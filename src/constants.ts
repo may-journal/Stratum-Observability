@@ -18,3 +18,9 @@ export const DEBUG_KEY = 'stratumdb';
  * executed by any StratumService instance regardless of productName.
  */
 export const GLOBAL_LISTENER_KEY = 'stratum_global';
+
+/**
+ * Event type every StratumService accepts without a plugin. Catalog
+ * items of this type map to the BaseEventModel.
+ */
+export const BASE_EVENT_TYPE = 'base';

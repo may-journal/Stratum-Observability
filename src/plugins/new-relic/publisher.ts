@@ -1,6 +1,7 @@
 import { type BaseEventModel, BasePublisher } from '../../base';
 import type { StratumSnapshot } from '../../types';
 import { isDefined } from '../../utils/general';
+import { NEW_RELIC_PLUGIN_NAME } from './constants';
 
 // biome-ignore lint/suspicious/noExplicitAny: legacy support
 type NrSpaInteraction = any;
@@ -13,7 +14,7 @@ type NrSpaInteraction = any;
  * run in browser contexts only.
  */
 export class NewRelicPublisher extends BasePublisher {
-  name = 'newRelic';
+  name = NEW_RELIC_PLUGIN_NAME;
 
   /**
    * Map of hard-coded key-value pairs to handle differently
