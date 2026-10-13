@@ -96,16 +96,17 @@ classDiagram
 
 ```mermaid
 classDiagram
-    class Parent {
-        +field
-        +method() result
+    class Example {
+        +property
+        +method()
     }
+    class Parent
     class Child
-    Parent <|-- Child
-    Child --> Parent
+    Parent <|-- Child : inherits
+    Parent --> Child : uses
 ```
 
-Numbers match the callout table.
+Numbers on classes and relationships match the callout table.
 
 | #   | Description                                                                                                                                         | Why                                                                |
 | --- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
@@ -117,9 +118,9 @@ Numbers match the callout table.
 | 6 | [Source](../../src/base/publisher.ts#L13-L86); `shouldPublishEvent` accepts only models listed in `acceptedEventModels`.            | The four steps every destination implements.                       |
 | 7 | [Source](../../src/utils/event.ts#L64-L121); prefixes each plugin's context keys unless the plugin opts out.                          | A free function, so it is drawn as a node with no members.         |
 | 8 | [Source](../../src/utils/ab-test-manager.ts#L9-L119); IDs come from a static counter, `t1`, `t2`, and so on.                | Running tests plus per-publish extras.                             |
-| 9 | [Source](../../src/plugins/new-relic/index.ts#L11-L14); named `newRelic`, no event types.                                | Accepts every event type.                                          |
-| 10 | [Source](../../src/plugins/new-relic/publisher.ts#L15-L162); available only when the agent global exists.            | Maps snapshot fields to interaction attributes.                    |
-| 11 | [Source](../../src/plugins/new-relic-plus/index.ts#L23-L40); prefix `stratum`, context from `defaultContext`.        | Plugin context travels with every event.                           |
+| 9 | [Source](../../src/plugins/new-relic/index.ts#L12-L15); named `newRelic`, no event types.                                | Accepts every event type.                                          |
+| 10 | [Source](../../src/plugins/new-relic/publisher.ts#L16-L163); available only when the agent global exists.            | Maps snapshot fields to interaction attributes.                    |
+| 11 | [Source](../../src/plugins/new-relic-plus/index.ts#L24-L41); prefix `stratum`, context from `defaultContext`.        | Plugin context travels with every event.                           |
 | 12 | [Source](../../src/plugins/new-relic-plus/model.ts#L11-L41); requires a non-empty `name`.                           | The `nrEvent` type.                                                |
 | 13 | [Source](../../src/plugins/new-relic-plus/model.ts#L49-L72); requires string `requestUri` and `statusCode`.          | The `nrApiResponse` type.                                          |
 | 14 | [Source](../../src/plugins/new-relic-plus/model.ts#L80-L99); requires a string `errorCode`.                          | The `nrError` type.                                                |
