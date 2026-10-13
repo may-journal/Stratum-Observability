@@ -11,7 +11,7 @@ import type { Injector } from '../utils/injector';
 export class BaseEventModel<T extends CatalogEvent = CatalogEvent> {
   /**
    * Stored value indicating the key used by the external
-   * application to reference the catalogue item.
+   * application to reference the catalog item.
    */
   readonly key: string;
 
