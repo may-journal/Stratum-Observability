@@ -6,13 +6,13 @@ relatedConfigurations: ['../../vitest.config.mts']
 
 ## Why
 
-A plugin's context values travel with every event, as they stood when I published it.
+A plugin's context holds only the keys it declares, and its values travel with every event.
 
 ## Measurement
 
-events carrying the context set before their publish call
+context keys accepted that the plugin declares
 -
-events published with plugin context
+context keys set
 
 Source: `src/base/plugin.ts:95`
 
@@ -27,10 +27,6 @@ Source: `src/base/plugin.ts:95`
         - When I set a key the plugin does not declare
             - Then the plugin refuses it and keeps no value
 - 0006.3
-    - Given Plugin author has a plugin whose context changes right after a publish
-        - When that event is delivered
-            - Then it carries the context from the moment of publishing
-- 0006.4
     - Given Plugin author has turned off the context prefix
         - When an event is delivered
             - Then its context keys carry no plugin name

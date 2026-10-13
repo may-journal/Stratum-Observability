@@ -2,7 +2,7 @@
 relatedConfigurations: ['../../vitest.config.mts']
 ---
 
-# 0012 Debug Log
+# 0010 Debug Log
 
 ## Why
 
@@ -18,11 +18,11 @@ Source: `src/utils/env.ts:100`
 
 ## Requirements
 
-- 0012.1
+- 0010.1
     - Given App developer has a tab with the debug flag off, then on
         - When Stratum writes a debug line
             - Then the console shows it, marked as Stratum, only while the flag is on
-- 0012.2
+- 0010.2
     - Given App developer has a page that blocks session storage
         - When Stratum checks for debug mode
             - Then debug mode is off and nothing fails

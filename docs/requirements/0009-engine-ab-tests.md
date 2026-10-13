@@ -2,7 +2,7 @@
 relatedConfigurations: ['../../vitest.config.mts']
 ---
 
-# 0011 A/B Tests
+# 0009 A/B Tests
 
 ## Why
 
@@ -18,23 +18,15 @@ Source: `src/utils/ab-test-manager.ts:99`
 
 ## Requirements
 
-- 0011.1
+- 0009.1
     - Given App developer has a service with no A/B tests
         - When I start an A/B test
             - Then the service lists it
-- 0011.2
-    - Given App developer has a running A/B test
-        - When I end it
-            - Then the service no longer lists it
-- 0011.3
-    - Given App developer has several running A/B tests
-        - When I end all A/B tests
-            - Then the service lists none
-- 0011.4
+- 0009.2
+    - Given App developer has one or several running A/B tests
+        - When I end one or end all of them
+            - Then the service no longer lists the ended tests
+- 0009.3
     - Given App developer has one or more one-time A/B tests
         - When I pass them to a publish call
             - Then that event carries them and the service does not keep them
-- 0011.5
-    - Given App developer ends an A/B test right after a publish
-        - When that event is delivered
-            - Then it still carries the ended A/B test

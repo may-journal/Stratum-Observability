@@ -10,9 +10,9 @@ Only well-formed catalog items can be published, and each bad item tells me what
 
 ## Measurement
 
-invalid catalog items held back with an error
+malformed catalog items held back with an error
 -
-invalid catalog items added
+malformed catalog items registered
 
 Source: `src/utils/catalog.ts:139`
 
@@ -28,7 +28,7 @@ Source: `src/utils/catalog.ts:139`
             - Then the item uses its key as its ID
 - 0002.3
     - Given App developer has items with an unknown type, missing fields or a reused ID
-        - When I register their catalog
+        - When I register them in a new catalog or add them to a valid one
             - Then each is held back with one error and the catalog is invalid
 - 0002.4
     - Given App developer has an item whose ID is negative, empty or not a number or text

@@ -2,7 +2,7 @@
 relatedConfigurations: ['../../vitest.config.mts']
 ---
 
-# 0013 Browser Console Plugin
+# 0101 Browser Console Output
 
 ## Why
 
@@ -18,7 +18,7 @@ Source: `src/plugins/browser-console/publisher.ts:46`
 
 ## Requirements
 
-- 0013.1
+- 0101.1
     - Given App developer has the console plugin and a catalog
         - When I publish a key
             - Then the console shows one line with the event's type, ID and key
