@@ -1,5 +1,5 @@
 import terser from '@rollup/plugin-terser';
-import typescript from 'rollup-plugin-typescript2';
+import esbuild from 'rollup-plugin-esbuild';
 import baseConfig from './rollup.config.mjs';
 
 export default baseConfig.input.map((input) => {
@@ -7,6 +7,6 @@ export default baseConfig.input.map((input) => {
   return {
     input,
     output: [{ dir: `temp/${name}`, format: 'es', name: 'index' }],
-    plugins: [typescript({ clean: true, useTsconfigDeclarationDir: true }), terser()]
+    plugins: [esbuild({ target: 'esnext' }), terser()]
   };
 });

@@ -21,7 +21,7 @@ export class Injector {
    * The static key is replaced by Rollup with the dynamic package.json
    * version at compile.
    */
-  readonly version = '__stratumLibraryVersion__';
+  readonly version: string = '__stratumLibraryVersion__';
 
   /**
    * Map of event type to aan EventModel class used to

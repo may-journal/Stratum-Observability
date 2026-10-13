@@ -1,6 +1,6 @@
 import { readdirSync, statSync } from 'node:fs';
 import replace from '@rollup/plugin-replace';
-import typescript from 'rollup-plugin-typescript2';
+import esbuild from 'rollup-plugin-esbuild';
 import pkg from './package.json' with { type: 'json' };
 
 const pluginPath = 'src/plugins';
@@ -30,9 +30,6 @@ export default {
       preventAssignment: true,
       __stratumLibraryVersion__: pkg.version
     }),
-    typescript({
-      clean: true,
-      useTsconfigDeclarationDir: true
-    })
+    esbuild({ target: 'esnext' })
   ]
 };
