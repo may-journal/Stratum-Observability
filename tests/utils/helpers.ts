@@ -35,8 +35,18 @@ export function isUuid(uuid: string) {
   return regExp.test(uuid);
 }
 
+const DEBUG_METHOD = 'debug';
+
 export function spyOnDebugLog() {
-  return vi.spyOn(Logger.prototype, 'debug');
+  return vi.spyOn(Logger.prototype, DEBUG_METHOD);
+}
+
+/**
+ * Silences console.debug and returns its spy, to assert on the debug
+ * lines a user would see.
+ */
+export function spyOnConsoleDebug() {
+  return vi.spyOn(console, DEBUG_METHOD).mockImplementation(() => {});
 }
 
 export function spyOnPublish(publisher: BasePublisher) {

@@ -56,10 +56,7 @@ export abstract class BasePublisher<T = any> {
    * by the publisher.
    */
   shouldPublishEvent(event: BaseEventModel): boolean {
-    if (Array.isArray(this.acceptedEventModels)) {
-      return this.acceptedEventModels.some((model) => event instanceof model);
-    }
-    return true;
+    return !!this.acceptedEventModels?.some((model) => event instanceof model);
   }
 
   /**

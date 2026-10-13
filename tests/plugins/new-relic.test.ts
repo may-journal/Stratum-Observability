@@ -36,7 +36,7 @@ describe('publishing events via NewRelicPublisher', () => {
     vi.restoreAllMocks();
   });
 
-  it('should send the event, its context and ab test data to window.newrelic', async () => {
+  it('0111.1 sends the event, its context and ab test data to window.newrelic', async () => {
     const spies = spyOnNewRelic();
     const eventName = 'testEvent';
 
@@ -48,7 +48,7 @@ describe('publishing events via NewRelicPublisher', () => {
     expectNewRelicEvent(spies, NR_MOCK.sampleA, eventName);
   });
 
-  it('should apply isValid attribute, if provided', async () => {
+  it('0111.2 applies the isValid attribute, if provided', async () => {
     const spies = spyOnNewRelic();
 
     const result = await stratum.publishFromCatalog(METADATA_CATALOG_ID, 1, {
@@ -59,7 +59,7 @@ describe('publishing events via NewRelicPublisher', () => {
     expect(newRelicAttributes(spies).isValid).toBe(true);
   });
 
-  it('should apply context data from other plugins', async () => {
+  it('0111.3 applies context data from other plugins', async () => {
     stratum = createService({ plugins: [pluginA] });
     stratum.addPlugin(NewRelicPlusPluginFactory());
     const spies = spyOnNewRelic();
@@ -71,7 +71,7 @@ describe('publishing events via NewRelicPublisher', () => {
     }
   });
 
-  it('should be unavailable outside a browser window', async () => {
+  it('0111.4 is unavailable outside a browser window', async () => {
     vi.stubGlobal('window', undefined);
     expect(await new NewRelicPublisher().isAvailable()).toBe(false);
   });

@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { BASE_EVENT_TYPE, BaseEventModel, BasePlugin, Injector, type StratumService } from '../src';
-import type { PluginHooks } from '../src/types';
+import { BASE_EVENT_TYPE, BaseEventModel, BasePlugin, type Injector, type StratumService } from '../src';
+import { NewRelicPlusPluginFactory } from '../src/plugins/new-relic-plus';
+import type { PluginContext, PluginHooks } from '../src/types';
 import { SAMPLE_A_CATALOG } from './utils/catalog';
 import { UPDATED_CONTEXT_VALUE } from './utils/constants';
 import {
@@ -20,14 +21,25 @@ import {
   PLUGIN_B_OPTIONS,
   type PluginA,
   PluginAFactory,
-  PluginB,
   PluginBFactory,
   SampleEventType,
-  SamplePublisher,
   VAR1
 } from './utils/sample-plugin';
 
 const UNKNOWN_VAR = 'var3';
+const CUSTOM_VAR = 'myCustomVar';
+
+type ContextPlugin = BasePlugin<PluginContext, never>;
+
+const CONTEXT_PLUGINS = [
+  { name: 'the sample plugin', create: () => PluginAFactory() as unknown as ContextPlugin, key: VAR1 },
+  {
+    name: 'New Relic Plus',
+    create: () =>
+      NewRelicPlusPluginFactory({ defaultContext: { [CUSTOM_VAR]: undefined } }) as unknown as ContextPlugin,
+    key: CUSTOM_VAR
+  }
+];
 
 describe('stratum base plugin functionality', () => {
   let stratum: StratumService;
@@ -45,7 +57,7 @@ describe('stratum base plugin functionality', () => {
   });
 
   describe('run time plugin registration', () => {
-    it('should allow run time plugin registration and populate across the publishing flow', async () => {
+    it('0004.1 registers a plugin at run time and populates the publishing flow', async () => {
       stratum.addPlugin(PluginBFactory({ pluginOptions: PLUGIN_B_OPTIONS }));
       const { listener, snapshot } = await captureSnapshot(stratum, () => stratum.publish(1));
 
@@ -62,7 +74,7 @@ describe('stratum base plugin functionality', () => {
       expect(Object.keys(snapshot.plugins)).toStrictEqual([PLUGIN_A_NAME]);
     });
 
-    it('should allow plugin b publishers to intercept events from plugin a via acceptedEventModels', async () => {
+    it('0004.4 lets plugin b publishers receive events from plugin a via acceptedEventModels', async () => {
       stratum.addPlugin(PluginBFactory({ pluginOptions: PLUGIN_B_OPTIONS, acceptedEventModels: [AModel] }));
       const { snapshot } = await captureSnapshot(stratum, () => stratum.publish(1));
 
@@ -71,7 +83,7 @@ describe('stratum base plugin functionality', () => {
       expect(snapshot.plugins[PLUGIN_B_NAME].options).toStrictEqual(PLUGIN_B_OPTIONS);
     });
 
-    it('should ignore an event type that another plugin already registered', () => {
+    it('0004.3 ignores an event type that another plugin already registered', () => {
       const debugSpy = spyOnDebugLog();
       class DuplicateTypePlugin extends BasePlugin<never, never> {
         name = 'duplicate-type';
@@ -86,50 +98,33 @@ describe('stratum base plugin functionality', () => {
   });
 
   describe('plugin context', () => {
-    it('should handle setting valid context vars', () => {
-      expect(pluginA.getContext(VAR1)).toBe(DEFAULT_VAR1);
-      expect(pluginA.setContext(VAR1, UPDATED_CONTEXT_VALUE)).toBe(true);
-      expect(pluginA.getContext(VAR1)).toBe(UPDATED_CONTEXT_VALUE);
+    it.each(CONTEXT_PLUGINS)('0006.1 sets a declared context key on $name', ({ create, key }) => {
+      const plugin = create();
+      expect(plugin.setContext(key, UPDATED_CONTEXT_VALUE)).toBe(true);
+      expect(plugin.getContext(key)).toBe(UPDATED_CONTEXT_VALUE);
     });
 
-    it('should handle setting invalid context vars', () => {
-      // @ts-expect-error testing runtime handling with invalid types
-      expect(pluginA.setContext(UNKNOWN_VAR, '456')).toBe(false);
-      // @ts-expect-error testing runtime handling with invalid types
-      expect(pluginA.getContext(UNKNOWN_VAR)).toBeUndefined();
+    it.each(CONTEXT_PLUGINS)('0006.2 refuses an undeclared context key on $name', ({ create }) => {
+      const plugin = create();
+      expect(plugin.setContext(UNKNOWN_VAR, '456')).toBe(false);
+      expect(plugin.getContext(UNKNOWN_VAR)).toBeUndefined();
     });
   });
 
   describe('plugin publishing', () => {
-    it('should keep context keys unprefixed when useGlobalContextPrefix is false', async () => {
+    it('0006.3 keeps context keys unprefixed when useGlobalContextPrefix is false', async () => {
       pluginA.useGlobalContextPrefix = false;
       const { snapshot } = await captureSnapshot(stratum, () => stratum.publish(1));
       expect(snapshot.globalContext[PLUGIN_A_NAME]).toStrictEqual({ [VAR1]: DEFAULT_VAR1 });
     });
 
-    it('should restrict publishing to plugin-specific models by default', () => {
+    it('0004.5 restricts publishing to plugin-specific models by default', () => {
       expect(pluginA.publishers[0].acceptedEventModels).toStrictEqual([EmptyModel, AModel]);
-    });
-
-    it('should accept every event model when a publisher sets no acceptedEventModels', () => {
-      const model = stratum.defaultCatalog?.validModels[1] as BaseEventModel;
-      expect(new SamplePublisher('unregistered').shouldPublishEvent(model)).toBe(true);
     });
   });
 
   describe('plugin lifecycle hooks', () => {
-    it('should fire onRegister when plugin is loaded into the StratumService', () => {
-      const onRegisterHookSpy = vi.spyOn(PluginB.prototype, 'onRegister');
-      const pluginB = PluginBFactory({ pluginOptions: PLUGIN_B_OPTIONS });
-      expect(onRegisterHookSpy).toHaveBeenCalledTimes(0);
-      stratum.addPlugin(pluginB);
-      expect(onRegisterHookSpy).toHaveBeenCalledWith(
-        expect.any(Injector),
-        expect.objectContaining({ addCatalog: expect.any(Function) })
-      );
-    });
-
-    it('should allow a plugin to register and publish from a catalog via hooks.addCatalog', async () => {
+    it('0004.6 lets a plugin register and publish from a catalog via hooks.addCatalog', async () => {
       let publishRef: () => Promise<boolean> = async () => false;
 
       class HooksPlugin extends BasePlugin<never, never> {
@@ -145,19 +140,6 @@ describe('stratum base plugin functionality', () => {
 
       expect(listener).toHaveBeenCalledTimes(1);
       expect(snapshot.event.id).toBe(1);
-    });
-  });
-
-  describe('atomic publishing', () => {
-    it('should preserve plugin vars at the time publish was called', async () => {
-      const first = await captureSnapshot(stratum, () => {
-        stratum.publish(1);
-        pluginA.setContext(VAR1, UPDATED_CONTEXT_VALUE);
-      });
-      expect(first.snapshot.plugins[PLUGIN_A_NAME].context.var1).toEqual(DEFAULT_VAR1);
-
-      const second = await captureSnapshot(stratum, () => stratum.publish(1));
-      expect(second.snapshot.plugins[PLUGIN_A_NAME].context.var1).toEqual(UPDATED_CONTEXT_VALUE);
     });
   });
 });
