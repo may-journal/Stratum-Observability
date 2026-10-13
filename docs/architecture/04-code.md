@@ -4,12 +4,9 @@ fitnessFunctions: ['architecture-contract', 'architecture-code']
 
 # Code
 
-The `architecture-code` check resolves Go and Swift declarations only. Every class here is a TypeScript declaration, so each carries `<<abstract>>` and its row links the source lines.
-
 ```mermaid
 classDiagram
     class StratumService["1 StratumService"] {
-        <<abstract>>
         +catalogs
         +defaultCatalog
         +publishers
@@ -21,7 +18,6 @@ classDiagram
         +startAbTest(obj) AbTest
     }
     class RegisteredStratumCatalog["2 RegisteredStratumCatalog"] {
-        <<abstract>>
         +id
         +metadata
         +errors
@@ -30,7 +26,6 @@ classDiagram
         +publish(key, options) Promise~boolean~
     }
     class Injector["3 Injector"] {
-        <<abstract>>
         +eventTypeModelMap
         +plugins
         +stratumSessionId
@@ -39,7 +34,6 @@ classDiagram
         +getExternalSnapshotListeners() listeners
     }
     class BaseEventModel["4 BaseEventModel"] {
-        <<abstract>>
         +key
         +item
         +eventType
@@ -48,7 +42,6 @@ classDiagram
         +getData(options) data
     }
     class BasePlugin["5 BasePlugin"] {
-        <<abstract>>
         +name
         +publishers
         +eventTypes
@@ -56,7 +49,6 @@ classDiagram
         +onRegister(injector, hooks)
     }
     class BasePublisher["6 BasePublisher"] {
-        <<abstract>>
         +name
         +acceptedEventModels
         +shouldPublishEvent(event) boolean
@@ -64,40 +56,21 @@ classDiagram
         +getEventOutput(event, snapshot) output
         +publish(content, snapshot) Promise~void~
     }
-    class generateStratumSnapshot["7 generateStratumSnapshot(injector, model, catalog, publishers, options)"] {
-        <<abstract>>
-    }
+    class generateStratumSnapshot["7 generateStratumSnapshot(injector, model, catalog, publishers, options)"]
     class AbTestManager["8 AbTestManager"] {
-        <<abstract>>
         +tests
         +startAbTest(obj) AbTest
         +endAbTest(key)
         +generateContexts(transient) schemas
     }
-    class NewRelicPlugin["9 NewRelicPlugin"] {
-        <<abstract>>
-    }
-    class NewRelicPublisher["10 NewRelicPublisher"] {
-        <<abstract>>
-    }
-    class NewRelicPlusPlugin["11 NewRelicPlusPlugin"] {
-        <<abstract>>
-    }
-    class NewRelicEventModel["12 NewRelicEventModel"] {
-        <<abstract>>
-    }
-    class NewRelicApiResponseEventModel["13 NewRelicApiResponseEventModel"] {
-        <<abstract>>
-    }
-    class NewRelicErrorEventModel["14 NewRelicErrorEventModel"] {
-        <<abstract>>
-    }
-    class BrowserConsolePlugin["15 BrowserConsolePlugin"] {
-        <<abstract>>
-    }
-    class BrowserConsolePublisher["16 BrowserConsolePublisher"] {
-        <<abstract>>
-    }
+    class NewRelicPlugin["9 NewRelicPlugin"]
+    class NewRelicPublisher["10 NewRelicPublisher"]
+    class NewRelicPlusPlugin["11 NewRelicPlusPlugin"]
+    class NewRelicEventModel["12 NewRelicEventModel"]
+    class NewRelicApiResponseEventModel["13 NewRelicApiResponseEventModel"]
+    class NewRelicErrorEventModel["14 NewRelicErrorEventModel"]
+    class BrowserConsolePlugin["15 BrowserConsolePlugin"]
+    class BrowserConsolePublisher["16 BrowserConsolePublisher"]
 
     StratumService --> Injector : 17
     StratumService --> RegisteredStratumCatalog : 18
