@@ -1,3 +1,8 @@
+---
+# Release history, judged by the changelog checks
+fitnessFunctions: ['changelog']
+---
+
 # Changelog
 
 ## Unreleased
@@ -11,19 +16,17 @@
 
 ## v2.0.0
 
-### Added
+### 2026.05.11.1700
 
-1. Catalog-level publishing via `catalog.publish(key)` with compile-time key safety
-2. `PluginHooks` parameter on `onRegister`, exposing `hooks.addCatalog()` for plugin-owned catalogs
-3. `addItems()` on `RegisteredStratumCatalog` to add items after catalog creation
+- feat(catalog): Add catalog-level publishing via `catalog.publish(key)` with compile-time key safety.
+- feat(plugin): Add a `PluginHooks` parameter on `onRegister`, exposing `hooks.addCatalog()` for plugin-owned catalogs.
+- feat(catalog): Add `addItems()` on `RegisteredStratumCatalog` to add items after catalog creation.
+- feat(catalog)!: Breaking: `addCatalog()` returns a `RegisteredStratumCatalog` instance instead of a catalog ID string.
+- feat(catalog): Duplicate catalog IDs now merge items into the existing catalog instead of rejecting.
 
-### Changed
+### 2026.05.11.1659
 
-1. **Breaking:** `addCatalog()` returns a `RegisteredStratumCatalog` instance instead of a catalog ID string
-2. Duplicate catalog IDs now merge items into the existing catalog instead of rejecting
-3. Integrates BiomeJS and resolves open findings
-
-### Removed
-1. Remove `prettier`, `eslint`, `lint-staged` and related devDependencies
-2. Convert ci scripts to ESM
-3. Remove `semver` and `shelljs` devDependencies
+- build(lint): Integrate BiomeJS and resolve open findings.
+- chore(deps): Remove `prettier`, `eslint`, `lint-staged` and related devDependencies.
+- chore(deps): Remove `semver` and `shelljs` devDependencies.
+- ci(scripts): Convert ci scripts to ESM.
