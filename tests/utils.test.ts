@@ -250,7 +250,7 @@ describe('util functions', () => {
       it('should execute console.debug only if debugModeEnabled', () => {
         const logger = new Logger();
         const loggerSpy = vi.spyOn(console, 'debug').mockImplementation(() => {});
-        const str = 'teststring';
+        const str = 'test-string';
 
         logger.debug(str);
         expect(loggerSpy).toHaveBeenCalledTimes(0);
