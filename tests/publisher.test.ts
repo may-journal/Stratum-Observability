@@ -1,26 +1,28 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { StratumService } from '../src';
-import type { AbTest, StratumSnapshot } from '../src/types';
+import type { StratumService } from '../src';
+import type { AbTest } from '../src/types';
 import { SAMPLE_A_CATALOG } from './utils/catalog';
-import { AB_TEST_SCHEMA, PRODUCT_NAME, PRODUCT_VERSION } from './utils/constants';
-import { enableDebugMode, removeAllPublishers, restoreStratumMocks } from './utils/helpers';
-import { PLUGIN_A_NAME, type PluginA, PluginAFactory } from './utils/sample-plugin';
+import { AB_TEST_SCHEMA, UPDATED_CONTEXT_VALUE } from './utils/constants';
+import {
+  captureSnapshot,
+  createService,
+  enableDebugMode,
+  removeAllPublishers,
+  restoreStratumMocks
+} from './utils/helpers';
+import { PLUGIN_A_NAME, type PluginA, PluginAFactory, VAR2 } from './utils/sample-plugin';
 
 describe('event publishing', () => {
   let stratum: StratumService;
   let activeAbTest: AbTest;
-  let PluginA: PluginA;
+  let pluginA: PluginA;
 
   beforeEach(() => {
     enableDebugMode(true);
-    PluginA = PluginAFactory();
-    stratum = new StratumService({
-      catalog: { items: SAMPLE_A_CATALOG },
-      productName: PRODUCT_NAME,
-      productVersion: PRODUCT_VERSION,
-      plugins: PluginA
-    });
+    pluginA = PluginAFactory();
+    stratum = createService({ catalog: { items: SAMPLE_A_CATALOG }, plugins: pluginA });
     activeAbTest = stratum.startAbTest(AB_TEST_SCHEMA);
+    removeAllPublishers(stratum);
   });
 
   afterEach(() => {
@@ -28,43 +30,27 @@ describe('event publishing', () => {
     vi.restoreAllMocks();
   });
 
-  describe('atomic publishing', () => {
-    beforeEach(() => {
-      removeAllPublishers(stratum);
+  it('should preserve global context set at the time publish is called', async () => {
+    pluginA.setContext(VAR2, UPDATED_CONTEXT_VALUE);
+
+    const { listener, snapshot } = await captureSnapshot(stratum, () => {
+      stratum.publish(1);
+      pluginA.setContext(VAR2, 'Next');
     });
 
-    it('should preserve product name set at the time publish is called', async () => {
-      const listener = vi.fn();
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(snapshot.globalContext[PLUGIN_A_NAME][`${PLUGIN_A_NAME}_${VAR2}`]).toBe(UPDATED_CONTEXT_VALUE);
+    expect(pluginA.getContext(VAR2)).toBe('Next');
+  });
 
-      PluginA.setContext('var1', '123');
-      PluginA.setContext('var2', 'Home');
-
-      const event = await new Promise<StratumSnapshot>((resolve) => {
-        listener.mockImplementation((event) => resolve(event));
-        stratum.addSnapshotListener(listener);
-        stratum.publish(1);
-        PluginA.setContext('var2', 'Next');
-      });
-
-      expect(listener).toHaveBeenCalledTimes(1);
-      expect(event.globalContext[PLUGIN_A_NAME][`${PLUGIN_A_NAME}_var2`]).toBe('Home');
-      expect(PluginA.getContext('var2')).toBe('Next');
+  it('should preserve ab tests at the time publish was called', async () => {
+    const { listener, snapshot } = await captureSnapshot(stratum, () => {
+      stratum.publish(1);
+      stratum.endAbTest(activeAbTest);
     });
 
-    it('should preserve ab tests at the time publish was called', async () => {
-      const listener = vi.fn();
-
-      const event = await new Promise<StratumSnapshot>((resolve) => {
-        listener.mockImplementation((event) => resolve(event));
-        stratum.addSnapshotListener(listener);
-        stratum.publish(1);
-        // Without waiting, end the active AB Test
-        stratum.endAbTest(activeAbTest);
-      });
-
-      expect(listener).toHaveBeenCalledTimes(1);
-      expect(event.abTestSchemas.length).toBe(1);
-      expect(stratum.abTests.length).toBe(0);
-    });
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(snapshot.abTestSchemas).toHaveLength(1);
+    expect(stratum.abTests).toHaveLength(0);
   });
 });

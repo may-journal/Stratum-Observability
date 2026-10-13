@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { type BasePublisher, StratumService } from '../../src';
-import { NewRelicPluginFactory, NewRelicPublisher } from '../../src/plugins/new-relic';
+import type { StratumService } from '../../src';
+import { NEW_RELIC_PLUGIN_NAME, NewRelicPluginFactory, NewRelicPublisher } from '../../src/plugins/new-relic';
 import {
   NewRelicApiResponseEventModel,
   NewRelicErrorEventModel,
@@ -8,11 +8,25 @@ import {
   type NewRelicPlusPlugin,
   NewRelicPlusPluginFactory
 } from '../../src/plugins/new-relic-plus';
-import { NR_CATALOG, SAMPLE_A_CATALOG } from '../utils/catalog';
-import { AB_TEST_SCHEMA, globalWindow, PLACEHOLDERS, PRODUCT_NAME, PRODUCT_VERSION } from '../utils/constants';
+import { NR_API_KEY, NR_API_NAME, NR_CATALOG, NR_ERROR_NAME, NR_EVENT_NAME, SAMPLE_A_CATALOG } from '../utils/catalog';
+import { AB_TEST_SCHEMA, PLACEHOLDERS } from '../utils/constants';
 import { NR_MOCK, SAMPLE_EVENT_OPTIONS } from '../utils/fixtures';
-import { getPublishers, mockNewRelic, mockSessionId, restoreStratumMocks } from '../utils/helpers';
+import {
+  createService,
+  expectNewRelicEvent,
+  getPublishers,
+  mockNewRelic,
+  mockSessionId,
+  newRelicAttributes,
+  restoreStratumMocks,
+  spyOnNewRelic,
+  spyOnPublish
+} from '../utils/helpers';
 import { PluginAFactory } from '../utils/sample-plugin';
+
+const NR_EVENT_KEY = 'nrEventValid';
+const CUSTOM_VAR = 'myCustomVar';
+const CUSTOM_VAR_2 = 'myCustomVar2';
 
 describe('NewRelicPlusPublisher', () => {
   let stratum: StratumService;
@@ -20,18 +34,19 @@ describe('NewRelicPlusPublisher', () => {
 
   beforeEach(() => {
     mockSessionId();
+    mockNewRelic();
     nrpPlugin = NewRelicPlusPluginFactory();
-    stratum = new StratumService({
-      catalog: { items: NR_CATALOG },
-      plugins: [nrpPlugin, NewRelicPluginFactory()],
-      productName: PRODUCT_NAME,
-      productVersion: PRODUCT_VERSION
-    });
+    stratum = createService({ catalog: { items: NR_CATALOG }, plugins: [nrpPlugin, NewRelicPluginFactory()] });
     stratum.startAbTest(AB_TEST_SCHEMA);
   });
 
+  afterEach(() => {
+    restoreStratumMocks();
+    vi.restoreAllMocks();
+  });
+
   it('should not register both the NewRelic and NewRelicPlus plugin', () => {
-    expect(Object.keys(stratum.injector.plugins)).toStrictEqual(['newRelic']);
+    expect(Object.keys(stratum.injector.plugins)).toStrictEqual([NEW_RELIC_PLUGIN_NAME]);
   });
 
   it('should initialize the NewRelic publisher', () => {
@@ -39,219 +54,109 @@ describe('NewRelicPlusPublisher', () => {
   });
 
   it('should set the acceptedEventModels of NewRelicPlusPublisher to NR-events only', () => {
-    const nrpPublisher = getPublishers(stratum)[0];
-    expect(nrpPublisher.acceptedEventModels).toEqual([
+    expect(getPublishers(stratum)[0].acceptedEventModels).toEqual([
       NewRelicApiResponseEventModel,
       NewRelicErrorEventModel,
       NewRelicEventModel
     ]);
   });
 
-  describe('custom event types', () => {
-    describe('base event type', () => {
-      it('should process a valid catalog item', () => {
-        expect(stratum.defaultCatalog?.validModels.nrEventValid).toBeInstanceOf(NewRelicEventModel);
-      });
-
-      it('should process an invalid catalog item', () => {
-        expect(stratum.defaultCatalog?.errors.nrEventInvalid).toBeDefined();
-        expect(stratum.defaultCatalog?.errors.nrEventInvalid.errors).toHaveLength(1);
-      });
-    });
-
-    describe('api response event type', () => {
-      it('should process a valid catalog item', () => {
-        expect(stratum.defaultCatalog?.validModels.nrApiValid).toBeInstanceOf(NewRelicApiResponseEventModel);
-      });
-
-      it('should process an invalid catalog item', () => {
-        expect(stratum.defaultCatalog?.errors.nrApiInvalid).toBeDefined();
-        expect(stratum.defaultCatalog?.errors.nrApiInvalid.errors).toHaveLength(2);
-      });
-    });
-
-    describe('error event type', () => {
-      it('should process a valid catalog item', () => {
-        expect(stratum.defaultCatalog?.validModels.nrErrorValid).toBeInstanceOf(NewRelicErrorEventModel);
-      });
-
-      it('should process an invalid catalog item', () => {
-        expect(stratum.defaultCatalog?.errors.nrErrorInvalid).toBeDefined();
-        expect(stratum.defaultCatalog?.errors.nrErrorInvalid.errors).toHaveLength(2);
-      });
-    });
+  it.each([
+    { key: NR_EVENT_KEY, model: NewRelicEventModel },
+    { key: NR_API_KEY, model: NewRelicApiResponseEventModel },
+    { key: 'nrErrorValid', model: NewRelicErrorEventModel }
+  ])('should load the valid catalog item $key as its event model', ({ key, model }) => {
+    expect(stratum.defaultCatalog?.validModels[key]).toBeInstanceOf(model);
   });
 
-  describe('publishing logic', () => {
-    let publisher: BasePublisher;
-    beforeEach(() => {
-      publisher = stratum.publishers[0];
-      mockNewRelic();
-    });
+  it.each([
+    { key: 'nrEventInvalid', errorCount: 1 },
+    { key: 'nrApiInvalid', errorCount: 2 },
+    { key: 'nrErrorInvalid', errorCount: 2 }
+  ])('should record $errorCount validation errors for the invalid catalog item $key', ({ key, errorCount }) => {
+    expect(stratum.defaultCatalog?.errors[key].errors).toHaveLength(errorCount);
+  });
 
-    afterEach(() => {
-      restoreStratumMocks();
-      vi.restoreAllMocks();
-    });
+  it.each([
+    { key: NR_EVENT_KEY, attributes: NR_MOCK.event, name: NR_EVENT_NAME },
+    { key: NR_API_KEY, attributes: NR_MOCK.api, name: NR_API_NAME },
+    { key: 'nrErrorValid', attributes: NR_MOCK.error, name: NR_ERROR_NAME }
+  ])('should publish the $key event to New Relic', async ({ key, attributes, name }) => {
+    const publisherSpy = spyOnPublish(stratum.publishers[0]);
+    const spies = spyOnNewRelic();
 
-    it('should process the nrEvent event type', async () => {
-      const publisherSpy = vi.spyOn(publisher, 'publish');
-      const interactionSpy = vi.spyOn(globalWindow.newrelic, 'interaction');
-      const saveSpy = vi.spyOn(globalWindow.newrelic, 'save');
-      const setAttributeSpy = vi.spyOn(globalWindow.newrelic, 'setAttribute');
-      const setNameSpy = vi.spyOn(globalWindow.newrelic, 'setName');
-      const endSpy = vi.spyOn(globalWindow.newrelic, 'end');
+    expect(await stratum.publish(key)).toBe(true);
+    expect(publisherSpy).toHaveBeenCalledTimes(1);
+    expectNewRelicEvent(spies, attributes, name);
+  });
 
-      const result = await stratum.publish('nrEventValid');
+  it('should handle placeholders within the nrApi event type', async () => {
+    const spies = spyOnNewRelic();
+    expect(await stratum.publish('nrApiPlaceholders', SAMPLE_EVENT_OPTIONS)).toBe(true);
 
-      expect(result).toBe(true);
-      expect(publisherSpy).toHaveBeenCalledTimes(1);
-      expect(setAttributeSpy).toHaveBeenCalledTimes(Object.keys(NR_MOCK.event).length);
-      expect(Object.fromEntries(setAttributeSpy.mock.calls)).toMatchObject(NR_MOCK.event);
-      expect(setNameSpy).toHaveBeenCalledTimes(1);
-      expect(setNameSpy).toHaveBeenCalledWith('nr-event');
-      expect(saveSpy).toHaveBeenCalledTimes(1);
-      expect(interactionSpy).toHaveBeenCalledTimes(2);
-      expect(endSpy).toHaveBeenCalledTimes(2);
-    });
-
-    it('should process the nrApi event type', async () => {
-      const publisherSpy = vi.spyOn(publisher, 'publish');
-      const interactionSpy = vi.spyOn(globalWindow.newrelic, 'interaction');
-      const saveSpy = vi.spyOn(globalWindow.newrelic, 'save');
-      const setAttributeSpy = vi.spyOn(globalWindow.newrelic, 'setAttribute');
-      const setNameSpy = vi.spyOn(globalWindow.newrelic, 'setName');
-      const endSpy = vi.spyOn(globalWindow.newrelic, 'end');
-
-      const result = await stratum.publish('nrApiValid');
-
-      expect(result).toBe(true);
-      expect(publisherSpy).toHaveBeenCalledTimes(1);
-
-      expect(setAttributeSpy).toHaveBeenCalledTimes(Object.keys(NR_MOCK.api).length);
-      expect(Object.fromEntries(setAttributeSpy.mock.calls)).toMatchObject(NR_MOCK.api);
-      expect(setNameSpy).toHaveBeenCalledTimes(1);
-      expect(setNameSpy).toHaveBeenCalledWith('nr-api-response');
-      expect(saveSpy).toHaveBeenCalledTimes(1);
-      expect(interactionSpy).toHaveBeenCalledTimes(2);
-      expect(endSpy).toHaveBeenCalledTimes(2);
-    });
-
-    it('should handle placeholders within the nrApi event type', async () => {
-      const setAttributeSpy = vi.spyOn(globalWindow.newrelic, 'setAttribute');
-      const setNameSpy = vi.spyOn(globalWindow.newrelic, 'setName');
-      const result = await stratum.publish('nrApiPlaceholders', SAMPLE_EVENT_OPTIONS);
-      expect(result).toBe(true);
-      const publishData = {
-        ...Object.fromEntries(setAttributeSpy.mock.calls),
-        ...{ name: setNameSpy.mock.calls[0][0] }
-      };
-      const catalogEntry = NR_CATALOG.nrApiPlaceholders;
-      const propertiesWithPlaceholders = Object.keys(catalogEntry).filter((k) =>
-        // @ts-expect-error testing runtime handling with invalid types
-        String(catalogEntry[k]).includes('{{')
-      );
-      propertiesWithPlaceholders.forEach((key) => {
-        // @ts-expect-error testing runtime handling with invalid types
-        const placeholder = catalogEntry[key].replace(/[{}]/g, '');
-        const placeholderValue = PLACEHOLDERS[placeholder];
-        expect(publishData[key]).toBe(placeholderValue);
-      });
-    });
-
-    it('should process the nrError event type', async () => {
-      const publisherSpy = vi.spyOn(publisher, 'publish');
-      const interactionSpy = vi.spyOn(globalWindow.newrelic, 'interaction');
-      const saveSpy = vi.spyOn(globalWindow.newrelic, 'save');
-      const setAttributeSpy = vi.spyOn(globalWindow.newrelic, 'setAttribute');
-      const setNameSpy = vi.spyOn(globalWindow.newrelic, 'setName');
-      const endSpy = vi.spyOn(globalWindow.newrelic, 'end');
-
-      const result = await stratum.publish('nrErrorValid');
-
-      expect(result).toBe(true);
-      expect(publisherSpy).toHaveBeenCalledTimes(1);
-
-      expect(setAttributeSpy).toHaveBeenCalledTimes(Object.keys(NR_MOCK.error).length);
-      expect(Object.fromEntries(setAttributeSpy.mock.calls)).toMatchObject(NR_MOCK.error);
-      expect(setNameSpy).toHaveBeenCalledTimes(1);
-      expect(setNameSpy).toHaveBeenCalledWith('nr-error');
-      expect(saveSpy).toHaveBeenCalledTimes(1);
-      expect(interactionSpy).toHaveBeenCalledTimes(2);
-      expect(endSpy).toHaveBeenCalledTimes(2);
-    });
+    const publishData = { ...newRelicAttributes(spies), name: spies.setName.mock.calls[0][0] };
+    for (const [key, value] of Object.entries(NR_CATALOG.nrApiPlaceholders)) {
+      const placeholder = /^\{\{(\w+)\}\}$/.exec(String(value))?.[1];
+      if (placeholder) {
+        expect(publishData[key]).toBe(PLACEHOLDERS[placeholder]);
+      }
+    }
   });
 
   describe('custom context', () => {
     beforeEach(() => {
-      mockNewRelic();
       nrpPlugin = NewRelicPlusPluginFactory({
-        defaultContext: {
-          myCustomVar: undefined,
-          myCustomVar2: 'initial'
-        }
+        defaultContext: { [CUSTOM_VAR]: undefined, [CUSTOM_VAR_2]: 'initial' }
       });
-      stratum = new StratumService({
-        catalog: { items: NR_CATALOG },
-        plugins: [nrpPlugin],
-        productName: PRODUCT_NAME,
-        productVersion: PRODUCT_VERSION
-      });
-    });
-
-    afterEach(() => {
-      restoreStratumMocks();
-      vi.restoreAllMocks();
+      stratum = createService({ catalog: { items: NR_CATALOG }, plugins: [nrpPlugin] });
     });
 
     it('should set the default context', () => {
-      expect(stratum.injector.plugins.newRelic.context).toMatchObject({
-        myCustomVar: undefined,
-        myCustomVar2: 'initial'
+      expect(stratum.injector.plugins[NEW_RELIC_PLUGIN_NAME].context).toMatchObject({
+        [CUSTOM_VAR]: undefined,
+        [CUSTOM_VAR_2]: 'initial'
       });
     });
 
     it('should only allow overriding default context keys', () => {
-      const fail = nrpPlugin.setContext('abc', 1234);
-      const success1 = nrpPlugin.setContext('myCustomVar', 1234);
-      const success2 = nrpPlugin.setContext('myCustomVar2', 678);
-      expect(fail).toBe(false);
-      expect(success1).toBe(true);
-      expect(success2).toBe(true);
-      expect(stratum.injector.plugins.newRelic.context).toMatchObject({
-        myCustomVar: 1234,
-        myCustomVar2: 678
+      expect(nrpPlugin.setContext('unknownVar', 1234)).toBe(false);
+      expect(nrpPlugin.setContext(CUSTOM_VAR, 1234)).toBe(true);
+      expect(nrpPlugin.setContext(CUSTOM_VAR_2, 678)).toBe(true);
+      expect(stratum.injector.plugins[NEW_RELIC_PLUGIN_NAME].context).toMatchObject({
+        [CUSTOM_VAR]: 1234,
+        [CUSTOM_VAR_2]: 678
       });
     });
 
-    it('should not publish undefined variables', async () => {
-      const setAttributeSpy = vi.spyOn(globalWindow.newrelic, 'setAttribute');
-      await stratum.publish('nrEventValid');
-      const attributes = Object.fromEntries(setAttributeSpy.mock.calls);
-      expect(Object.keys(attributes)).not.toContain('stratum_myCustomVar');
-      expect(Object.keys(attributes)).toContain('stratum_myCustomVar2');
+    it.each([undefined, null])('should not publish a context variable set to %s', async (value) => {
+      nrpPlugin.setContext(CUSTOM_VAR, value);
+      const spies = spyOnNewRelic();
+      await stratum.publish(NR_EVENT_KEY);
+      const attributeNames = Object.keys(newRelicAttributes(spies));
+      expect(attributeNames).not.toContain(`stratum_${CUSTOM_VAR}`);
+      expect(attributeNames).toContain(`stratum_${CUSTOM_VAR_2}`);
     });
 
     it('should pass prefixed context variables when publishing nr events', async () => {
-      const setAttributeSpy = vi.spyOn(globalWindow.newrelic, 'setAttribute');
-      nrpPlugin.setContext('myCustomVar', 'abc');
-      nrpPlugin.setContext('myCustomVar2', false);
-      await stratum.publish('nrEventValid');
-      const attributes = Object.fromEntries(setAttributeSpy.mock.calls);
-      expect(attributes.stratum_myCustomVar).toBe('abc');
-      expect(attributes.stratum_myCustomVar2).toBe(false);
+      const spies = spyOnNewRelic();
+      nrpPlugin.setContext(CUSTOM_VAR, 'custom');
+      nrpPlugin.setContext(CUSTOM_VAR_2, false);
+      await stratum.publish(NR_EVENT_KEY);
+      const attributes = newRelicAttributes(spies);
+      expect(attributes[`stratum_${CUSTOM_VAR}`]).toBe('custom');
+      expect(attributes[`stratum_${CUSTOM_VAR_2}`]).toBe(false);
     });
 
     it('should include the default context when publishing other events', async () => {
-      const setAttributeSpy = vi.spyOn(globalWindow.newrelic, 'setAttribute');
+      const spies = spyOnNewRelic();
       stratum.addPlugin(PluginAFactory());
-      nrpPlugin.setContext('myCustomVar', 'test1');
-      nrpPlugin.setContext('myCustomVar2', 'test2');
+      nrpPlugin.setContext(CUSTOM_VAR, 'test1');
+      nrpPlugin.setContext(CUSTOM_VAR_2, 'test2');
       const id = stratum.addCatalog({ items: SAMPLE_A_CATALOG, componentName: 'noop' }).id;
       await stratum.publishFromCatalog(id, 1);
-      const attributes = Object.fromEntries(setAttributeSpy.mock.calls);
-      expect(attributes.stratum_myCustomVar).toBe('test1');
-      expect(attributes.stratum_myCustomVar2).toBe('test2');
+      const attributes = newRelicAttributes(spies);
+      expect(attributes[`stratum_${CUSTOM_VAR}`]).toBe('test1');
+      expect(attributes[`stratum_${CUSTOM_VAR_2}`]).toBe('test2');
     });
   });
 });

@@ -6,7 +6,7 @@ export default baseConfig.input.map((input) => {
   const name = input === 'src/index.ts' ? 'core' : input.replace('src/plugins', 'plugins/').replace('/index.ts', '');
   return {
     input,
-    output: [{ dir: `temp/${name}`, format: 'es', name: 'index' }],
+    output: [{ dir: `temp/${name}`, format: 'es' }],
     plugins: [esbuild({ target: 'esnext' }), terser()]
   };
 });

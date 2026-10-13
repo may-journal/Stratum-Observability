@@ -1,30 +1,23 @@
 import { afterEach, beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
-import { StratumService } from '../../src';
+import type { StratumService } from '../../src';
 import {
   type BrowserConsolePlugin,
   BrowserConsolePluginFactory,
   BrowserConsolePublisher
 } from '../../src/plugins/browser-console';
 import { BASE_CATALOG } from '../utils/catalog';
-import { CATALOG_METADATA, PRODUCT_NAME, PRODUCT_VERSION } from '../utils/constants';
-import { getPublishers, restoreStratumMocks } from '../utils/helpers';
+import { CATALOG_METADATA } from '../utils/constants';
+import { createService, getPublishers, restoreStratumMocks, spyOnPublish } from '../utils/helpers';
 
 describe('browser console plugin', () => {
   let stratum: StratumService;
   let plugin: BrowserConsolePlugin;
-  let publisher: BrowserConsolePublisher;
   let consoleSpy: Mock;
 
   beforeEach(() => {
     consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
     plugin = BrowserConsolePluginFactory();
-    stratum = new StratumService({
-      catalog: { items: BASE_CATALOG, ...CATALOG_METADATA },
-      plugins: [plugin],
-      productName: PRODUCT_NAME,
-      productVersion: PRODUCT_VERSION
-    });
-    publisher = plugin.publishers[0];
+    stratum = createService({ catalog: { items: BASE_CATALOG, ...CATALOG_METADATA }, plugins: [plugin] });
   });
 
   afterEach(() => {
@@ -32,47 +25,19 @@ describe('browser console plugin', () => {
     vi.restoreAllMocks();
   });
 
-  it('should successfully publish from catalog', async () => {
-    const result = await stratum.publish(1);
-    expect(result).toBe(true);
-  });
-
   it('should initialize the BrowserConsole publisher', () => {
     expect(getPublishers(stratum)[0]).toBeInstanceOf(BrowserConsolePublisher);
   });
 
-  it('should publish and log events to the console', async () => {
-    const publishSpy = vi.spyOn(publisher, 'publish');
+  it.each([
+    { key: 1, id: BASE_CATALOG[1].id },
+    { key: 2, id: '2' }
+  ])('should publish and log event $key to the console', async ({ key, id }) => {
+    const publishSpy = spyOnPublish(plugin.publishers[0]);
+    const expectedContent = JSON.stringify({ eventType: BASE_CATALOG[key].eventType, id, key: String(key) });
 
-    const expectedContent = JSON.stringify({
-      eventType: BASE_CATALOG[1].eventType,
-      id: BASE_CATALOG[1].id,
-      key: '1'
-    });
-    const expectedLoggedMessage = `BrowserConsolePlugin: ${expectedContent}`;
-    let result = await stratum.publish(1);
-
-    expect(result).toBe(true);
-    expect(publishSpy).toHaveBeenCalledTimes(1);
-    expect(consoleSpy).toHaveBeenCalledTimes(1);
-    expect(publishSpy).toHaveBeenCalledWith(expectedContent, expect.anything());
-    expect(consoleSpy).toHaveBeenCalledWith(expectedLoggedMessage);
-
-    publishSpy.mockClear();
-    consoleSpy.mockClear();
-
-    const expectedContent2 = JSON.stringify({
-      eventType: BASE_CATALOG[2].eventType,
-      id: '2',
-      key: '2'
-    });
-    const expectedLoggedMessage2 = `BrowserConsolePlugin: ${expectedContent2}`;
-    result = await stratum.publish(2);
-
-    expect(result).toBe(true);
-    expect(publishSpy).toHaveBeenCalledTimes(1);
-    expect(consoleSpy).toHaveBeenCalledTimes(1);
-    expect(publishSpy).toHaveBeenCalledWith(expectedContent2, expect.anything());
-    expect(consoleSpy).toHaveBeenCalledWith(expectedLoggedMessage2);
+    expect(await stratum.publish(key)).toBe(true);
+    expect(publishSpy).toHaveBeenCalledExactlyOnceWith(expectedContent, expect.anything());
+    expect(consoleSpy).toHaveBeenCalledExactlyOnceWith(`BrowserConsolePlugin: ${expectedContent}`);
   });
 });

@@ -1,5 +1,6 @@
 import { BasePlugin } from '../../base';
 import type { PluginContext, PluginFactory } from '../../types';
+import { NEW_RELIC_PLUGIN_NAME } from '../new-relic/constants';
 import { NewRelicPublisher } from '../new-relic/publisher';
 import { NewRelicEventType } from './constants';
 import { NewRelicApiResponseEventModel, NewRelicErrorEventModel, NewRelicEventModel } from './model';
@@ -21,7 +22,7 @@ import type { NewRelicPluginOptions } from './types';
  * application-specific New Relic events. Otherwise, use the base plugin.
  */
 export class NewRelicPlusPlugin extends BasePlugin<PluginContext, NewRelicPluginOptions> {
-  name = 'newRelic'; // Same as NewRelicPlugin to prevent loading both plugins simultaneously
+  name = NEW_RELIC_PLUGIN_NAME;
   eventTypes = {
     [NewRelicEventType.API_RESPONSE]: NewRelicApiResponseEventModel,
     [NewRelicEventType.ERROR]: NewRelicErrorEventModel,

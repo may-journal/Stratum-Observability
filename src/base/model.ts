@@ -89,7 +89,7 @@ export class BaseEventModel<T extends CatalogEvent = CatalogEvent> {
    * underlying event types.
    */
   protected checkValidity(): boolean {
-    if (!this.item || typeof this.item !== 'object') {
+    if (typeof this.item !== 'object') {
       this.addValidationError('Catalog item has an unexpected format');
       return false;
     }

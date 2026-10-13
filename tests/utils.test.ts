@@ -3,24 +3,49 @@ import {
   addGlobalPlugin,
   addGlobalStratumSnapshotListener,
   addStratumSnapshotListener,
+  BASE_EVENT_TYPE,
+  BaseEventModel,
   debugModeEnabled,
   GLOBAL_LISTENER_KEY,
   generateCatalogId,
   generateDefaultSessionId,
+  generateStratumSnapshot,
   getGlobalPlugins,
   Injector,
   Logger,
+  performReplacements,
   RegisteredStratumCatalog,
   removeGlobalPlugin,
   STORED_SESSION_ID_KEY,
+  safeStringify,
   uuid
 } from '../src';
-import { INVALID_SAMPLE_CATALOG, SAMPLE_A_CATALOG, SAMPLE_A_CATALOG_2 } from './utils/catalog';
+import type { StratumCatalog } from '../src/types';
+import { ADDED_KEY, INVALID_SAMPLE_CATALOG, SAMPLE_A_CATALOG, SAMPLE_A_CATALOG_2 } from './utils/catalog';
 import { CATALOG_METADATA, globalWindow, PRODUCT_NAME, PRODUCT_VERSION, SESSION_ID } from './utils/constants';
-import { enableDebugMode, isUuid, mockCrypto, restoreStratumMocks } from './utils/helpers';
-import { PluginA, PluginAFactory, PluginB, SamplePublisher } from './utils/sample-plugin';
+import {
+  createSamplePlugins,
+  enableDebugMode,
+  isUuid,
+  mockCrypto,
+  restoreStratumMocks,
+  setGlobalPlugins
+} from './utils/helpers';
+import { PLUGIN_A_NAME, PluginA, PluginAFactory, SamplePublisher } from './utils/sample-plugin';
+
+const CATALOG_ID = 'catalog-id';
+const MODEL_KEY = 'key';
+const LABEL_PLACEHOLDER = '{{LABEL}}';
 
 describe('util functions', () => {
+  let injector: Injector;
+
+  function createInjector() {
+    const created = new Injector(PRODUCT_NAME, PRODUCT_VERSION);
+    created.registerPlugin(PluginAFactory());
+    return created;
+  }
+
   beforeEach(() => {
     mockCrypto();
   });
@@ -31,140 +56,77 @@ describe('util functions', () => {
   });
 
   describe('catalog', () => {
-    describe('generateCatalogId()', () => {
-      it('should use the componentName and catalogVersion if provided', () => {
-        const options = {
-          items: {},
-          catalogVersion: CATALOG_METADATA.catalogVersion,
-          componentName: CATALOG_METADATA.componentName,
-          componentVersion: CATALOG_METADATA.componentVersion
-        };
-        const expected = `${CATALOG_METADATA.componentName}:${CATALOG_METADATA.catalogVersion}`;
-        expect(generateCatalogId(options, PRODUCT_NAME, PRODUCT_VERSION)).toEqual(expected);
-      });
+    beforeEach(() => {
+      injector = createInjector();
+    });
 
-      it('should use the productName if componentName is not provided', () => {
-        const options = {
-          items: {},
-          catalogVersion: CATALOG_METADATA.catalogVersion,
-          componentVersion: CATALOG_METADATA.componentVersion
-        };
-        const expected = `${PRODUCT_NAME}:${CATALOG_METADATA.catalogVersion}`;
-        expect(generateCatalogId(options, PRODUCT_NAME, PRODUCT_VERSION)).toEqual(expected);
-      });
+    const { catalogVersion, componentName, componentVersion } = CATALOG_METADATA;
 
-      it('should use the componentVersion if catalogVersion is not provided', () => {
-        const options = {
-          items: {},
-          componentName: CATALOG_METADATA.componentName,
-          componentVersion: CATALOG_METADATA.componentVersion
-        };
-        const expected = `${CATALOG_METADATA.componentName}:${CATALOG_METADATA.componentVersion}`;
-        expect(generateCatalogId(options, PRODUCT_NAME, PRODUCT_VERSION)).toEqual(expected);
-      });
-
-      it('should use the productVersion if componentVersion is not provided', () => {
-        const options = {
-          items: {}
-        };
-        const expected = `${PRODUCT_NAME}:${PRODUCT_VERSION}`;
-        expect(generateCatalogId(options, PRODUCT_NAME, PRODUCT_VERSION)).toEqual(expected);
-      });
+    it.each([
+      { options: { catalogVersion, componentName, componentVersion }, expected: `${componentName}:${catalogVersion}` },
+      { options: { catalogVersion, componentVersion }, expected: `${PRODUCT_NAME}:${catalogVersion}` },
+      { options: { componentName, componentVersion }, expected: `${componentName}:${componentVersion}` },
+      { options: {}, expected: `${PRODUCT_NAME}:${PRODUCT_VERSION}` }
+    ])('should generate the catalog id $expected from the provided metadata', ({ options, expected }) => {
+      expect(generateCatalogId({ items: {}, ...options }, PRODUCT_NAME, PRODUCT_VERSION)).toEqual(expected);
     });
 
     describe('RegisteredStratumCatalog', () => {
-      const id = 'catalog-id';
-      let injector: Injector;
       let publishFn: Mock;
-      const options = { items: SAMPLE_A_CATALOG, ...CATALOG_METADATA };
+
+      function createCatalog(items: StratumCatalog | object = SAMPLE_A_CATALOG) {
+        const options = { items: items as StratumCatalog, ...CATALOG_METADATA };
+        return new RegisteredStratumCatalog(CATALOG_ID, options, injector, publishFn);
+      }
 
       beforeEach(() => {
-        injector = new Injector(PRODUCT_NAME, PRODUCT_VERSION);
-        injector.registerPlugin(PluginAFactory());
         publishFn = vi.fn();
       });
 
       it('should handle validating a stratum catalog on construction', () => {
-        const catalog = new RegisteredStratumCatalog(id, options, injector, publishFn);
-        expect(catalog.id).toEqual(id);
+        const catalog = createCatalog();
+        expect(catalog.id).toEqual(CATALOG_ID);
         expect(catalog.isValid).toBe(true);
       });
 
       it('should show validation errors for invalid events', () => {
-        const options = { items: INVALID_SAMPLE_CATALOG, ...CATALOG_METADATA };
-        // @ts-expect-error testing runtime handling with invalid types
-        const catalog = new RegisteredStratumCatalog(id, options, injector, publishFn);
+        const catalog = createCatalog(INVALID_SAMPLE_CATALOG);
 
         expect(catalog.isValid).toBe(false);
-        expect(Object.keys(catalog.validModels)).toHaveLength(1);
+        expect(Object.keys(catalog.validModels)).toStrictEqual(['correct']);
         expect(Object.keys(catalog.errors)).toHaveLength(4);
-        expect(catalog.errors[0].errors).toHaveLength(1);
-        expect(catalog.errors[1].errors).toHaveLength(1);
-        expect(catalog.errors[3].errors).toHaveLength(1);
-        expect(catalog.errors.duplicate.errors).toHaveLength(1);
+        for (const key of [0, 1, 3, 'duplicate']) {
+          expect(catalog.errors[key].errors).toHaveLength(1);
+        }
       });
 
       it('should add new valid models via addItems at runtime', () => {
-        const catalog = new RegisteredStratumCatalog(id, options, injector, publishFn);
-        const initialCount = Object.keys(catalog.validModels).length;
-
+        const catalog = createCatalog();
         catalog.addItems(SAMPLE_A_CATALOG_2);
-        expect(Object.keys(catalog.validModels)).toHaveLength(initialCount + 1);
-        expect(catalog.validModels.abc).toBeDefined();
+
+        expect(Object.keys(catalog.validModels)).toHaveLength(Object.keys(SAMPLE_A_CATALOG).length + 1);
+        expect(catalog.validModels[ADDED_KEY]).toBeDefined();
         expect(catalog.isValid).toBe(true);
       });
 
       it('should reject invalid items via addItems at runtime', () => {
-        const catalog = new RegisteredStratumCatalog(id, options, injector, publishFn);
-        const initialCount = Object.keys(catalog.validModels).length;
-        expect(catalog.isValid).toBe(true);
-
-        // @ts-expect-error testing runtime handling with invalid types
-        catalog.addItems(INVALID_SAMPLE_CATALOG);
+        const catalog = createCatalog();
+        catalog.addItems(INVALID_SAMPLE_CATALOG as StratumCatalog);
 
         expect(catalog.isValid).toBe(false);
-        expect(Object.keys(catalog.validModels)).toHaveLength(initialCount);
+        expect(Object.keys(catalog.validModels)).toHaveLength(Object.keys(SAMPLE_A_CATALOG).length);
         expect(Object.keys(catalog.errors)).toHaveLength(Object.keys(INVALID_SAMPLE_CATALOG).length);
       });
 
-      it('should delegate publish to the provided publishFn', async () => {
-        publishFn.mockResolvedValue(true);
-        const catalog = new RegisteredStratumCatalog(id, options, injector, publishFn);
-        const result = await catalog.publish(1);
-        expect(result).toBe(true);
-        expect(publishFn).toHaveBeenCalledWith(id, 1, undefined);
-      });
+      it('should append errors when an invalid key is added again', () => {
+        const catalog = createCatalog({ 1: INVALID_SAMPLE_CATALOG[1] });
+        catalog.addItems({ 1: INVALID_SAMPLE_CATALOG[1] } as StratumCatalog);
 
-      it('should add new valid models via addItems at runtime', () => {
-        const catalog = new RegisteredStratumCatalog(id, options, injector, publishFn);
-        const initialCount = Object.keys(catalog.validModels).length;
-
-        catalog.addItems(SAMPLE_A_CATALOG_2);
-
-        expect(Object.keys(catalog.validModels)).toHaveLength(initialCount + 1);
-        expect(catalog.validModels.abc).toBeDefined();
-        expect(catalog.isValid).toBe(true);
-      });
-
-      it('should reject invalid items via addItems at runtime', () => {
-        const catalog = new RegisteredStratumCatalog(id, options, injector, publishFn);
-        const initialCount = Object.keys(catalog.validModels).length;
-        expect(catalog.isValid).toBe(true);
-
-        // @ts-expect-error testing runtime handling with invalid types
-        catalog.addItems(INVALID_SAMPLE_CATALOG);
-
-        expect(catalog.isValid).toBe(false);
-        expect(Object.keys(catalog.validModels)).toHaveLength(initialCount);
-        expect(Object.keys(catalog.errors)).toHaveLength(Object.keys(INVALID_SAMPLE_CATALOG).length);
+        expect(catalog.errors[1].errors).toHaveLength(2);
       });
 
       it('should recover isValid when failed keys are re-added successfully', () => {
-        const invalidItems = { 1: INVALID_SAMPLE_CATALOG[1] };
-        const options = { items: invalidItems, ...CATALOG_METADATA };
-        // @ts-expect-error testing runtime handling with invalid types
-        const catalog = new RegisteredStratumCatalog(id, options, injector, publishFn);
-
+        const catalog = createCatalog({ 1: INVALID_SAMPLE_CATALOG[1] });
         expect(catalog.isValid).toBe(false);
 
         catalog.addItems(SAMPLE_A_CATALOG);
@@ -173,53 +135,86 @@ describe('util functions', () => {
         expect(Object.keys(catalog.errors)).toHaveLength(0);
       });
 
+      it('should leave plugin data out of snapshots for publishers without a plugin', () => {
+        const catalog = createCatalog();
+        const publishers = [new SamplePublisher('unregistered')];
+        const snapshot = generateStratumSnapshot(injector, catalog.validModels[1], catalog, publishers);
+        expect(snapshot.plugins).toStrictEqual({});
+      });
+
       it('should delegate publish to the provided publishFn', async () => {
         publishFn.mockResolvedValue(true);
-        const catalog = new RegisteredStratumCatalog(id, options, injector, publishFn);
-        const result = await catalog.publish(1);
-        expect(result).toBe(true);
-        expect(publishFn).toHaveBeenCalledWith(id, 1, undefined);
+        expect(await createCatalog().publish(1)).toBe(true);
+        expect(publishFn).toHaveBeenCalledWith(CATALOG_ID, 1, undefined);
       });
     });
   });
 
+  describe('event models', () => {
+    beforeEach(() => {
+      injector = createInjector();
+    });
+
+    function createModel(item: object) {
+      return new BaseEventModel(
+        MODEL_KEY,
+        { eventType: BASE_EVENT_TYPE, description: 'model', ...item },
+        CATALOG_ID,
+        injector
+      );
+    }
+
+    it.each([{ id: -1 }, { id: '' }, { id: true }])('should reject the invalid id $id', ({ id }) => {
+      const model = createModel({ id });
+      expect(model.isValid).toBe(false);
+      expect(model.validationErrors).toStrictEqual(['An invalid id was provided']);
+    });
+
+    it('should reject a catalog item that is not a plain object', () => {
+      const item = Object.assign(() => undefined, { eventType: BASE_EVENT_TYPE, description: 'fn', id: 1 });
+      const model = new BaseEventModel(MODEL_KEY, item, CATALOG_ID, injector);
+      expect(model.isValid).toBe(false);
+      expect(model.validationErrors).toStrictEqual(['Catalog item has an unexpected format']);
+    });
+
+    it('should replace placeholders with the result of a replacement function', () => {
+      const model = createModel({ id: 1 });
+      const data = model.getData({ replacements: { KEY: (m: BaseEventModel) => m.key } });
+      expect(data.description).toBe(MODEL_KEY);
+    });
+
+    it('should replace placeholders inside nested objects', () => {
+      const model = createModel({ id: 1, details: { label: LABEL_PLACEHOLDER } });
+      expect(model.getData({ replacements: { LABEL: 'nested' } }).details.label).toBe('nested');
+    });
+
+    it('should leave arrays passed to performReplacements unchanged', () => {
+      const list = [LABEL_PLACEHOLDER];
+      performReplacements(createModel({ id: 1 }), list, { LABEL: 'replaced' });
+      expect(list).toStrictEqual([LABEL_PLACEHOLDER]);
+    });
+
+    it('should mark circular references when converting to JSON', () => {
+      const node: Record<string, unknown> = {};
+      node.self = node;
+      expect(safeStringify(node)).toBe('{"self":"[Circular]"}');
+    });
+  });
+
   describe('env', () => {
-    describe('stratum event listeners', () => {
-      const configKey = `stratum_config_${PRODUCT_NAME}`;
-
-      afterEach(() => {
-        delete globalWindow[configKey];
-        delete globalWindow[GLOBAL_LISTENER_KEY];
-        vi.restoreAllMocks();
-      });
-
-      it('should add event listener to globalThis', () => {
-        const mock = vi.fn();
-        expect(addStratumSnapshotListener(PRODUCT_NAME, mock)).toBe(true);
-        expect(globalWindow[configKey].listeners[0]).toStrictEqual(mock);
-      });
-
-      it('should read in all valid snapshot listeners', () => {
-        const mockFn1 = vi.fn();
-        const mockFn2 = vi.fn();
-
-        const result1 = addStratumSnapshotListener(PRODUCT_NAME, mockFn1);
-        const result2 = addStratumSnapshotListener(PRODUCT_NAME, mockFn2);
-        expect(result1).toBe(true);
-        expect(result2).toBe(true);
-        expect(globalWindow[configKey].listeners).toStrictEqual([mockFn1, mockFn2]);
-      });
-
-      it('should add global snapshot listeners', () => {
-        const mockFn1 = vi.fn();
-        const mockFn2 = vi.fn();
-
-        const result1 = addGlobalStratumSnapshotListener(mockFn1);
-        const result2 = addGlobalStratumSnapshotListener(mockFn2);
-        expect(result1).toBe(true);
-        expect(result2).toBe(true);
-        expect(globalWindow[GLOBAL_LISTENER_KEY].listeners).toStrictEqual([mockFn1, mockFn2]);
-      });
+    it.each([
+      {
+        scope: 'service',
+        key: `stratum_config_${PRODUCT_NAME}`,
+        add: (fn: Mock) => addStratumSnapshotListener(PRODUCT_NAME, fn)
+      },
+      { scope: 'global', key: GLOBAL_LISTENER_KEY, add: addGlobalStratumSnapshotListener }
+    ])('should add every $scope snapshot listener to globalThis', ({ key, add }) => {
+      const listeners = [vi.fn(), vi.fn()];
+      for (const listener of listeners) {
+        expect(add(listener)).toBe(true);
+      }
+      expect(globalWindow[key].listeners).toStrictEqual(listeners);
     });
 
     describe('generateDefaultSessionId()', () => {
@@ -246,21 +241,17 @@ describe('util functions', () => {
       });
     });
 
-    describe('Logger', () => {
-      it('should execute console.debug only if debugModeEnabled', () => {
-        const logger = new Logger();
-        const loggerSpy = vi.spyOn(console, 'debug').mockImplementation(() => {});
-        const str = 'test-string';
+    it('should execute console.debug only if debugModeEnabled', () => {
+      const logger = new Logger();
+      const consoleSpy = vi.spyOn(console, 'debug').mockImplementation(() => {});
+      const message = 'test-string';
 
-        logger.debug(str);
-        expect(loggerSpy).toHaveBeenCalledTimes(0);
+      logger.debug(message);
+      expect(consoleSpy).toHaveBeenCalledTimes(0);
 
-        enableDebugMode(true);
-
-        logger.debug(str);
-        expect(loggerSpy).toHaveBeenCalledTimes(1);
-        expect(loggerSpy).toHaveBeenCalledWith('[Stratum]', str);
-      });
+      enableDebugMode(true);
+      logger.debug(message);
+      expect(consoleSpy).toHaveBeenCalledExactlyOnceWith('[Stratum]', message);
     });
 
     describe('debugModeEnabled()', () => {
@@ -280,12 +271,12 @@ describe('util functions', () => {
 
     describe('uuid()', () => {
       it('should return a random UUID', () => {
-        const uuid1 = uuid();
-        const uuid2 = uuid();
+        const first = uuid();
+        const second = uuid();
 
-        expect(isUuid(uuid1)).toBe(true);
-        expect(isUuid(uuid2)).toBe(true);
-        expect(uuid1 === uuid2).toBe(false);
+        expect(isUuid(first)).toBe(true);
+        expect(isUuid(second)).toBe(true);
+        expect(first).not.toEqual(second);
       });
 
       it('should return the nil UUID if crypto library is unavailable', () => {
@@ -296,41 +287,38 @@ describe('util functions', () => {
   });
 
   describe('global-plugins', () => {
-    it('should get global plugins', async () => {
-      const plugin1 = new PluginA();
-      const plugin2 = new PluginB({ versionNumber: 1, apiKey: 'api' }, new SamplePublisher('sample'));
-      globalWindow[GLOBAL_LISTENER_KEY] = {
-        globalPlugins: [plugin1, plugin2]
-      };
-      const globalPlugins = getGlobalPlugins();
-      expect(globalPlugins).toEqual([plugin1, plugin2]);
+    it('should get global plugins', () => {
+      const plugins = createSamplePlugins();
+      setGlobalPlugins(plugins);
+      expect(getGlobalPlugins()).toEqual(plugins);
     });
 
-    it('should add a plugin to the global namespace', async () => {
-      globalWindow[GLOBAL_LISTENER_KEY] = {};
+    it('should create the global namespace when adding the first plugin', () => {
       const plugin = new PluginA();
-      addGlobalPlugin(plugin);
+      expect(addGlobalPlugin(plugin)).toEqual([plugin]);
       expect(globalWindow[GLOBAL_LISTENER_KEY].globalPlugins).toEqual([plugin]);
     });
 
-    it('should remove a plugin from the global namespace', async () => {
-      const plugin1 = new PluginA();
-      const plugin2 = new PluginB({ versionNumber: 1, apiKey: 'api' }, new SamplePublisher('sample'));
-      globalWindow[GLOBAL_LISTENER_KEY] = {
-        globalPlugins: [plugin1, plugin2]
-      };
-      removeGlobalPlugin('pluginA');
-      expect(globalWindow[GLOBAL_LISTENER_KEY].globalPlugins).toEqual([plugin2]);
+    it.each([
+      { state: 'an empty', existing: undefined },
+      { state: 'a populated', existing: [new PluginA()] }
+    ])('should append a plugin to $state global plugin list', ({ existing }) => {
+      setGlobalPlugins(existing && [...existing]);
+      const plugin = new PluginA();
+      expect(addGlobalPlugin(plugin)).toEqual([...(existing ?? []), plugin]);
     });
 
-    it('should not remove a plugin that does not exist', async () => {
-      const plugin1 = new PluginA();
-      const plugin2 = new PluginB({ versionNumber: 1, apiKey: 'api' }, new SamplePublisher('sample'));
-      globalWindow[GLOBAL_LISTENER_KEY] = {
-        globalPlugins: [plugin1, plugin2]
-      };
-      removeGlobalPlugin('pluginC');
-      expect(globalWindow[GLOBAL_LISTENER_KEY].globalPlugins).toEqual([plugin1, plugin2]);
+    it.each([
+      { name: PLUGIN_A_NAME, remaining: (plugins: unknown[]) => plugins.slice(1) },
+      { name: 'pluginC', remaining: (plugins: unknown[]) => plugins }
+    ])('should remove only a registered plugin named $name', ({ name, remaining }) => {
+      const plugins = createSamplePlugins();
+      setGlobalPlugins([...plugins]);
+      expect(removeGlobalPlugin(name)).toEqual(remaining(plugins));
+    });
+
+    it('should return no plugins when removing without a global namespace', () => {
+      expect(removeGlobalPlugin(PLUGIN_A_NAME)).toEqual([]);
     });
   });
 });

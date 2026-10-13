@@ -1,10 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { StratumService, type StratumSnapshot } from '../src';
+import { BASE_EVENT_TYPE, type StratumService } from '../src';
 import { BrowserConsolePlugin } from '../src/plugins/browser-console';
 import { BASE_CATALOG } from './utils/catalog';
-import { PRODUCT_NAME, PRODUCT_VERSION } from './utils/constants';
 import { BASE_EVENT_MOCK } from './utils/fixtures';
-import { enableDebugMode, mockSessionId, restoreStratumMocks } from './utils/helpers';
+import { captureSnapshot, createService, enableDebugMode, mockSessionId, restoreStratumMocks } from './utils/helpers';
+
+const KEY_WITHOUT_ID = 'app-loaded';
 
 describe('load stratum without plugins', () => {
   let stratum: StratumService;
@@ -12,10 +13,7 @@ describe('load stratum without plugins', () => {
   beforeEach(() => {
     enableDebugMode(true);
     mockSessionId();
-    stratum = new StratumService({
-      productName: PRODUCT_NAME,
-      productVersion: PRODUCT_VERSION
-    });
+    stratum = createService();
   });
 
   afterEach(() => {
@@ -23,65 +21,34 @@ describe('load stratum without plugins', () => {
     vi.restoreAllMocks();
   });
 
-  describe('add base events', () => {
-    it('should allow adding catalogs containing base events', async () => {
-      const catalog = stratum.addCatalog({ items: BASE_CATALOG });
-      expect(catalog).toBeDefined();
-      expect(catalog.isValid).toBe(true);
-      expect(Object.keys(catalog.validModels)).toStrictEqual(['1', '2']);
-    });
-
-    it('should use event key as id when id field is omitted', () => {
-      const stratumWithPlugin = new StratumService({
-        productName: 'test',
-        productVersion: '1.0',
-        plugins: [new BrowserConsolePlugin()],
-        catalog: {
-          items: {
-            'app-loaded': {
-              eventType: 'base',
-              description: 'Application loaded'
-              // id field omitted - should use 'app-loaded' as the id
-            },
-            'user-login': {
-              eventType: 'base',
-              description: 'User logged in',
-              id: 'custom-id' // explicit id should still work
-            }
-          }
-        }
-      });
-
-      const catalog = stratumWithPlugin.defaultCatalog;
-      expect(catalog).toBeDefined();
-      expect(catalog?.isValid).toBe(true);
-
-      // Verify that the omitted id uses the key
-      expect(catalog?.validModels['app-loaded'].id).toBe('app-loaded');
-
-      // Verify that explicit id still works
-      expect(catalog?.validModels['user-login'].id).toBe('custom-id');
-    });
+  it('should allow adding catalogs containing base events', () => {
+    const catalog = stratum.addCatalog({ items: BASE_CATALOG });
+    expect(catalog.isValid).toBe(true);
+    expect(Object.keys(catalog.validModels)).toStrictEqual(['1', '2']);
   });
 
-  describe('allow publishing base events', () => {
-    let id = '';
-
-    beforeEach(() => {
-      id = stratum.addCatalog({ items: BASE_CATALOG }).id;
+  it('should use event key as id when id field is omitted', () => {
+    const stratumWithPlugin = createService({
+      plugins: [new BrowserConsolePlugin()],
+      catalog: {
+        items: {
+          [KEY_WITHOUT_ID]: { eventType: BASE_EVENT_TYPE, description: 'Application loaded' },
+          'user-login': { eventType: BASE_EVENT_TYPE, description: 'User logged in', id: 'custom-id' }
+        }
+      }
     });
 
-    it('should allow publishing  events', async () => {
-      const listener = vi.fn();
+    const catalog = stratumWithPlugin.defaultCatalog;
+    expect(catalog?.isValid).toBe(true);
+    expect(catalog?.validModels[KEY_WITHOUT_ID].id).toBe(KEY_WITHOUT_ID);
+    expect(catalog?.validModels['user-login'].id).toBe('custom-id');
+  });
 
-      const event = await new Promise<StratumSnapshot>((resolve) => {
-        listener.mockImplementation((event) => resolve(event));
-        stratum.addSnapshotListener(listener);
-        stratum.publishFromCatalog(id, 1);
-      });
+  it('should allow publishing base events', async () => {
+    const id = stratum.addCatalog({ items: BASE_CATALOG }).id;
+    const { listener, snapshot } = await captureSnapshot(stratum, () => stratum.publishFromCatalog(id, 1));
 
-      expect(listener).toHaveBeenCalledTimes(1);
-      expect(event).toEqual(BASE_EVENT_MOCK);
-    });
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(snapshot).toEqual(BASE_EVENT_MOCK);
   });
 });
