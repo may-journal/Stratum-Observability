@@ -34,7 +34,6 @@ describe('publishing events via NewRelicPublisher', () => {
   afterEach(() => {
     restoreStratumMocks();
     vi.restoreAllMocks();
-    vi.unstubAllGlobals();
   });
 
   it('should send the event, its context and ab test data to window.newrelic', async () => {

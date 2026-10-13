@@ -194,7 +194,7 @@ describe('util functions', () => {
       expect(list).toStrictEqual([LABEL_PLACEHOLDER]);
     });
 
-    it('should mark circular references when stringifying', () => {
+    it('should mark circular references when converting to JSON', () => {
       const node: Record<string, unknown> = {};
       node.self = node;
       expect(safeStringify(node)).toBe('{"self":"[Circular]"}');
