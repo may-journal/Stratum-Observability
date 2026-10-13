@@ -1,11 +1,15 @@
+---
+fitnessFunctions: ['markdown-front-matter']
+---
+
 # Contributions
-We love to hear feedback from the community and encourage developers to contribute back to Stratum with bugfixes, feature requests, and new plugins whenever possible.
+We love to hear feedback from the community. We encourage developers to contribute bugfixes, feature requests, and new plugins whenever possible.
 
 If you are looking to contribute a new feature, we recommend first implementing it as a custom plugin if possible. If you think your plugin is useful to others, let us know! We'd love to learn more and help you make it available.
 
 ## Intake
 
-In order to maintain Stratum, we require that all contributions (feature requests or bugs) go through an intake process via GitHub issues so that maintainers can evaluate the impacts of changes and provide guidance on the implementation.
+To maintain Stratum, we require every contribution (feature request or bug) to go through intake via GitHub issues. Maintainers can then evaluate the impact of changes and guide the implementation.
 
 ### Any contributions you make will be under the Apache License 2.0
 In short, when you submit code changes, your submissions are understood to be under the same [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) that covers the project. Feel free to contact the maintainers if that's a concern.
@@ -21,19 +25,18 @@ We use github to host code, to track issues and feature requests, as well as acc
 
 #### Intake approval process
 
-Once an issue is created, a maintainer will review the issue and provide feedback.
+Once an issue is created, a maintainer will review the issue and provide feedback. The intake approval process is relatively informal. We will
 
-The intake approval process is relatively informal. We will
  * Go over your request and use cases
  * Provide any feedback, questions, technical considerations, or complications that we notice
  * Let you know if any specific updates would be required with your changes 
 
-If we require additional information from you, we'll label the issue with *"engaged"* to indicate that it's mid-process and also add the correct request category: *"bug"*, *"enhancement"*, *"documentation"*, etc.
+If we need more information, we label the issue "engaged" to show it is mid-process. We also add the right request category, such as "bug", "enhancement" or "documentation".
 
 Once we've looked over the issue, we'll label your PR as one of the following:
-* *"ready for contribution"* - your intake is approved and awaiting contributions
-* *"duplicate"* - the issue outlines a request that's already been decided on
-* *"wontfix"* - your intake is not something we plan to incorporate within Stratum. This may be because your enhancement is better suited as custom plugin instead
+* "ready for contribution" - your intake is approved and awaiting contributions
+* "duplicate" - the issue outlines a request that's already been decided on
+* "wontfix" - we do not plan to incorporate your intake into Stratum. It may be better suited as a custom plugin.
 
 ## Local development
 
@@ -114,7 +117,7 @@ Once your PR is submitted, all Stratum maintainers will be automatically be requ
 
 After a maintainer approves your PR, they will merge it to the base branch and handle any release activities.
 
-* Add a *"complete"* label to your intake request.
-* If your changes require a new release, we will verify that the new version is available for download and create a new release tag in GitHub crediting you!
+* Add a "complete" label to your intake request.
+* If your changes need a new release, we verify the new version is downloadable. We then create a release tag crediting you!
 
 We absolutely love and welcome any and all contributions. Thanks for being a part of the community! 
