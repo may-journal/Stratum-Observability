@@ -40,7 +40,7 @@
     "build:clean": "rimraf dist",
     "build:lib": "rollup -c && npm run build:types",
     "build:types": "tsc -p . --noEmit false --emitDeclarationOnly",
-    "build:watch": "npm run build:clean && npm run build:lib -- --watch",
+    "build:watch": "npm run build:clean && (trap 'kill 0' EXIT; npm run build:types -- --watch & rollup -c --watch)",
     "ci:pipeline": "npm ci --ignore-scripts",
     "lint": "biome check --fix --no-errors-on-unmatched --error-on-warnings",
     "lint:check": "biome check --no-errors-on-unmatched --error-on-warnings",
