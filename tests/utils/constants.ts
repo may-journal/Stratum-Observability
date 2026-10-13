@@ -5,6 +5,7 @@ export const STRATUM_LIBRARY_VERSION_PLACEHOLDER = '__stratumLibraryVersion__';
 export const PRODUCT_NAME = 'my-product-name';
 export const PRODUCT_VERSION = '1.0';
 export const SESSION_ID = 'd308a2b6-477c-48f5-8107-8977c2a86b01';
+export const UPDATED_CONTEXT_VALUE = '123';
 
 export const AB_TEST_SCHEMA: AbTestSchema = {
   name: 'test-ab',
