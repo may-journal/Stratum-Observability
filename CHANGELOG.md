@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### 2026.10.13.1808
+
+- docs(architecture): Add the system context and containers views for the library and the host app it runs in.
+- docs(architecture): Add the components view, giving each source under `src` one owner.
+- docs(architecture): Add the code view and the app developer journey, with links to real source lines.
+
 ## v2.0.0
 
 ### Added
