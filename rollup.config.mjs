@@ -12,7 +12,6 @@ export default {
     {
       dir: `dist/cjs`,
       format: 'cjs',
-      name: 'index',
       exports: 'auto',
       preserveModules: true,
       preserveModulesRoot: 'src'
@@ -20,7 +19,6 @@ export default {
     {
       dir: `dist/esm`,
       format: 'es',
-      name: 'index',
       preserveModules: true,
       preserveModulesRoot: 'src'
     }
