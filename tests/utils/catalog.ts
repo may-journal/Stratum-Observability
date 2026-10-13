@@ -95,7 +95,7 @@ export const NR_CATALOG = {
   nrEventValid: {
     eventType: NewRelicEventType.EVENT,
     message: 'abc',
-    name: 'nrevent',
+    name: 'nr-event',
     description: 'description',
     id: 100
   },
@@ -109,7 +109,7 @@ export const NR_CATALOG = {
     eventType: NewRelicEventType.API_RESPONSE,
     message: 'abc',
     featureName: 'featureName',
-    name: 'nrapiresponse',
+    name: 'nr-api-response',
     requestHeaders: 'requestHeaders',
     requestUri: 'requestUri',
     statusCode: 'statusCode',
@@ -120,28 +120,28 @@ export const NR_CATALOG = {
   // @ts-expect-error testing runtime handling with invalid types
   nrApiInvalid: {
     eventType: NewRelicEventType.API_RESPONSE,
-    name: 'nrapiresponse',
+    name: 'nr-api-response',
     requestHeaders: '',
     statusText: '',
     description: 'description',
     id: 103
   },
   nrErrorValid: {
-    errorCode: 'myerrorcode',
-    errorText: 'errortext',
+    errorCode: 'my-error-code',
+    errorText: 'error-text',
     eventType: NewRelicEventType.ERROR,
     featureName: 'featureName',
     isVisual: false,
     message: 'errormessage',
-    name: 'nrerror',
-    reason: 'myreason',
+    name: 'nr-error',
+    reason: 'my-reason',
     description: 'description',
     id: 104
   },
   // @ts-expect-error testing runtime handling with invalid types
   nrErrorInvalid: {
     eventType: NewRelicEventType.ERROR,
-    name: 'nrerror',
+    name: 'nr-error',
     description: 'description',
     id: 104 // Intentional repeat of already-in-use id
   },

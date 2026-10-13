@@ -109,7 +109,7 @@ describe('NewRelicPlusPublisher', () => {
       expect(setAttributeSpy).toHaveBeenCalledTimes(Object.keys(NR_MOCK.event).length);
       expect(Object.fromEntries(setAttributeSpy.mock.calls)).toMatchObject(NR_MOCK.event);
       expect(setNameSpy).toHaveBeenCalledTimes(1);
-      expect(setNameSpy).toHaveBeenCalledWith('nrevent');
+      expect(setNameSpy).toHaveBeenCalledWith('nr-event');
       expect(saveSpy).toHaveBeenCalledTimes(1);
       expect(interactionSpy).toHaveBeenCalledTimes(2);
       expect(endSpy).toHaveBeenCalledTimes(2);
@@ -131,7 +131,7 @@ describe('NewRelicPlusPublisher', () => {
       expect(setAttributeSpy).toHaveBeenCalledTimes(Object.keys(NR_MOCK.api).length);
       expect(Object.fromEntries(setAttributeSpy.mock.calls)).toMatchObject(NR_MOCK.api);
       expect(setNameSpy).toHaveBeenCalledTimes(1);
-      expect(setNameSpy).toHaveBeenCalledWith('nrapiresponse');
+      expect(setNameSpy).toHaveBeenCalledWith('nr-api-response');
       expect(saveSpy).toHaveBeenCalledTimes(1);
       expect(interactionSpy).toHaveBeenCalledTimes(2);
       expect(endSpy).toHaveBeenCalledTimes(2);
@@ -175,7 +175,7 @@ describe('NewRelicPlusPublisher', () => {
       expect(setAttributeSpy).toHaveBeenCalledTimes(Object.keys(NR_MOCK.error).length);
       expect(Object.fromEntries(setAttributeSpy.mock.calls)).toMatchObject(NR_MOCK.error);
       expect(setNameSpy).toHaveBeenCalledTimes(1);
-      expect(setNameSpy).toHaveBeenCalledWith('nrerror');
+      expect(setNameSpy).toHaveBeenCalledWith('nr-error');
       expect(saveSpy).toHaveBeenCalledTimes(1);
       expect(interactionSpy).toHaveBeenCalledTimes(2);
       expect(endSpy).toHaveBeenCalledTimes(2);

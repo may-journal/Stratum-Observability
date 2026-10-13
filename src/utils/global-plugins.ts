@@ -33,9 +33,9 @@ export function addGlobalPlugin(plugin: GenericPlugin): GenericPlugin[] {
 }
 
 /**
- * Removes a Stratum pluging from the global namespace. If there are duplicate plugin names, it will only remove the first one that was added.
+ * Removes a Stratum plugin from the global namespace. If there are duplicate plugin names, it will only remove the first one that was added.
  * @param pluginName - string - Name of plugin to remove from global plugins list.
- * @returns - GenericPlugin[] - Returns the full list of global plutins after removal.
+ * @returns - GenericPlugin[] - Returns the full list of global plugins after removal.
  */
 export function removeGlobalPlugin(pluginName: string) {
   if (pluginName && g[GLOBAL_LISTENER_KEY]?.globalPlugins?.length > 0) {

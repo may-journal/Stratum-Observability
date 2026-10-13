@@ -281,14 +281,14 @@ describe('stratum service base functionality', () => {
 
     it('should warn if catalog to publish from cannot be found', async () => {
       const warnSpy = vi.spyOn(Logger.prototype, 'debug');
-      const result = await stratum.publishFromCatalog('unknowncatalogid', 1);
+      const result = await stratum.publishFromCatalog('unknown-catalog-id', 1);
       expect(result).toBe(false);
       expect(warnSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should warn if the key to publish in catalog cannot be found', async () => {
       const warnSpy = vi.spyOn(Logger.prototype, 'debug');
-      const result = await stratum.publishFromCatalog(DEFAULT_CATALOG_ID, 'unknownkey');
+      const result = await stratum.publishFromCatalog(DEFAULT_CATALOG_ID, 'unknown-key');
       expect(result).toBe(false);
       expect(warnSpy).toHaveBeenCalledTimes(1);
     });

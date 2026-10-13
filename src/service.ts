@@ -23,7 +23,7 @@ import { Injector } from './utils/injector';
  * The functionality encapsulated by this class can be summarized as follows:
  *   1. Starts default catalog validation on initialization and creates event model instances
  *   2. Loads and instantiates publishers on initialization
- *   3. Store global variables and globl stratum context info
+ *   3. Store global variables and global stratum context info
  *   4. Exposes functions for application to publish from catalogs and register plugins
  *
  * This class is designed to operate in a singleton-scope. However, this is dependent on use case.
