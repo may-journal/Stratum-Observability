@@ -34,25 +34,25 @@ Numbers match the callout table. "Screen" is output the developer sees, not a GU
 
 ## App developer journey
 
-Each step will name the requirement docs it fulfils once `docs/requirements` exists.
+Each step's label ends with the requirement docs it fulfils, by ID. The `architecture-journey` check requires every doc in some label and an ID on every step.
 
 ```mermaid
 flowchart TB
     developer((1 App developer)):::persona
     pluginAuthor((2 Plugin author)):::persona
-    install(3 Install the package):::action
-    construct(4 Construct StratumService):::action
-    writePlugin(5 Extend the base classes):::action
-    registerPlugins[(6 Register plugins and global plugins)]:::system
-    validate[(7 Validate catalog items)]:::system
-    publish(8 Publish by catalog key):::action
-    snapshot[(9 Build the snapshot)]:::system
-    listeners[(10 Notify snapshot listeners)]:::system
-    dispatch[(11 Check each publisher)]:::system
-    newRelicOut[12 New Relic interaction saved]:::screen
-    consoleOut[13 Event logged to the console]:::screen
-    debugOut[14 Debug line logged]:::screen
-    abTest(15 Start or end an A/B test):::action
+    install(3 Install the package<br/>Req 0001):::action
+    construct(4 Construct StratumService<br/>Req 0001, 0003):::action
+    writePlugin(5 Extend the base classes<br/>Req 0004, 0006):::action
+    registerPlugins[(6 Register plugins and global plugins<br/>Req 0004, 0005)]:::system
+    validate[(7 Validate catalog items<br/>Req 0002, 0003)]:::system
+    publish(8 Publish by catalog key<br/>Req 0007):::action
+    snapshot[(9 Build the snapshot<br/>Req 0001, 0007)]:::system
+    listeners[(10 Notify snapshot listeners<br/>Req 0008)]:::system
+    dispatch[(11 Check each publisher<br/>Req 0004, 0007)]:::system
+    newRelicOut[12 New Relic interaction saved<br/>Req 0111, 0121]:::screen
+    consoleOut[13 Event logged to the console<br/>Req 0101]:::screen
+    debugOut[14 Debug line logged<br/>Req 0010]:::screen
+    abTest(15 Start or end an A/B test<br/>Req 0009):::action
 
     developer --> install
     install --> construct
