@@ -10,45 +10,50 @@ C4Container
 
     Person(developer, "1 App developer")
 
-    System_Boundary(page, "Browser page") {
-        Container_Ext(hostApp, "2 Host web app", "TypeScript or JavaScript", "Bundles the ESM or CJS build of the package")
+    System_Boundary(stratum, "2 Stratum Observability") {
+        Container(library, "3 Stratum package", "TypeScript", "src")
     }
 
-    System_Ext(newRelic, "3 New Relic browser agent")
-    System_Ext(console, "4 Browser console")
-    System_Ext(browserState, "5 Browser globals", "globalThis and sessionStorage")
-    System_Ext(registry, "6 npm registry")
+    System_Ext(hostApp, "4 Host web app", "Bundles the ESM or CJS build of the package")
+    System_Ext(newRelic, "5 New Relic browser agent")
+    System_Ext(console, "6 Browser console")
+    System_Ext(browserState, "7 Browser globals", "globalThis and sessionStorage")
+    System_Ext(registry, "8 npm registry")
 
-    Rel(developer, hostApp, "7")
-    Rel(hostApp, newRelic, "8")
-    Rel(hostApp, console, "9")
-    Rel(hostApp, browserState, "10")
-    Rel(hostApp, registry, "11")
+    Rel(developer, hostApp, "9")
+    Rel(hostApp, library, "10")
+    Rel(library, newRelic, "11")
+    Rel(library, console, "12")
+    Rel(library, browserState, "13")
+    Rel(hostApp, registry, "14")
 ```
 
 ```mermaid
 C4Container
     title Legend
 
-    Person(p, "Person", "Human actor")
+    Person(p, "Person", "Human or agent actor")
     System_Boundary(b, "System boundary") {
-        Container_Ext(c, "External container", "Tech", "Runtime we do not own")
+        Container(c, "Container", "Tech", "Runnable or deployable unit")
     }
     System_Ext(e, "External", "Outside our boundary")
 ```
 
-Numbers on nodes and arrows match the callout table. Stratum owns no container: `package.json` has no `start` script, `bin`, or deploy file.
+Numbers on nodes and arrows match the callout table. Stratum ships one unit, the package, and runs inside the host app.
 
 | #   | Description                                                                                                                  | Why                                                             |
 | --- | ---------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
 | 1   | Same actor as the system context.                                                                                            | Adds the library to an app; never runs it alone.                |
-| 2   | The only runtime. It bundles `dist/esm` or `dist/cjs`, which Rollup builds from the core and plugin entry points.            | A library runs in-process, so the host app is the container.    |
-| 3   | Present only when the page loads the agent script; publishers check for it before each event.                               | A missing agent skips the publisher instead of throwing.        |
-| 4   | Present in every browser and in the jsdom test environment.                                                                  | Always-available fallback destination.                          |
-| 5   | Shared by every Stratum instance and every script on the page.                                                               | Cross-bundle listeners and plugins need a common home.          |
-| 6   | Serves the scoped `stratum-observability` package; `package.json` maps four export paths to the built files.                        | Subpath exports keep unused plugins out of the app bundle.      |
-| 7   | Imports the service and the chosen plugins.                                                                                  | Setup is code, not configuration.                               |
-| 8   | Stratum code inside the app calls the agent's interaction API.                                                               | The call crosses from app code to the vendor script.            |
-| 9   | Stratum code inside the app writes events and debug lines.                                                                   | Local visibility without a vendor.                              |
-| 10  | Stratum code inside the app keeps listeners, global plugins, the session ID, and the debug flag.                             | State that must outlive one service instance.                   |
-| 11  | The app's package manager fetches the published build.                                                                       | Versioned releases.                                             |
+| 2   | Same system as the system context.                                                                                           | Everything inside it ships from this repo.                      |
+| 3   | The package, built from `src`. Rollup turns the core and plugin entry points into `dist/esm` and `dist/cjs`.                 | One shipped unit; it runs in-process in the host app.           |
+| 4   | Same host app as the system context. It bundles the built package.                                                           | Stratum has no runtime of its own.                              |
+| 5   | Present only when the page loads the agent script; publishers check for it before each event.                               | A missing agent skips the publisher instead of throwing.        |
+| 6   | Present in every browser and in the jsdom test environment.                                                                  | Always-available fallback destination.                          |
+| 7   | Shared by every Stratum instance and every script on the page.                                                               | Cross-bundle listeners and plugins need a common home.          |
+| 8   | Serves the scoped `stratum-observability` package; `package.json` maps four export paths to the built files.                 | Subpath exports keep unused plugins out of the app bundle.      |
+| 9   | Imports the service and the chosen plugins.                                                                                  | Setup is code, not configuration.                               |
+| 10  | The app calls the package's service and catalogs in-process.                                                                 | The call never leaves the page.                                 |
+| 11  | The package calls the agent's interaction API.                                                                               | The call crosses from app code to the vendor script.            |
+| 12  | The package writes events and debug lines.                                                                                   | Local visibility without a vendor.                              |
+| 13  | The package keeps listeners, global plugins, the session ID, and the debug flag.                                             | State that must outlive one service instance.                   |
+| 14  | The app's package manager fetches the published build.                                                                       | Versioned releases.                                             |

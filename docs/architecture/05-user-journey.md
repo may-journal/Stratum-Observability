@@ -19,8 +19,6 @@ flowchart TB
     classDef screen fill:#f8fafc,stroke:#64748b,color:#1e293b,stroke-width:2px
     classDef action fill:#fff7ed,stroke:#f97316,color:#9a3412,stroke-width:2px
     classDef system fill:#ecfdf5,stroke:#10b981,color:#064e3b,stroke-width:2px
-
-    style types fill:#ffffff,stroke:#e2e8f0,color:#475569,stroke-width:1px
 ```
 
 Numbers match the callout table. "Screen" is output the developer sees, not a GUI view; this is a library.
@@ -32,9 +30,7 @@ Numbers match the callout table. "Screen" is output the developer sees, not a GU
 | 3   | Action       | A call the app code makes.                                 |
 | 4   | System       | Work Stratum does inside the call.                         |
 
-## App developer journey
-
-Each step's label ends with the requirement docs it fulfils, by ID. The `architecture-journey` check requires every doc in some label and an ID on every step.
+## Journey
 
 ```mermaid
 flowchart TB
