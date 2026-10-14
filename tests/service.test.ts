@@ -188,13 +188,13 @@ describe('stratum service base functionality', () => {
           return s.publish(1);
         }
       }
-    ])('0007.2 returns false and logs when $reason', async ({ act }) => {
+    ])('0007.3 returns false and logs when $reason', async ({ act }) => {
       const debugSpy = spyOnDebugLog();
       expect(await act(stratum)).toBe(false);
       expect(debugSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('0007.8 returns false and logs when a publisher throws', async () => {
+    it('0007.9 returns false and logs when a publisher throws', async () => {
       const debugSpy = spyOnDebugLog();
       vi.spyOn(stratum.publishers[0], 'publish').mockRejectedValue(new Error('publisher failed'));
 

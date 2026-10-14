@@ -45,7 +45,7 @@ describe('event publishing', () => {
       atPublish: [AB_TEST_SCHEMA],
       afterChange: []
     }
-  ])('0007.5 keeps the $change from the moment of publishing', async ({ act, read, atPublish, afterChange }) => {
+  ])('0007.6 keeps the $change from the moment of publishing', async ({ act, read, atPublish, afterChange }) => {
     const { stratum } = state;
     const first = await captureSnapshot(stratum, () => {
       stratum.publish(1);

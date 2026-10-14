@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as core from '../src';
-import { BASE_EVENT_TYPE, DEBUG_LOG_PREFIX, type StratumService } from '../src';
+import { BASE_EVENT_TYPE, DEBUG_LOG_PREFIX, type RegisteredStratumCatalog, type StratumService } from '../src';
 import { BrowserConsolePlugin } from '../src/plugins/browser-console';
 import * as newRelic from '../src/plugins/new-relic';
 import { BASE_CATALOG, INVALID_SAMPLE_CATALOG } from './utils/catalog';
@@ -78,9 +78,15 @@ describe('load stratum without plugins', () => {
     );
   });
 
-  it('0007.1 publishes base events from the default catalog to the listener', async () => {
-    const id = stratum.addCatalog({ items: BASE_CATALOG }).id;
-    const { listener, snapshot } = await captureSnapshot(stratum, () => stratum.publishFromCatalog(id, 1));
+  it.each([
+    {
+      entry: 'stratum.publishFromCatalog',
+      publish: (s: StratumService, c: RegisteredStratumCatalog) => s.publishFromCatalog(c.id, 1)
+    },
+    { entry: 'catalog.publish', publish: (_s: StratumService, c: RegisteredStratumCatalog) => c.publish(1) }
+  ])('0007.1 publishes base events to the listener through $entry', async ({ publish }) => {
+    const catalog = stratum.addCatalog({ items: BASE_CATALOG });
+    const { listener, snapshot } = await captureSnapshot(stratum, () => publish(stratum, catalog));
 
     expect(listener).toHaveBeenCalledTimes(1);
     expect(snapshot).toEqual(BASE_EVENT_MOCK);
