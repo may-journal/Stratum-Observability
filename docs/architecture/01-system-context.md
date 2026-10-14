@@ -30,7 +30,7 @@ C4Context
 C4Context
     title Legend
 
-    Person(p, "Person", "Human actor")
+    Person(p, "Person", "Human or agent actor")
     System(s, "System", "Software we own")
     System_Ext(e, "External", "Outside our boundary")
 ```
