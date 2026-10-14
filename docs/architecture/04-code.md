@@ -29,6 +29,7 @@ classDiagram
         +eventTypeModelMap
         +plugins
         +stratumSessionId
+        +registerPlugin(GenericPlugin)
         +registerEventId(string, EventId)
         +getExternalSnapshotListeners() StratumSnapshotListenerFn[]
     }
@@ -60,6 +61,7 @@ classDiagram
         +tests
         +startAbTest(AbTestSchema) AbTest
         +endAbTest(string | AbTest)
+        +generateContexts(AbTestSchema | AbTest | (AbTestSchema | AbTest)[]) AbTestSchema[]
     }
     class NewRelicPlugin["9 NewRelicPlugin"]
     class NewRelicPublisher["10 NewRelicPublisher"]
@@ -127,7 +129,7 @@ Numbers on classes and relationships match the callout table.
 | --- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
 | 1   | [Source](../../src/service.ts#L36-L341); [`publishFromCatalog`](../../src/service.ts#L197-L269) runs the publish outcomes below.                    | Public entry point.                                                |
 | 2   | [Source](../../src/utils/catalog.ts#L19-L208); [`addItems`](../../src/utils/catalog.ts#L114-L128) runs the item outcomes below.                     | Catalog state and its typed publish shortcut.                      |
-| 3   | [Source](../../src/utils/injector.ts#L16-L184); [`registerPlugin`](../../src/utils/injector.ts#L133-L168) skips duplicate names.                    | Plugin, event type, and event ID registry.                         |
+| 3   | [Source](../../src/utils/injector.ts#L16-L184); [`registerPlugin`](../../src/utils/injector.ts#L133-L168) returns `{ publishers }` and skips duplicates. | Plugin, event type, and event ID registry.                         |
 | 4   | [Source](../../src/base/model.ts#L11-L143); the constructor clones the item and validates ID, uniqueness, and description.                          | Default model for the `base` event type.                           |
 | 5   | [Source](../../src/base/plugin.ts#L13-L125); `setContext` only changes keys the context already has.                                                | The shape every plugin declares.                                   |
 | 6   | [Source](../../src/base/publisher.ts#L13-L86); `shouldPublishEvent` accepts only models listed in `acceptedEventModels`.                            | The four steps every destination implements.                       |
@@ -147,7 +149,7 @@ Numbers on classes and relationships match the callout table.
 | 20  | Filters, checks, maps, and publishes through each publisher in its own microtask.                                                                   | A slow destination never blocks the app.                           |
 | 21  | Builds one snapshot per publish call.                                                                                                               | Listeners and publishers share one source of truth.                |
 | 22  | Instantiates the model class registered for the item's event type.                                                                                  | Validation lives on the model.                                     |
-| 23  | Collects each plugin's publishers and sets their accepted models.                                                                                   | First plugin with a name wins.                                     |
+| 23  | `registerPlugin` collects each plugin's publishers and tags them with the plugin name.                                                              | A publisher with no model list accepts only its plugin's models.   |
 | 24  | Owns the A/B test manager.                                                                                                                          | One manager per service instance.                                  |
 | 25  | Reads plugins, context, tests, and metadata.                                                                                                        | Copied from state, but listeners share and can change one object.  |
 | 26  | Inherits from the base plugin.                                                                                                                      | Bundled and custom plugins share one contract.                     |
