@@ -26,7 +26,7 @@ export default {
   plugins: [
     replace({
       preventAssignment: true,
-      __stratumLibraryVersion__: pkg.version
+      __stratumLibraryVersion__: pkg.version.split('+')[0]
     }),
     esbuild({ target: 'esnext' })
   ]

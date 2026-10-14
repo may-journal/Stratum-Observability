@@ -16,17 +16,17 @@ fitnessFunctions: ['changelog']
 
 ## v2.0.0
 
-### 2026.05.11.1700
+### 2026.05.12.1522
+
+- build(lint): Integrate BiomeJS and resolve open findings.
+- chore(deps): Remove `prettier`, `eslint`, `lint-staged` and related devDependencies.
+- chore(deps): Remove `semver` and `shelljs` devDependencies.
+- ci(scripts): Convert ci scripts to ESM.
+
+### 2026.05.11.2200
 
 - feat(catalog): Add catalog-level publishing via `catalog.publish(key)` with compile-time key safety.
 - feat(plugin): Add a `PluginHooks` parameter on `onRegister`, exposing `hooks.addCatalog()` for plugin-owned catalogs.
 - feat(catalog): Add `addItems()` on `RegisteredStratumCatalog` to add items after catalog creation.
 - feat(catalog)!: Breaking: `addCatalog()` returns a `RegisteredStratumCatalog` instance instead of a catalog ID string.
 - feat(catalog): Duplicate catalog IDs now merge items into the existing catalog instead of rejecting.
-
-### 2026.05.11.1659
-
-- build(lint): Integrate BiomeJS and resolve open findings.
-- chore(deps): Remove `prettier`, `eslint`, `lint-staged` and related devDependencies.
-- chore(deps): Remove `semver` and `shelljs` devDependencies.
-- ci(scripts): Convert ci scripts to ESM.
