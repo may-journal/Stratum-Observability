@@ -168,14 +168,6 @@ describe('stratum service base functionality', () => {
       catalog = stratum.addCatalog({ items: SAMPLE_A_CATALOG, ...CATALOG_METADATA });
     });
 
-    it('0007.2 publishes an event via catalog.publish and fires the snapshot listener', async () => {
-      const { listener, snapshot } = await captureSnapshot(stratum, () => catalog.publish(1));
-
-      expect(listener).toHaveBeenCalledTimes(1);
-      expect(snapshot.catalog.id).toEqual(METADATA_CATALOG_ID);
-      expect(snapshot.event.key).toBe('1');
-    });
-
     it('0003.4 publishes new keys after addItems at runtime', async () => {
       const extended = catalog.addItems(SAMPLE_A_CATALOG_2);
       const { snapshot } = await captureSnapshot(stratum, () => extended.publish(ADDED_KEY));
@@ -199,6 +191,14 @@ describe('stratum service base functionality', () => {
     ])('0007.3 returns false and logs when $reason', async ({ act }) => {
       const debugSpy = spyOnDebugLog();
       expect(await act(stratum)).toBe(false);
+      expect(debugSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('0007.9 returns false and logs when a publisher throws', async () => {
+      const debugSpy = spyOnDebugLog();
+      vi.spyOn(stratum.publishers[0], 'publish').mockRejectedValue(new Error('publisher failed'));
+
+      expect(await stratum.publish(1)).toBe(false);
       expect(debugSpy).toHaveBeenCalledTimes(1);
     });
   });

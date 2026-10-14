@@ -19,13 +19,9 @@ Source: `src/service.ts:171`
 ## Requirements
 
 - 0007.1
-    - Given App developer has a default catalog and a snapshot listener
-        - When I publish a key from it
-            - Then the listener gets one event with the item, product and session
-- 0007.2
-    - Given App developer has a catalog added after construction
-        - When I publish a key through that catalog
-            - Then the listener gets the event with that catalog's ID and the key
+    - Given App developer has a default catalog, or one added after construction, and a snapshot listener
+        - When I publish a key from it, through the service or the catalog
+            - Then the listener gets one event with the item, product, session, catalog ID and key
 - 0007.3
     - Given App developer names a missing catalog or key, or a destination is missing
         - When I publish
@@ -50,3 +46,7 @@ Source: `src/service.ts:171`
     - Given App developer has a null value or a list
         - When I run placeholder replacement on it
             - Then it returns and leaves the value unchanged
+- 0007.9
+    - Given Plugin author has a publisher that throws while publishing
+        - When I publish a key
+            - Then the call resolves false and logs why in debug mode
