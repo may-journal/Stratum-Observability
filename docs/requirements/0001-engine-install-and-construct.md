@@ -46,3 +46,7 @@ Source: `src/service.ts:74`
     - Given App developer has a page with no crypto library
         - When the service creates a session ID
             - Then the ID is all zeros
+- 0001.8
+    - Given App developer installs a package whose version carries build metadata
+        - When the library is built
+            - Then the library version it reports is the version without that metadata
