@@ -243,17 +243,22 @@ export class StratumService {
           new Promise<void>((resolve, reject) => {
             queueMicrotask(async () => {
               const internalSnapshot = cloneStratumSnapshot(snapshot);
-              internalSnapshot.eventOptions = populateDynamicEventOptions(publisher, options);
-              const isAvailable = await publisher.isAvailable(model, internalSnapshot);
-              if (isAvailable) {
-                const content = publisher.getEventOutput(model, internalSnapshot);
-                await publisher.publish(content, internalSnapshot);
-                resolve();
-              } else {
-                this.injector.logger.debug(
-                  `Unable to publish "${key}": Publisher "${publisher.name}" is not available`
-                );
-                reject();
+              try {
+                internalSnapshot.eventOptions = populateDynamicEventOptions(publisher, options);
+                const isAvailable = await publisher.isAvailable(model, internalSnapshot);
+                if (isAvailable) {
+                  const content = publisher.getEventOutput(model, internalSnapshot);
+                  await publisher.publish(content, internalSnapshot);
+                  resolve();
+                } else {
+                  this.injector.logger.debug(
+                    `Unable to publish "${key}": Publisher "${publisher.name}" is not available`
+                  );
+                  reject();
+                }
+              } catch (error) {
+                this.injector.logger.debug(`Unable to publish "${key}": Publisher "${publisher.name}" threw`, error);
+                reject(error);
               }
             });
           })

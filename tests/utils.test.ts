@@ -98,7 +98,7 @@ describe('util functions', () => {
         expect(catalog.errors[1].errors).toHaveLength(2);
       });
 
-      it('0007.7 leaves plugin data out of snapshots for publishers without a plugin', () => {
+      it('0007.6 leaves plugin data out of snapshots for publishers without a plugin', () => {
         const catalog = createCatalog();
         const publishers = [new SamplePublisher('unregistered')];
         const snapshot = generateStratumSnapshot(injector, catalog.validModels[1], catalog, publishers);
@@ -159,7 +159,7 @@ describe('util functions', () => {
         read: (data: { description: string }) => data.description,
         expected: MODEL_KEY
       }
-    ])('0007.4 replaces placeholders with $replacement', ({ item, replacements, read, expected }) => {
+    ])('0007.3 replaces placeholders with $replacement', ({ item, replacements, read, expected }) => {
       const data = createModel({ id: 1, ...item }).getData({ replacements });
       expect(read(data)).toBe(expected);
     });
@@ -167,13 +167,13 @@ describe('util functions', () => {
     it.each([
       { kind: 'a null value', value: () => null, expected: null },
       { kind: 'a list', value: () => [LABEL_PLACEHOLDER], expected: [LABEL_PLACEHOLDER] }
-    ])('0007.8 leaves $kind passed to performReplacements unchanged', ({ value, expected }) => {
+    ])('0007.7 leaves $kind passed to performReplacements unchanged', ({ value, expected }) => {
       const target = value();
       performReplacements(createModel({ id: 1 }), target, { LABEL: 'replaced' });
       expect(target).toStrictEqual(expected);
     });
 
-    it('0007.5 marks circular references when converting to JSON', () => {
+    it('0007.4 marks circular references when converting to JSON', () => {
       const node: Record<string, unknown> = {};
       node.self = node;
       expect(safeStringify(node)).toBe('{"self":"[Circular]"}');

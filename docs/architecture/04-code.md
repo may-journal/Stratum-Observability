@@ -110,7 +110,7 @@ Numbers on classes and relationships match the callout table.
 
 | #   | Description                                                                                                                                         | Why                                                                |
 | --- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ |
-| 1 | [Source](../../src/service.ts#L36-L336); [`publishFromCatalog`](../../src/service.ts#L197-L264) runs the publish outcomes below.          | Public entry point.                                                |
+| 1 | [Source](../../src/service.ts#L36-L341); [`publishFromCatalog`](../../src/service.ts#L197-L269) runs the publish outcomes below.          | Public entry point.                                                |
 | 2 | [Source](../../src/utils/catalog.ts#L19-L208); [`addItems`](../../src/utils/catalog.ts#L114-L128) runs the item outcomes below.     | Catalog state and its typed publish shortcut.                      |
 | 3 | [Source](../../src/utils/injector.ts#L16-L184); [`registerPlugin`](../../src/utils/injector.ts#L133-L168) skips duplicate names.    | Plugin, event type, and event ID registry.                         |
 | 4 | [Source](../../src/base/model.ts#L11-L143); the constructor clones the item and validates ID, uniqueness, and description.            | Default model for the `base` event type.                           |
@@ -155,7 +155,7 @@ Numbers on classes and relationships match the callout table.
 | No publishers            | No publisher accepts the model                                   | `true`, listeners still called |
 | All published            | Every accepting publisher is available and publishes             | `true`                         |
 | A publisher unavailable  | Any `isAvailable` resolves `false`                               | `false`, debug line logged     |
-| A publisher throws       | `isAvailable`, `getEventOutput`, or `publish` throws, and no publisher is unavailable | Never settles; the error goes unhandled, see #56 |
+| A publisher throws       | `isAvailable`, `getEventOutput`, or `publish` throws             | `false`, debug line logged     |
 
 ## Catalog item outcomes
 
