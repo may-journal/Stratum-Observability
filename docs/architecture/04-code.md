@@ -133,7 +133,7 @@ Numbers on classes and relationships match the callout table.
 | 21  | Instantiates the model class registered for the item's event type.                                                                                  | Validation lives on the model.                                     |
 | 22  | Stores plugins by name and reads their event types and publishers.                                                                                  | First plugin with a name wins.                                     |
 | 23  | Owns the A/B test manager.                                                                                                                          | One manager per service instance.                                  |
-| 24  | Reads plugins, context, tests, and metadata.                                                                                                        | The snapshot copies state, never references it.                    |
+| 24  | Reads plugins, context, tests, and metadata.                                                                                                        | Copied from state, but listeners share and can change one object.  |
 | 25  | Inherits from the base plugin.                                                                                                                      | Bundled and custom plugins share one contract.                     |
 | 26  | Inherits from the base plugin.                                                                                                                      | Same contract, with typed options.                                 |
 | 27  | Inherits from the base plugin.                                                                                                                      | Same contract, nothing extra.                                      |
@@ -155,6 +155,7 @@ Numbers on classes and relationships match the callout table.
 | No publishers            | No publisher accepts the model                                   | `true`, listeners still called |
 | All published            | Every accepting publisher is available and publishes             | `true`                         |
 | A publisher unavailable  | Any `isAvailable` resolves `false`                               | `false`, debug line logged     |
+| A publisher throws       | `isAvailable`, `getEventOutput`, or `publish` throws, and no publisher is unavailable | Never settles; the error goes unhandled, see #56 |
 
 ## Catalog item outcomes
 

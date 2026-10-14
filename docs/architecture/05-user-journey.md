@@ -94,5 +94,5 @@ Numbers match the callout table. System context: [01-system-context.md](01-syste
 | 11  | Asks each accepting publisher whether it is available, then maps and publishes.                                      | System  | A missing destination is skipped, and the call resolves false.  |
 | 12  | One SPA interaction with Stratum attributes and the event name.                                                      | Screen  | Queryable in New Relic.                                         |
 | 13  | One JSON line per event.                                                                                             | Screen  | Instant feedback in developer tools.                            |
-| 14  | Shown only when session storage holds the `DEBUG_KEY` flag as `true`.                                                    | Screen  | Explains dropped items and skipped publishers.                  |
+| 14  | Shown only when session storage holds `stratumdb` set to `true`.                                                    | Screen  | Explains dropped items and skipped publishers.                  |
 | 15  | Calls `startAbTest`, `endAbTest`, or `endAllAbTests`.                                                                | Action  | Running tests tag every later event.                            |
