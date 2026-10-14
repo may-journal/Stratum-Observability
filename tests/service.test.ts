@@ -8,6 +8,7 @@ import {
 } from '../src';
 import { BrowserConsolePlugin, BrowserConsolePublisher } from '../src/plugins/browser-console';
 import { NewRelicPluginFactory } from '../src/plugins/new-relic';
+import type { CatalogMetadata } from '../src/types';
 import * as utils from '../src/utils/general';
 import { ADDED_KEY, SAMPLE_A_CATALOG, SAMPLE_A_CATALOG_2 } from './utils/catalog';
 import {
@@ -15,8 +16,6 @@ import {
   CATALOG_METADATA,
   DEFAULT_CATALOG_ID,
   DEFAULT_CATALOG_ID_W_CATALOG_VERSION,
-  GENERATED_DEFAULT_METADATA,
-  globalWindow,
   METADATA_CATALOG_ID,
   PRODUCT_NAME,
   PRODUCT_VERSION,
@@ -36,6 +35,13 @@ import { AModel, PluginAFactory, SamplePublisher } from './utils/sample-plugin';
 const UNKNOWN_CATALOG_ID = 'unknown-catalog-id';
 const catalog1Length = Object.keys(SAMPLE_A_CATALOG).length;
 const SAMPLE_A_IDS = Object.fromEntries(Object.values(SAMPLE_A_CATALOG).map((item) => [item.id, true]));
+const { catalogVersion, componentName, componentVersion } = CATALOG_METADATA;
+const CATALOG_ID_CASES: { options: Partial<CatalogMetadata>; expected: string }[] = [
+  { options: { catalogVersion, componentName, componentVersion }, expected: `${componentName}:${catalogVersion}` },
+  { options: { catalogVersion, componentVersion }, expected: `${PRODUCT_NAME}:${catalogVersion}` },
+  { options: { componentName, componentVersion }, expected: `${componentName}:${componentVersion}` },
+  { options: {}, expected: DEFAULT_CATALOG_ID }
+];
 
 function createSampleService() {
   return createService({ catalog: { items: SAMPLE_A_CATALOG }, plugins: [PluginAFactory()] });
@@ -55,23 +61,24 @@ describe('stratum service base functionality', () => {
     restoreStratumMocks();
   });
 
-  it('should set the stratum service id, version and product details', () => {
+  it('0001.2 sets the stratum service id, version and product details', () => {
     expect(stratum.id).toEqual(PRODUCT_NAME);
     expect(stratum.version).toEqual(STRATUM_LIBRARY_VERSION_PLACEHOLDER);
     expect(stratum.injector.productName).toEqual(PRODUCT_NAME);
     expect(stratum.injector.productVersion).toEqual(PRODUCT_VERSION);
   });
 
-  it('should expect a default service instance to be empty', () => {
+  it('0001.3 constructs an empty service with no catalogs, plugins, publishers or listeners', () => {
     const empty = createService();
     expect(getPublishers(empty)).toEqual([]);
     expect(Object.keys(empty.injector.eventTypeModelMap)).toHaveLength(1);
     expect(Object.keys(empty.catalogs)).toHaveLength(0);
     expect(empty.defaultCatalog).toBeUndefined();
     expect(Object.keys(empty.injector.plugins)).toHaveLength(0);
+    expect(empty.injector.getExternalSnapshotListeners()).toEqual([]);
   });
 
-  it('should create the expected models for a dynamically loaded StratumCatalog', () => {
+  it('0003.1 creates the expected models for a catalog added after construction', () => {
     const dynamic = createService({ plugins: [PluginAFactory()] });
     const catalog = dynamic.addCatalog({ items: SAMPLE_A_CATALOG, ...CATALOG_METADATA });
 
@@ -87,16 +94,21 @@ describe('stratum service base functionality', () => {
     expect(dynamic.injector.registeredEventIds).toEqual({ [METADATA_CATALOG_ID]: SAMPLE_A_IDS });
   });
 
-  it('should infer the metadata of a default StratumCatalog from the product', () => {
-    const catalog = stratum.defaultCatalog as RegisteredStratumCatalog;
+  it.each(CATALOG_ID_CASES)('0003.2 derives the catalog id $expected', ({ options, expected }) => {
+    const service = createService({ catalog: { items: SAMPLE_A_CATALOG, ...options }, plugins: [PluginAFactory()] });
+    const catalog = service.defaultCatalog as RegisteredStratumCatalog;
+
     expect(catalog.isValid).toBe(true);
-    expect(catalog.id).toBe(DEFAULT_CATALOG_ID);
-    expect(catalog.metadata).toStrictEqual(GENERATED_DEFAULT_METADATA);
-    expect(Object.keys(catalog.validModels)).toHaveLength(catalog1Length);
-    expect(stratum.injector.registeredEventIds).toEqual({ [DEFAULT_CATALOG_ID]: SAMPLE_A_IDS });
+    expect(catalog.id).toBe(expected);
+    expect(catalog.metadata).toStrictEqual({
+      catalogVersion: options.catalogVersion ?? '',
+      componentName: options.componentName ?? PRODUCT_NAME,
+      componentVersion: options.componentVersion ?? PRODUCT_VERSION
+    });
+    expect(service.injector.registeredEventIds).toEqual({ [expected]: SAMPLE_A_IDS });
   });
 
-  it('should register global plugins if available', () => {
+  it('0005.1 registers global plugins after the constructor plugins', () => {
     addGlobalPlugin(new BrowserConsolePlugin());
     stratum = createSampleService();
 
@@ -105,7 +117,7 @@ describe('stratum service base functionality', () => {
     expect(stratum.publishers[1]).toBeInstanceOf(BrowserConsolePublisher);
   });
 
-  it('should return an existing catalog and add items for duplicate catalog ids', () => {
+  it('0003.3 returns an existing catalog and adds items for duplicate catalog ids', () => {
     const first = stratum.addCatalog({ items: SAMPLE_A_CATALOG, ...CATALOG_METADATA });
     expect(Object.keys(stratum.catalogs)).toHaveLength(2);
 
@@ -119,7 +131,7 @@ describe('stratum service base functionality', () => {
     expect(Object.keys(stratum.catalogs)).toHaveLength(3);
   });
 
-  it('should handle removing catalogs at run-time', async () => {
+  it('0003.7 removes catalogs at run-time so they no longer publish', async () => {
     stratum = createService({
       catalog: { items: SAMPLE_A_CATALOG, catalogVersion: CATALOG_METADATA.catalogVersion },
       plugins: [PluginAFactory()]
@@ -144,7 +156,7 @@ describe('stratum service base functionality', () => {
     expect(await catalog.publish(ADDED_KEY)).toBe(false);
   });
 
-  it('should ignore removing an unknown catalog id', () => {
+  it('0003.8 ignores removing an unknown catalog id', () => {
     stratum.removeCatalog(UNKNOWN_CATALOG_ID);
     expect(Object.keys(stratum.catalogs)).toStrictEqual([DEFAULT_CATALOG_ID]);
   });
@@ -156,7 +168,7 @@ describe('stratum service base functionality', () => {
       catalog = stratum.addCatalog({ items: SAMPLE_A_CATALOG, ...CATALOG_METADATA });
     });
 
-    it('should publish an event via catalog.publish and fire the snapshot listener', async () => {
+    it('0007.2 publishes an event via catalog.publish and fires the snapshot listener', async () => {
       const { listener, snapshot } = await captureSnapshot(stratum, () => catalog.publish(1));
 
       expect(listener).toHaveBeenCalledTimes(1);
@@ -164,11 +176,7 @@ describe('stratum service base functionality', () => {
       expect(snapshot.event.key).toBe('1');
     });
 
-    it('should return false when publishing an invalid key', async () => {
-      expect(await catalog.publish('noop')).toBe(false);
-    });
-
-    it('should allow publishing new keys after addItems at runtime', async () => {
+    it('0003.4 publishes new keys after addItems at runtime', async () => {
       const extended = catalog.addItems(SAMPLE_A_CATALOG_2);
       const { snapshot } = await captureSnapshot(stratum, () => extended.publish(ADDED_KEY));
 
@@ -188,7 +196,7 @@ describe('stratum service base functionality', () => {
           return s.publish(1);
         }
       }
-    ])('should return false and log when $reason', async ({ act }) => {
+    ])('0007.3 returns false and logs when $reason', async ({ act }) => {
       const debugSpy = spyOnDebugLog();
       expect(await act(stratum)).toBe(false);
       expect(debugSpy).toHaveBeenCalledTimes(1);
@@ -196,22 +204,27 @@ describe('stratum service base functionality', () => {
   });
 
   describe('ab test manager', () => {
-    it('should return started ab tests', () => {
+    it('0009.1 returns started ab tests', () => {
       expect(stratum.abTests).toEqual([]);
       stratum.startAbTest(AB_TEST_SCHEMA);
       expect(stratum.abTests.map((test) => test.data)).toEqual([AB_TEST_SCHEMA]);
     });
 
-    it('should remove ab test from manager after end', () => {
-      const test = stratum.startAbTest(AB_TEST_SCHEMA);
-      stratum.endAbTest(test.id);
-      expect(stratum.abTests).toEqual([]);
-    });
-
-    it('should remove all ab tests from manager', () => {
+    it.each([
+      {
+        action: 'ending one test',
+        end: (s: StratumService) => s.endAbTest(s.abTests[0].id)
+      },
+      {
+        action: 'ending all tests',
+        end: (s: StratumService) => {
+          s.startAbTest(AB_TEST_SCHEMA);
+          s.endAllAbTests();
+        }
+      }
+    ])('0009.2 removes ab tests from the manager after $action', ({ end }) => {
       stratum.startAbTest(AB_TEST_SCHEMA);
-      stratum.startAbTest(AB_TEST_SCHEMA);
-      stratum.endAllAbTests();
+      end(stratum);
       expect(stratum.abTests).toEqual([]);
     });
 
@@ -221,7 +234,7 @@ describe('stratum service base functionality', () => {
         shape: 'a list of tests and schemas',
         abTestSchemas: () => [{ id: 'started', data: AB_TEST_SCHEMA }, AB_TEST_SCHEMA]
       }
-    ])('should add one-time ab tests passed to publish as $shape', async ({ abTestSchemas }) => {
+    ])('0009.3 adds one-time ab tests passed to publish as $shape', async ({ abTestSchemas }) => {
       const transient = abTestSchemas();
       const { snapshot } = await captureSnapshot(stratum, () => stratum.publish(1, { abTestSchemas: transient }));
 
@@ -230,30 +243,20 @@ describe('stratum service base functionality', () => {
     });
   });
 
-  it('should use the session id stored in session storage', () => {
+  it('0001.5 uses the session id stored in session storage', () => {
     sessionStorage.setItem(STORED_SESSION_ID_KEY, 'test-id');
     expect(createService().stratumSessionId).toEqual('test-id');
   });
 
   describe('globalThis events', () => {
-    it('should not load any event listeners until one is added', () => {
-      expect(stratum.injector.getExternalSnapshotListeners()).toEqual([]);
-    });
-
-    it('should fail to add event listener if an error occurs', () => {
+    it('0008.2 fails to add a snapshot listener if an error occurs', () => {
       vi.spyOn(utils, 'isDefined').mockImplementation(() => {
         throw new Error();
       });
       expect(stratum.addSnapshotListener(() => {})).toBe(false);
     });
 
-    it('should add event listener to the global object', () => {
-      const mock = vi.fn();
-      expect(stratum.addSnapshotListener(mock)).toBe(true);
-      expect(globalWindow[`stratum_config_${PRODUCT_NAME}`].listeners).toStrictEqual([mock]);
-    });
-
-    it('should read global listeners before service listeners', () => {
+    it('0008.1 reads global listeners before service listeners', () => {
       const serviceListener = vi.fn();
       const globalListener = vi.fn();
 

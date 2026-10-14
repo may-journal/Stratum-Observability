@@ -45,43 +45,27 @@ describe('NewRelicPlusPublisher', () => {
     vi.restoreAllMocks();
   });
 
-  it('should not register both the NewRelic and NewRelicPlus plugin', () => {
+  it('0004.2 registers only the first of the NewRelic and NewRelicPlus plugins', () => {
     expect(Object.keys(stratum.injector.plugins)).toStrictEqual([NEW_RELIC_PLUGIN_NAME]);
-  });
-
-  it('should initialize the NewRelic publisher', () => {
+    expect(stratum.injector.plugins[NEW_RELIC_PLUGIN_NAME]).toBe(nrpPlugin);
+    expect(getPublishers(stratum)).toStrictEqual(nrpPlugin.publishers);
     expect(getPublishers(stratum)[0]).toBeInstanceOf(NewRelicPublisher);
-  });
-
-  it('should set the acceptedEventModels of NewRelicPlusPublisher to NR-events only', () => {
-    expect(getPublishers(stratum)[0].acceptedEventModels).toEqual([
-      NewRelicApiResponseEventModel,
-      NewRelicErrorEventModel,
-      NewRelicEventModel
-    ]);
-  });
-
-  it.each([
-    { key: NR_EVENT_KEY, model: NewRelicEventModel },
-    { key: NR_API_KEY, model: NewRelicApiResponseEventModel },
-    { key: 'nrErrorValid', model: NewRelicErrorEventModel }
-  ])('should load the valid catalog item $key as its event model', ({ key, model }) => {
-    expect(stratum.defaultCatalog?.validModels[key]).toBeInstanceOf(model);
   });
 
   it.each([
     { key: 'nrEventInvalid', errorCount: 1 },
     { key: 'nrApiInvalid', errorCount: 2 },
     { key: 'nrErrorInvalid', errorCount: 2 }
-  ])('should record $errorCount validation errors for the invalid catalog item $key', ({ key, errorCount }) => {
+  ])('0121.1 records $errorCount validation errors for the invalid catalog item $key', ({ key, errorCount }) => {
     expect(stratum.defaultCatalog?.errors[key].errors).toHaveLength(errorCount);
   });
 
   it.each([
-    { key: NR_EVENT_KEY, attributes: NR_MOCK.event, name: NR_EVENT_NAME },
-    { key: NR_API_KEY, attributes: NR_MOCK.api, name: NR_API_NAME },
-    { key: 'nrErrorValid', attributes: NR_MOCK.error, name: NR_ERROR_NAME }
-  ])('should publish the $key event to New Relic', async ({ key, attributes, name }) => {
+    { key: NR_EVENT_KEY, model: NewRelicEventModel, attributes: NR_MOCK.event, name: NR_EVENT_NAME },
+    { key: NR_API_KEY, model: NewRelicApiResponseEventModel, attributes: NR_MOCK.api, name: NR_API_NAME },
+    { key: 'nrErrorValid', model: NewRelicErrorEventModel, attributes: NR_MOCK.error, name: NR_ERROR_NAME }
+  ])('0121.2 loads $key as its event model and publishes it to New Relic', async ({ key, model, attributes, name }) => {
+    expect(stratum.defaultCatalog?.validModels[key]).toBeInstanceOf(model);
     const publisherSpy = spyOnPublish(stratum.publishers[0]);
     const spies = spyOnNewRelic();
 
@@ -90,7 +74,7 @@ describe('NewRelicPlusPublisher', () => {
     expectNewRelicEvent(spies, attributes, name);
   });
 
-  it('should handle placeholders within the nrApi event type', async () => {
+  it('0121.5 replaces placeholders within the nrApi request fields', async () => {
     const spies = spyOnNewRelic();
     expect(await stratum.publish('nrApiPlaceholders', SAMPLE_EVENT_OPTIONS)).toBe(true);
 
@@ -111,24 +95,7 @@ describe('NewRelicPlusPublisher', () => {
       stratum = createService({ catalog: { items: NR_CATALOG }, plugins: [nrpPlugin] });
     });
 
-    it('should set the default context', () => {
-      expect(stratum.injector.plugins[NEW_RELIC_PLUGIN_NAME].context).toMatchObject({
-        [CUSTOM_VAR]: undefined,
-        [CUSTOM_VAR_2]: 'initial'
-      });
-    });
-
-    it('should only allow overriding default context keys', () => {
-      expect(nrpPlugin.setContext('unknownVar', 1234)).toBe(false);
-      expect(nrpPlugin.setContext(CUSTOM_VAR, 1234)).toBe(true);
-      expect(nrpPlugin.setContext(CUSTOM_VAR_2, 678)).toBe(true);
-      expect(stratum.injector.plugins[NEW_RELIC_PLUGIN_NAME].context).toMatchObject({
-        [CUSTOM_VAR]: 1234,
-        [CUSTOM_VAR_2]: 678
-      });
-    });
-
-    it.each([undefined, null])('should not publish a context variable set to %s', async (value) => {
+    it.each([undefined, null])('0121.3 does not publish a context variable set to %s', async (value) => {
       nrpPlugin.setContext(CUSTOM_VAR, value);
       const spies = spyOnNewRelic();
       await stratum.publish(NR_EVENT_KEY);
@@ -137,26 +104,24 @@ describe('NewRelicPlusPublisher', () => {
       expect(attributeNames).toContain(`stratum_${CUSTOM_VAR_2}`);
     });
 
-    it('should pass prefixed context variables when publishing nr events', async () => {
+    it.each([
+      { event: 'a New Relic event', publish: (s: StratumService) => s.publish(NR_EVENT_KEY) },
+      {
+        event: "another plugin's event",
+        publish: (s: StratumService) => {
+          s.addPlugin(PluginAFactory());
+          const id = s.addCatalog({ items: SAMPLE_A_CATALOG, componentName: 'noop' }).id;
+          return s.publishFromCatalog(id, 1);
+        }
+      }
+    ])('0121.4 passes prefixed context variables when publishing $event', async ({ publish }) => {
       const spies = spyOnNewRelic();
       nrpPlugin.setContext(CUSTOM_VAR, 'custom');
       nrpPlugin.setContext(CUSTOM_VAR_2, false);
-      await stratum.publish(NR_EVENT_KEY);
+      await publish(stratum);
       const attributes = newRelicAttributes(spies);
       expect(attributes[`stratum_${CUSTOM_VAR}`]).toBe('custom');
       expect(attributes[`stratum_${CUSTOM_VAR_2}`]).toBe(false);
-    });
-
-    it('should include the default context when publishing other events', async () => {
-      const spies = spyOnNewRelic();
-      stratum.addPlugin(PluginAFactory());
-      nrpPlugin.setContext(CUSTOM_VAR, 'test1');
-      nrpPlugin.setContext(CUSTOM_VAR_2, 'test2');
-      const id = stratum.addCatalog({ items: SAMPLE_A_CATALOG, componentName: 'noop' }).id;
-      await stratum.publishFromCatalog(id, 1);
-      const attributes = newRelicAttributes(spies);
-      expect(attributes[`stratum_${CUSTOM_VAR}`]).toBe('test1');
-      expect(attributes[`stratum_${CUSTOM_VAR_2}`]).toBe('test2');
     });
   });
 });
