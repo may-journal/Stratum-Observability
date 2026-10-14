@@ -1,10 +1,14 @@
+---
+fitnessFunctions: ['markdown-front-matter']
+---
+
 # Stratum Observability | standardization as you publish
 
 A no-dependency library defining a framework for sending analytics and observability events in a standardized format.
-Stratum is a plugin-based framework that allows you to create your own custom plugins to define, validate, and publish events
+Stratum is a plugin-based framework. Create your own custom plugins to define, validate, and publish events
 to your observability stack. We also offer community-driven plugins for popular integrations.
 
-**Common problems that Stratum helps solve:**
+Common problems that Stratum helps solve:
 1. Standardized data for clean queries, clear ownership, and strongest possible signals for alerting/reporting
 1. Being the first to know when your app is down, up, or sideways (let alone determining what any of those mean to you)
 1. Clear cataloging of what your product is capable of and who's using what
@@ -85,12 +89,12 @@ A typical Stratum implementation consists of:
 
 ## Installation
 
-**Via npm:**
+Via npm:
 ```bash
 npm install @capitalone/stratum-observability
 ```
 
-**Via yarn:**
+Via yarn:
 ```bash
 yarn add @capitalone/stratum-observability
 ```
@@ -123,7 +127,7 @@ export class SimplePlugin extends BasePlugin<never, never> {
 Each of the concepts above are explained in further detail in the following sections.
 
 #### Plugin factories
-If you have a configurable plugin that can be customized based on context, define your plugin as a PluginFactory instead of a static object. Plugin factories are a function that (optionally) take in arguments and return a new plugin instance on each execution.
+If your plugin is configurable based on context, define it as a PluginFactory instead of a static object. Plugin factories are a function that (optionally) take in arguments and return a new plugin instance on each execution.
 
 Plugin factory options are good way to dynamically define plugins or pass initialization data to publishers at run-time. Use this in cases where your plugin needs to behave differently based on what application or environment is using it.
 
