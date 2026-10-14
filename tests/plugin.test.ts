@@ -23,6 +23,7 @@ import {
   PluginAFactory,
   PluginBFactory,
   SampleEventType,
+  SamplePublisher,
   VAR1
 } from './utils/sample-plugin';
 
@@ -120,6 +121,11 @@ describe('stratum base plugin functionality', () => {
 
     it('0004.5 restricts publishing to plugin-specific models by default', () => {
       expect(pluginA.publishers[0].acceptedEventModels).toStrictEqual([EmptyModel, AModel]);
+    });
+
+    it('0004.7 accepts every event model when a publisher outside any plugin sets no acceptedEventModels', () => {
+      const model = stratum.defaultCatalog?.validModels[1] as BaseEventModel;
+      expect(new SamplePublisher('unregistered').shouldPublishEvent(model)).toBe(true);
     });
   });
 

@@ -38,6 +38,9 @@ export function clone<T>(source: T): T {
  */
 // biome-ignore lint/suspicious/noExplicitAny: legacy support
 export function performReplacements(model: BaseEventModel, obj: any, map: { [key: string]: EventReplacement }): void {
+  if (!isRecord(obj)) {
+    return;
+  }
   Object.keys(obj).forEach((prop) => {
     if (typeof obj[prop] === 'string') {
       Object.keys(map).forEach((search) => {
@@ -67,11 +70,13 @@ export function generateStratumSnapshot(
 ): StratumSnapshot {
   const plugins: StratumSnapshot['plugins'] = {};
   publishers.forEach((publisher) => {
-    const plugin = injector.plugins[publisher.pluginName];
-    plugins[publisher.pluginName] = {
-      context: plugin.context ?? {},
-      options: plugin.options ?? {}
-    };
+    if (publisher.pluginName && publisher.pluginName in injector.plugins) {
+      const plugin = injector.plugins[publisher.pluginName];
+      plugins[publisher.pluginName] = {
+        context: plugin.context ?? {},
+        options: plugin.options ?? {}
+      };
+    }
   });
 
   const globalContext: StratumSnapshot['globalContext'] = {};

@@ -9,8 +9,10 @@ import {
   debugModeEnabled,
   GLOBAL_LISTENER_KEY,
   generateDefaultSessionId,
+  generateStratumSnapshot,
   Injector,
   Logger,
+  performReplacements,
   RegisteredStratumCatalog,
   removeGlobalPlugin,
   STORED_SESSION_ID_KEY,
@@ -30,7 +32,7 @@ import {
   setGlobalPlugins,
   spyOnConsoleDebug
 } from './utils/helpers';
-import { PLUGIN_A_NAME, PluginA, PluginAFactory } from './utils/sample-plugin';
+import { PLUGIN_A_NAME, PluginA, PluginAFactory, SamplePublisher } from './utils/sample-plugin';
 
 const CATALOG_ID = 'catalog-id';
 const MODEL_KEY = 'key';
@@ -96,6 +98,13 @@ describe('util functions', () => {
         expect(catalog.errors[1].errors).toHaveLength(2);
       });
 
+      it('0007.7 leaves plugin data out of snapshots for publishers without a plugin', () => {
+        const catalog = createCatalog();
+        const publishers = [new SamplePublisher('unregistered')];
+        const snapshot = generateStratumSnapshot(injector, catalog.validModels[1], catalog, publishers);
+        expect(snapshot.plugins).toStrictEqual({});
+      });
+
       it('0003.6 recovers isValid when failed keys are re-added successfully', () => {
         const catalog = createCatalog({ 1: INVALID_SAMPLE_CATALOG[1] });
         expect(catalog.isValid).toBe(false);
@@ -153,6 +162,15 @@ describe('util functions', () => {
     ])('0007.4 replaces placeholders with $replacement', ({ item, replacements, read, expected }) => {
       const data = createModel({ id: 1, ...item }).getData({ replacements });
       expect(read(data)).toBe(expected);
+    });
+
+    it.each([
+      { kind: 'a null value', value: () => null, expected: null },
+      { kind: 'a list', value: () => [LABEL_PLACEHOLDER], expected: [LABEL_PLACEHOLDER] }
+    ])('0007.8 leaves $kind passed to performReplacements unchanged', ({ value, expected }) => {
+      const target = value();
+      performReplacements(createModel({ id: 1 }), target, { LABEL: 'replaced' });
+      expect(target).toStrictEqual(expected);
     });
 
     it('0007.5 marks circular references when converting to JSON', () => {

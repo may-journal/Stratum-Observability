@@ -42,3 +42,7 @@ Source: `src/utils/injector.ts:133`
     - Given Plugin author has a plugin that adds a catalog when registered
         - When it publishes from that catalog
             - Then the snapshot listener gets the event
+- 0004.7
+    - Given Plugin author has a publisher outside any plugin that names no accepted event types
+        - When I ask whether it handles an event
+            - Then it accepts every event
