@@ -45,7 +45,7 @@
     "lint": "biome check --fix --no-errors-on-unmatched --error-on-warnings",
     "lint:check": "biome check --no-errors-on-unmatched --error-on-warnings",
     "pre-commit": "npm run lint:check -- --staged",
-    "prepare": "git config --local core.hooksPath .fitness-hooks",
+    "prepare": "node scripts/prepare-hooks.mjs",
     "prepublishOnly": "npm run build",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
