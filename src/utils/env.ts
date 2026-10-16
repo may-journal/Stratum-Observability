@@ -1,4 +1,4 @@
-import { DEBUG_KEY, GLOBAL_LISTENER_KEY, STORED_SESSION_ID_KEY } from '../constants';
+import { DEBUG_KEY, DEBUG_LOG_PREFIX, GLOBAL_LISTENER_KEY, STORED_SESSION_ID_KEY } from '../constants';
 import type { StratumSnapshotListenerFn } from '../types';
 import { isDefined } from './general';
 
@@ -99,7 +99,7 @@ export class Logger {
    */
   debug(...args: unknown[]) {
     if (debugModeEnabled()) {
-      console.debug('[Stratum]', ...args);
+      console.debug(DEBUG_LOG_PREFIX, ...args);
     }
   }
 }
