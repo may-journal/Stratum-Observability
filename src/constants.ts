@@ -10,6 +10,11 @@ export const STORED_SESSION_ID_KEY = 'stm_internal_id';
 export const DEBUG_KEY = 'stratumdb';
 
 /**
+ * Prefix of every debug line Stratum writes to the console.
+ */
+export const DEBUG_LOG_PREFIX = '[Stratum]';
+
+/**
  * Key on the globalThis object that stratum will check for when
  * looking for event listener callbacks.
  *
@@ -18,3 +23,9 @@ export const DEBUG_KEY = 'stratumdb';
  * executed by any StratumService instance regardless of productName.
  */
 export const GLOBAL_LISTENER_KEY = 'stratum_global';
+
+/**
+ * Event type every StratumService accepts without a plugin. Catalog
+ * items of this type map to the BaseEventModel.
+ */
+export const BASE_EVENT_TYPE = 'base';

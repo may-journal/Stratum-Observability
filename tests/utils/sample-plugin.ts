@@ -9,6 +9,10 @@ import type { CatalogEvent, PluginFactory, PluginFactoryWithRequiredOptions, Str
 export const PLUGIN_A_NAME = 'pluginA';
 export const PLUGIN_B_NAME = 'pluginB';
 
+export const VAR1 = 'var1';
+export const VAR2 = 'var2';
+export const DEFAULT_VAR1 = 'default';
+
 export enum SampleEventType {
   A = 'a',
   B = 'b'
@@ -27,6 +31,8 @@ export interface PluginBOptions {
   versionNumber: number;
   apiKey: string;
 }
+
+export const PLUGIN_B_OPTIONS: PluginBOptions = { versionNumber: 1, apiKey: 'abc123' };
 
 export interface PluginBFactoryOptions {
   pluginOptions: PluginBOptions;
@@ -97,7 +103,7 @@ export class PluginA extends BasePlugin<PluginAContext, PluginAOptions> {
   };
 
   context = {
-    var1: 'default',
+    var1: DEFAULT_VAR1,
     var2: undefined
   };
 

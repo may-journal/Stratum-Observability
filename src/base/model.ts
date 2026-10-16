@@ -11,7 +11,7 @@ import type { Injector } from '../utils/injector';
 export class BaseEventModel<T extends CatalogEvent = CatalogEvent> {
   /**
    * Stored value indicating the key used by the external
-   * application to reference the cataloge item.
+   * application to reference the catalog item.
    */
   readonly key: string;
 
@@ -89,7 +89,7 @@ export class BaseEventModel<T extends CatalogEvent = CatalogEvent> {
    * underlying event types.
    */
   protected checkValidity(): boolean {
-    if (!this.item || typeof this.item !== 'object') {
+    if (typeof this.item !== 'object') {
       this.addValidationError('Catalog item has an unexpected format');
       return false;
     }

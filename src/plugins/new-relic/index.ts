@@ -1,5 +1,6 @@
 import { BasePlugin } from '../../base';
 import type { PluginFactory } from '../../types';
+import { NEW_RELIC_PLUGIN_NAME } from './constants';
 import { NewRelicPublisher } from './publisher';
 
 /**
@@ -9,7 +10,7 @@ import { NewRelicPublisher } from './publisher';
  * This enables near real-time dashboards and alerting.
  */
 export class NewRelicPlugin extends BasePlugin<never, never> {
-  name = 'newRelic';
+  name = NEW_RELIC_PLUGIN_NAME;
   publishers = [new NewRelicPublisher()];
 }
 
@@ -21,4 +22,5 @@ export class NewRelicPlugin extends BasePlugin<never, never> {
  */
 export const NewRelicPluginFactory: PluginFactory<NewRelicPlugin> = () => new NewRelicPlugin();
 
+export * from './constants';
 export * from './publisher';
