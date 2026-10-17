@@ -23,7 +23,7 @@ import { Injector } from './utils/injector';
  * The functionality encapsulated by this class can be summarized as follows:
  *   1. Starts default catalog validation on initialization and creates event model instances
  *   2. Loads and instantiates publishers on initialization
- *   3. Store global variables and globl stratum context info
+ *   3. Store global variables and global stratum context info
  *   4. Exposes functions for application to publish from catalogs and register plugins
  *
  * This class is designed to operate in a singleton-scope. However, this is dependent on use case.
@@ -243,17 +243,22 @@ export class StratumService {
           new Promise<void>((resolve, reject) => {
             queueMicrotask(async () => {
               const internalSnapshot = cloneStratumSnapshot(snapshot);
-              internalSnapshot.eventOptions = populateDynamicEventOptions(publisher, options);
-              const isAvailable = await publisher.isAvailable(model, internalSnapshot);
-              if (isAvailable) {
-                const content = publisher.getEventOutput(model, internalSnapshot);
-                await publisher.publish(content, internalSnapshot);
-                resolve();
-              } else {
-                this.injector.logger.debug(
-                  `Unable to publish "${key}": Publisher "${publisher.name}" is not available`
-                );
-                reject();
+              try {
+                internalSnapshot.eventOptions = populateDynamicEventOptions(publisher, options);
+                const isAvailable = await publisher.isAvailable(model, internalSnapshot);
+                if (isAvailable) {
+                  const content = publisher.getEventOutput(model, internalSnapshot);
+                  await publisher.publish(content, internalSnapshot);
+                  resolve();
+                } else {
+                  this.injector.logger.debug(
+                    `Unable to publish "${key}": Publisher "${publisher.name}" is not available`
+                  );
+                  reject();
+                }
+              } catch (error) {
+                this.injector.logger.debug(`Unable to publish "${key}": Publisher "${publisher.name}" threw`, error);
+                reject(error);
               }
             });
           })

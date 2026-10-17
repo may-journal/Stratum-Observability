@@ -155,7 +155,7 @@ export class RegisteredStratumCatalog<T extends CatalogEvent = CatalogEvent, K e
    * item key.
    *
    * @param {string} key - Catalog item key
-   * @param {string[]} errors - Error messsages
+   * @param {string[]} errors - Error messages
    */
   private recordErrors(key: string, errors: string[]) {
     if (key in this.errors) {

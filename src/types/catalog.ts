@@ -1,4 +1,5 @@
 import type { BaseEventModel } from '../base';
+import type { BASE_EVENT_TYPE } from '../constants';
 import type { AbTestSchema } from './ab-test';
 
 /**
@@ -48,7 +49,10 @@ export interface CatalogEvent<EventType extends string = string> {
  * type via the generic T. The K generic constrains the keys allowed
  * in the catalog for type-safe publishing.
  */
-export type StratumCatalog<T extends CatalogEvent = CatalogEvent<'base'>, K extends CatalogKey = CatalogKey> = {
+export type StratumCatalog<
+  T extends CatalogEvent = CatalogEvent<typeof BASE_EVENT_TYPE>,
+  K extends CatalogKey = CatalogKey
+> = {
   [key in K]: T;
 };
 

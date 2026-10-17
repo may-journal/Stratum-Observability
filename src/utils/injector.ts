@@ -1,5 +1,5 @@
 import { BaseEventModel, type BasePublisher } from '../base';
-import { GLOBAL_LISTENER_KEY } from '../constants';
+import { BASE_EVENT_TYPE, GLOBAL_LISTENER_KEY } from '../constants';
 import type { EventId, EventTypeModelMap, GenericPlugin, RegisteredPlugins, StratumSnapshotListenerFn } from '../types';
 import { AbTestManager } from './ab-test-manager';
 import { generateDefaultSessionId, Logger } from './env';
@@ -21,7 +21,7 @@ export class Injector {
    * The static key is replaced by Rollup with the dynamic package.json
    * version at compile.
    */
-  readonly version = '__stratumLibraryVersion__';
+  readonly version: string = '__stratumLibraryVersion__';
 
   /**
    * Map of event type to aan EventModel class used to
@@ -31,7 +31,7 @@ export class Injector {
    * added to this mapping.
    */
   readonly eventTypeModelMap: EventTypeModelMap = {
-    base: { model: BaseEventModel }
+    [BASE_EVENT_TYPE]: { model: BaseEventModel }
   };
 
   /**
