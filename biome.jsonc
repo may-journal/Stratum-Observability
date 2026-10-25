@@ -47,6 +47,16 @@
       "semicolons": "always"
     }
   },
+  "markdown": {
+    "formatter": {
+      "enabled": false
+    }
+  },
+  "yaml": {
+    "formatter": {
+      "quoteStyle": "single"
+    }
+  },
   "assist": {
     "enabled": true,
     "actions": {
