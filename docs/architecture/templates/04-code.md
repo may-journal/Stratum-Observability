@@ -1,5 +1,5 @@
 ---
-fitnessFunctions: ['architecture-contract', 'architecture-code']
+fitnessFunctions: ["architecture-contract", "architecture-code"]
 ---
 
 # Code
@@ -32,8 +32,8 @@ classDiagram
 
 Numbers on classes and relationships match the callout table.
 
-| #   | Description                           | Why                                  |
-| --- | ------------------------------------- | ------------------------------------ |
-| 1   | One saved record.                     | The type every store call shares.    |
-| 2   | Writes one record.                    | The only write path.                 |
-| 3   | Save takes the record it writes.      | The call the code makes.             |
+| #   | Description                      | Why                               |
+| --- | -------------------------------- | --------------------------------- |
+| 1   | One saved record.                | The type every store call shares. |
+| 2   | Writes one record.               | The only write path.              |
+| 3   | Save takes the record it writes. | The call the code makes.          |

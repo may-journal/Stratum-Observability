@@ -10,12 +10,12 @@ fitnessFunctions: ['markdown-front-matter']
 
 Please review our [Contributor Docs](https://github.com/capitalone/Stratum-Observability/blob/main/CONTRIBUTING.md) for more details
 
-* [ ] Fixes #ISSUE-NUMBER
-* [ ] I have run `npm version [patch, minor, major]` (considering [semantic versioning](https://semver.org/#summary)) for a new release if needed
-* [ ] If the package version changed, this PR's title is prefixed with `release([VERSION]): `
-* [ ] I have added [typedoc-style comments](https://typedoc.org/example/) to my changes to improve the developer experience
+- [ ] Fixes #ISSUE-NUMBER
+- [ ] I have run `npm version [patch, minor, major]` (considering [semantic versioning](https://semver.org/#summary)) for a new release if needed
+- [ ] If the package version changed, this PR's title is prefixed with `release([VERSION]): `
+- [ ] I have added [typedoc-style comments](https://typedoc.org/example/) to my changes to improve the developer experience
 
-----
+---
 
 #### ⏩ Next steps
 

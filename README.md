@@ -1,5 +1,5 @@
 ---
-fitnessFunctions: ['markdown-front-matter']
+fitnessFunctions: ["markdown-front-matter"]
 ---
 
 # Stratum Observability | standardization as you publish
@@ -21,70 +21,70 @@ A typical Stratum implementation consists of:
 1. Functional code aka your application code! Any files containing logic you'd like to observe
 
 ```ts
-  import { StratumService } from '@capitalone/stratum-observability';
-  import { NewRelicPluginFactory } from '@capitalone/stratum-observability/plugins/new-relic';
+import { StratumService } from '@capitalone/stratum-observability';
+import { NewRelicPluginFactory } from '@capitalone/stratum-observability/plugins/new-relic';
+
+/**
+ * Using enumerated keys afford the best chance of consistent references throughout your application.
+ * This replaces the need to hard code string values as reference.
+ */
+export const EventKey = {
+  LOADED: 'app-loaded'
+};
+
+/**
+ * Initialize Stratum with required arguments, again
+ * typically within a shared file for re-use.
+ *
+ * The StratumService is the engine for publishing.
+ */
+export const stratumService = new StratumService({
+  /**
+   * 1+ plugins defining your standardized event schemas and how to
+   * map these schemas when published to your data collectors
+   *
+   * The NewRelicPlugin is available from the @capitalone/stratum-observability library
+   */
+  plugins: [NewRelicPluginFactory()],
 
   /**
-   * Using enumerated keys afford the best chance of consistent references throughout your application. 
-   * This replaces the need to hard code string values as reference.
+   * The canonical name for referring to this capability
    */
-  export const EventKey = {
-    LOADED: 'app-loaded'
-  };
+  productName: 'stratumExampleApp',
 
   /**
-   * Initialize Stratum with required arguments, again 
-   * typically within a shared file for re-use.
-   * 
-   * The StratumService is the engine for publishing.
+   * Typically, this references the version of the application you're
+   * publishing observability events from
    */
-  export const stratumService = new StratumService({
-    /**
-     * 1+ plugins defining your standardized event schemas and how to
-     * map these schemas when published to your data collectors
-     * 
-     * The NewRelicPlugin is available from the @capitalone/stratum-observability library
-     */
-    plugins: [NewRelicPluginFactory()],
+  productVersion: 'REPLACE_WITH_PRODUCT_VERSION',
 
-    /**
-     * The canonical name for referring to this capability
-     */
-    productName: 'stratumExampleApp',
-
-    /**
-     * Typically, this references the version of the application you're 
-     * publishing observability events from
-     */
-    productVersion: 'REPLACE_WITH_PRODUCT_VERSION',
-
-    /**
-     * Your "catalog" or dictionary serves as the source-of-truth of events 
-     * published by an application. This provides the structure for standardization.
-     * 
-     * Custom plugins allow you to define your own catalog events, attributes,
-     * and custom validation rules.
-     * 
-     * We've added an example event for the sake of getting started.
-     */
-    catalog: {
-      items: {
-        [EventKey.LOADED]: {
-          eventType: 'base', // The base event type for Stratum events
-          description: 'This application has loaded for the first time',
-          id: 1 // Very important reference identifier -- the key to simple queries (can be omitted to use the event key as id)
-        }
+  /**
+   * Your "catalog" or dictionary serves as the source-of-truth of events
+   * published by an application. This provides the structure for standardization.
+   *
+   * Custom plugins allow you to define your own catalog events, attributes,
+   * and custom validation rules.
+   *
+   * We've added an example event for the sake of getting started.
+   */
+  catalog: {
+    items: {
+      [EventKey.LOADED]: {
+        eventType: 'base', // The base event type for Stratum events
+        description: 'This application has loaded for the first time',
+        id: 1 // Very important reference identifier -- the key to simple queries (can be omitted to use the event key as id)
       }
     }
-  });
+  }
+});
 
-  /**
-   * Publish your event via Stratum. In this example, Stratum will send your event
-   * to New Relic's Browser Agent, if available on the webpage.
-   * 
-   * (see: https://docs.newrelic.com/docs/browser/browser-monitoring/getting-started/introduction-browser-monitoring/)
-   */
-  stratumService.publish(EventKey.LOADED);
+/**
+ * Publish your event via Stratum. In this example, Stratum will send your event
+ * to New Relic's Browser Agent, if available on the webpage.
+ *
+ * (see: https://docs.newrelic.com/docs/browser/browser-monitoring/getting-started/introduction-browser-monitoring/)
+ */
+stratumService.publish(EventKey.LOADED);
 ```
 
 ## Installation
@@ -127,6 +127,7 @@ export class SimplePlugin extends BasePlugin<never, never> {
 Each of the concepts above are explained in further detail in the following sections.
 
 #### Plugin factories
+
 If your plugin is configurable based on context, define it as a PluginFactory instead of a static object. Plugin factories are a function that (optionally) take in arguments and return a new plugin instance on each execution.
 
 Plugin factory options are good way to dynamically define plugins or pass initialization data to publishers at run-time. Use this in cases where your plugin needs to behave differently based on what application or environment is using it.
@@ -157,6 +158,7 @@ const myPluginInstanceWithOptions = SimplePluginFactoryWithOptions({ isLoggedIn:
 ```
 
 ### Catalog entries
+
 Through plugins, you may define custom event type which are referenced by the `eventType` property on your catalog items. Any events loaded into your StratumService must have a corresponding eventType to EventModel relation defined via a plugin.
 
 ```javascript
@@ -202,11 +204,13 @@ const catalog = {
 ```
 
 #### Type-safe keys with `satisfies`
+
 Using `satisfies StratumCatalog<T>` instead of `: StratumCatalog<T>` preserves literal key types. This enables compile-time key checking when publishing via `catalog.publish()` from `RegisteredStratumCatalog` instance (via `addCatalog()`).
 
 Note: type-safe keys only apply to catalog-level publishing. Publishing through the service (`stratum.publish(key)`) does not support compile-time key checking.
 
 ### Event models
+
 ```javascript
 import { BaseEventModel } from '@capitalone/stratum-observability';
 
@@ -227,6 +231,7 @@ export class SimpleEventModel extends BaseEventModel<SimpleEvent> {
 ```
 
 ### Publisher models
+
 ```javascript
 import { BasePublisher, EventOptions } from '@capitalone/stratum-observability';
 
@@ -275,7 +280,8 @@ export class SimplePublisher extends BasePublisher<ExternalEventSchema> {
 ```
 
 ## Contributing
-We welcome and appreciate your contributions! 
+
+We welcome and appreciate your contributions!
 
 If you have suggestions or find a bug, please [open an issue](https://github.com/capitalone/Stratum-Observability/issues/new/choose).
 

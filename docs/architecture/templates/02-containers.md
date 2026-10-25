@@ -1,5 +1,5 @@
 ---
-fitnessFunctions: ['architecture-contract', 'architecture-containers']
+fitnessFunctions: ["architecture-contract", "architecture-containers"]
 ---
 
 # Containers
@@ -37,11 +37,11 @@ C4Container
 
 Numbers on nodes and arrows match the callout table.
 
-| #   | Description                              | Why                                     |
-| --- | ---------------------------------------- | --------------------------------------- |
-| 1   | Same person as the system context.       | Every run starts with this actor.       |
-| 2   | The product's boundary.                  | Everything inside it ships from here.   |
-| 3   | The app, built from `src/app`.           | One unit per runtime or shipped binary. |
-| 4   | Same outside service as the context.     | The product does not own it.            |
-| 5   | The user runs the app.                   | The main way in.                        |
-| 6   | The app calls the outside service.       | The one dependency it does not own.     |
+| #   | Description                          | Why                                     |
+| --- | ------------------------------------ | --------------------------------------- |
+| 1   | Same person as the system context.   | Every run starts with this actor.       |
+| 2   | The product's boundary.              | Everything inside it ships from here.   |
+| 3   | The app, built from `src/app`.       | One unit per runtime or shipped binary. |
+| 4   | Same outside service as the context. | The product does not own it.            |
+| 5   | The user runs the app.               | The main way in.                        |
+| 6   | The app calls the outside service.   | The one dependency it does not own.     |
