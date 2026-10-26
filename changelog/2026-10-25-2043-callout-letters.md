@@ -1,6 +1,6 @@
 ---
 # The changelog check folds this entry into CHANGELOG.md
-fitnessFunctions: ['changelog']
+fitnessFunctions: ["changelog"]
 ---
 
 ### 2026.10.25.2043
