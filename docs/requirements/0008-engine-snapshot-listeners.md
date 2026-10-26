@@ -16,8 +16,6 @@ published events each listener receives
 
 published events
 
-Source: `src/service.ts:221`
-
 ## Requirements
 
 - 0008.1

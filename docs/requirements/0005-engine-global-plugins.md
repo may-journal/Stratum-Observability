@@ -16,8 +16,6 @@ services that register the page's global plugins
 
 services constructed on a page with global plugins
 
-Source: `src/utils/global-plugins.ts:19`
-
 ## Requirements
 
 - 0005.1

@@ -16,8 +16,6 @@ events tagged with the A/B tests running at publish time
 
 events published while A/B tests run
 
-Source: `src/utils/ab-test-manager.ts:99`
-
 ## Requirements
 
 - 0009.1

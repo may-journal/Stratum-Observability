@@ -16,8 +16,6 @@ debug lines shown only while the tab's debug flag is on
 
 debug lines Stratum writes
 
-Source: `src/utils/env.ts:100`
-
 ## Requirements
 
 - 0010.1
