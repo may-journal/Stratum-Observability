@@ -1,7 +1,3 @@
----
-relatedConfigurations: ["../../vitest.config.mts"]
----
-
 # 0001 Install and Construct
 
 ## Why

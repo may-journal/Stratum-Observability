@@ -1,8 +1,3 @@
----
-# The changelog check folds this entry into CHANGELOG.md
-fitnessFunctions: ["changelog"]
----
-
 ### 2026.10.25.2043
 
 - Docs: every arrow in the architecture diagrams now carries a letter callout, such as A or B, instead of a number

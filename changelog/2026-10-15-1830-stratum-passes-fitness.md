@@ -1,8 +1,3 @@
----
-# The changelog check folds this entry into CHANGELOG.md
-fitnessFunctions: ["changelog"]
----
-
 ### 2026.10.15.1830
 
 - docs(changelog): Restructure the upstream history into dated typed sections, and add entry files so only the release writes CHANGELOG.md.

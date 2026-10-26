@@ -1,7 +1,3 @@
----
-relatedConfigurations: ["../../vitest.config.mts"]
----
-
 # 0101 Browser Console Output
 
 ## Why

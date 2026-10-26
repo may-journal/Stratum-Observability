@@ -1,7 +1,3 @@
----
-relatedConfigurations: ["../../vitest.config.mts"]
----
-
 # 0010 Debug Log
 
 ## Why

@@ -1,7 +1,3 @@
----
-relatedConfigurations: ["../../vitest.config.mts"]
----
-
 # 0111 New Relic Interactions
 
 ## Why

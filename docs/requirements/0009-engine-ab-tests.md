@@ -1,7 +1,3 @@
----
-relatedConfigurations: ["../../vitest.config.mts"]
----
-
 # 0009 A/B Tests
 
 ## Why

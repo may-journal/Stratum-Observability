@@ -4,7 +4,6 @@ about: Propose a change to Stratum (enhancement, bug, etc.)
 title: ""
 labels: needs triage
 assignees: ""
-fitnessFunctions: ["markdown-front-matter"]
 ---
 
 ### What's the problem you are facing?
