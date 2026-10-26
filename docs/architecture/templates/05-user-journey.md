@@ -1,5 +1,5 @@
 ---
-fitnessFunctions: ['architecture-contract', 'architecture-journey']
+fitnessFunctions: ["architecture-contract", "architecture-journey"]
 ---
 
 # User Journey
@@ -25,12 +25,12 @@ flowchart TB
 
 Numbers match the callout table.
 
-| #   | Description | Why                                      |
-| --- | ----------- | ---------------------------------------- |
-| 1   | Persona     | A person the system context declares.    |
-| 2   | Screen      | What the person sees.                    |
-| 3   | Action      | What the person does.                    |
-| 4   | System      | What the product does in reply.          |
+| #   | Description | Why                                   |
+| --- | ----------- | ------------------------------------- |
+| 1   | Persona     | A person the system context declares. |
+| 2   | Screen      | What the person sees.                 |
+| 3   | Action      | What the person does.                 |
+| 4   | System      | What the product does in reply.       |
 
 ## Journey
 
@@ -52,8 +52,8 @@ flowchart TB
 
 Numbers match the callout table.
 
-| #   | Description          | Type    | Why                                   |
-| --- | -------------------- | ------- | ------------------------------------- |
-| 1   | The user.            | Persona | Same person as the system context.    |
-| 2   | Opens the app.       | Action  | The first step of every visit.        |
-| 3   | The record is saved. | Screen  | What the user came to do.             |
+| #   | Description          | Type    | Why                                |
+| --- | -------------------- | ------- | ---------------------------------- |
+| 1   | The user.            | Persona | Same person as the system context. |
+| 2   | Opens the app.       | Action  | The first step of every visit.     |
+| 3   | The record is saved. | Screen  | What the user came to do.          |
