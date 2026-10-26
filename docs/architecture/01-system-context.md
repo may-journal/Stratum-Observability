@@ -24,6 +24,15 @@ C4Context
     Rel(stratum, console, "E")
     Rel(stratum, browserState, "F")
     Rel(hostApp, registry, "G")
+
+    UpdateElementStyle(developer, $bgColor="#334155", $borderColor="#1e293b", $fontColor="#ffffff")
+    UpdateElementStyle(pluginAuthor, $bgColor="#334155", $borderColor="#1e293b", $fontColor="#ffffff")
+    UpdateElementStyle(stratum, $bgColor="#1d4ed8", $borderColor="#1e3a8a", $fontColor="#ffffff")
+    UpdateElementStyle(hostApp, $bgColor="#64748b", $borderColor="#475569", $fontColor="#ffffff")
+    UpdateElementStyle(newRelic, $bgColor="#64748b", $borderColor="#475569", $fontColor="#ffffff")
+    UpdateElementStyle(console, $bgColor="#64748b", $borderColor="#475569", $fontColor="#ffffff")
+    UpdateElementStyle(browserState, $bgColor="#64748b", $borderColor="#475569", $fontColor="#ffffff")
+    UpdateElementStyle(registry, $bgColor="#64748b", $borderColor="#475569", $fontColor="#ffffff")
 ```
 
 ```mermaid
@@ -33,9 +42,13 @@ C4Context
     Person(p, "Person", "Human or agent actor")
     System(s, "System", "Software we own")
     System_Ext(e, "External", "Outside our boundary")
+
+    UpdateElementStyle(p, $bgColor="#334155", $borderColor="#1e293b", $fontColor="#ffffff")
+    UpdateElementStyle(s, $bgColor="#1d4ed8", $borderColor="#1e3a8a", $fontColor="#ffffff")
+    UpdateElementStyle(e, $bgColor="#64748b", $borderColor="#475569", $fontColor="#ffffff")
 ```
 
-Numbers on nodes and arrows match the callout table.
+Numbers on nodes and letters on arrows match the callout table.
 
 | #   | Description                                                                                           | Why                                                          |
 | --- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
