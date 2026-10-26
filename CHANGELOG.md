@@ -1,6 +1,6 @@
 ---
 # Release history, judged by the changelog checks
-fitnessFunctions: ['changelog']
+fitnessFunctions: ["changelog"]
 ---
 
 # Changelog

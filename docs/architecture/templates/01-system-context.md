@@ -1,5 +1,5 @@
 ---
-fitnessFunctions: ['architecture-contract', 'architecture-actors']
+fitnessFunctions: ["architecture-contract", "architecture-actors"]
 ---
 
 # System Context
@@ -31,10 +31,10 @@ C4Context
 
 Numbers on nodes and arrows match the callout table.
 
-| #   | Description                         | Why                                       |
-| --- | ----------------------------------- | ----------------------------------------- |
-| 1   | The person who uses the product.    | Requirements name this actor in a Given.  |
-| 2   | The product this repo builds.       | The boundary the other views break down.  |
-| 3   | A system the product relies on.     | It sits outside the product's boundary.   |
-| A   | The user works in the product.      | The main way in.                          |
-| B   | The product calls the outside service. | The one dependency it does not own.    |
+| #   | Description                            | Why                                      |
+| --- | -------------------------------------- | ---------------------------------------- |
+| 1   | The person who uses the product.       | Requirements name this actor in a Given. |
+| 2   | The product this repo builds.          | The boundary the other views break down. |
+| 3   | A system the product relies on.        | It sits outside the product's boundary.  |
+| A   | The user works in the product.         | The main way in.                         |
+| B   | The product calls the outside service. | The one dependency it does not own.      |

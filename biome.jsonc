@@ -48,13 +48,8 @@
     }
   },
   "markdown": {
-    "formatter": {
-      "enabled": false
-    }
-  },
-  "yaml": {
-    "formatter": {
-      "quoteStyle": "single"
+    "parser": {
+      "frontmatter": true
     }
   },
   "assist": {
