@@ -13,7 +13,7 @@ classDiagram
     }
     class save["2 save(Record) error"]
 
-    save --> Record : 3
+    save --> Record : A
 ```
 
 <!-- The legend is a second classDiagram with no numbers, showing each class and arrow kind above. -->
@@ -36,4 +36,4 @@ Numbers on classes and relationships match the callout table.
 | --- | ------------------------------------- | ------------------------------------ |
 | 1   | One saved record.                     | The type every store call shares.    |
 | 2   | Writes one record.                    | The only write path.                 |
-| 3   | Save takes the record it writes.      | The call the code makes.             |
+| A   | Save takes the record it writes.      | The call the code makes.             |

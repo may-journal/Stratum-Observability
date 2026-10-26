@@ -73,42 +73,42 @@ classDiagram
     class BrowserConsolePublisher["16 BrowserConsolePublisher"]
     class Logger["17 Logger"]
 
-    StratumService --> Injector : 18
-    StratumService --> RegisteredStratumCatalog : 19
-    StratumService --> BasePublisher : 20
-    StratumService --> generateStratumSnapshot : 21
-    RegisteredStratumCatalog --> BaseEventModel : 22
-    Injector --> BasePublisher : 23
-    Injector --> AbTestManager : 24
-    generateStratumSnapshot --> Injector : 25
-    BasePlugin <|-- NewRelicPlugin : 26
-    BasePlugin <|-- NewRelicPlusPlugin : 27
-    BasePlugin <|-- BrowserConsolePlugin : 28
-    BasePublisher <|-- NewRelicPublisher : 29
-    BasePublisher <|-- BrowserConsolePublisher : 30
-    BaseEventModel <|-- NewRelicEventModel : 31
-    NewRelicEventModel <|-- NewRelicApiResponseEventModel : 32
-    NewRelicEventModel <|-- NewRelicErrorEventModel : 33
-    NewRelicPlugin --> NewRelicPublisher : 34
-    NewRelicPlusPlugin --> NewRelicPublisher : 35
-    NewRelicPlusPlugin --> NewRelicEventModel : 36
-    BrowserConsolePlugin --> BrowserConsolePublisher : 37
-    Injector --> Logger : 38
-    Injector --> BaseEventModel : 39
-    RegisteredStratumCatalog --> Injector : 40
-    BaseEventModel --> Injector : 41
-    BasePlugin --> BasePublisher : 42
-    BasePlugin --> BaseEventModel : 43
-    BasePlugin --> Injector : 44
-    BasePublisher --> BaseEventModel : 45
-    BasePublisher --> Injector : 46
-    NewRelicPublisher --> BaseEventModel : 47
-    BrowserConsolePublisher --> BaseEventModel : 48
-    NewRelicPlusPlugin --> NewRelicApiResponseEventModel : 49
-    NewRelicPlusPlugin --> NewRelicErrorEventModel : 50
-    generateStratumSnapshot --> BaseEventModel : 51
-    generateStratumSnapshot --> RegisteredStratumCatalog : 52
-    generateStratumSnapshot --> BasePublisher : 53
+    StratumService --> Injector : A
+    StratumService --> RegisteredStratumCatalog : B
+    StratumService --> BasePublisher : C
+    StratumService --> generateStratumSnapshot : D
+    RegisteredStratumCatalog --> BaseEventModel : E
+    Injector --> BasePublisher : F
+    Injector --> AbTestManager : G
+    generateStratumSnapshot --> Injector : H
+    BasePlugin <|-- NewRelicPlugin : I
+    BasePlugin <|-- NewRelicPlusPlugin : J
+    BasePlugin <|-- BrowserConsolePlugin : K
+    BasePublisher <|-- NewRelicPublisher : L
+    BasePublisher <|-- BrowserConsolePublisher : M
+    BaseEventModel <|-- NewRelicEventModel : N
+    NewRelicEventModel <|-- NewRelicApiResponseEventModel : O
+    NewRelicEventModel <|-- NewRelicErrorEventModel : P
+    NewRelicPlugin --> NewRelicPublisher : Q
+    NewRelicPlusPlugin --> NewRelicPublisher : R
+    NewRelicPlusPlugin --> NewRelicEventModel : S
+    BrowserConsolePlugin --> BrowserConsolePublisher : T
+    Injector --> Logger : U
+    Injector --> BaseEventModel : V
+    RegisteredStratumCatalog --> Injector : W
+    BaseEventModel --> Injector : X
+    BasePlugin --> BasePublisher : Y
+    BasePlugin --> BaseEventModel : Z
+    BasePlugin --> Injector : AA
+    BasePublisher --> BaseEventModel : BB
+    BasePublisher --> Injector : CC
+    NewRelicPublisher --> BaseEventModel : DD
+    BrowserConsolePublisher --> BaseEventModel : EE
+    NewRelicPlusPlugin --> NewRelicApiResponseEventModel : FF
+    NewRelicPlusPlugin --> NewRelicErrorEventModel : GG
+    generateStratumSnapshot --> BaseEventModel : HH
+    generateStratumSnapshot --> RegisteredStratumCatalog : II
+    generateStratumSnapshot --> BasePublisher : JJ
 ```
 
 ```mermaid
@@ -144,42 +144,42 @@ Numbers on classes and relationships match the callout table.
 | 15  | [Source](../../src/plugins/browser-console/index.ts#L8-L11); named `browserConsole`.                                                                | Accepts every event type.                                          |
 | 16  | [Source](../../src/plugins/browser-console/publisher.ts#L7-L49); available wherever `console` is defined.                                           | Prints the event as JSON.                                          |
 | 17  | [Source](../../src/utils/env.ts#L96-L105); `debug` writes only while the debug flag is set.                                                         | Every debug line passes one check.                                 |
-| 18  | Creates the injector in the constructor and calls `registerPlugin`.                                                                                 | All shared state hangs off one injector.                           |
-| 19  | Constructs catalogs, or calls `addItems` on an existing ID.                                                                                         | Duplicate catalog IDs merge instead of failing.                    |
-| 20  | Filters, checks, maps, and publishes through each publisher in its own microtask.                                                                   | A slow destination never blocks the app.                           |
-| 21  | Builds one snapshot per publish call.                                                                                                               | Listeners and publishers share one source of truth.                |
-| 22  | Instantiates the model class registered for the item's event type.                                                                                  | Validation lives on the model.                                     |
-| 23  | `registerPlugin` collects each plugin's publishers and tags them with the plugin name.                                                              | A publisher with no model list accepts only its plugin's models.   |
-| 24  | Owns the A/B test manager.                                                                                                                          | One manager per service instance.                                  |
-| 25  | Reads plugins, context, tests, and metadata.                                                                                                        | Copied from state, but listeners share and can change one object.  |
-| 26  | Inherits from the base plugin.                                                                                                                      | Bundled and custom plugins share one contract.                     |
-| 27  | Inherits from the base plugin.                                                                                                                      | Same contract, with typed options.                                 |
-| 28  | Inherits from the base plugin.                                                                                                                      | Same contract, nothing extra.                                      |
-| 29  | Inherits from the base publisher.                                                                                                                   | Overrides `shouldPublishEvent` to accept everything.               |
-| 30  | Inherits from the base publisher.                                                                                                                   | Overrides `shouldPublishEvent` to accept everything.               |
-| 31  | Adds the `name` rule to the base checks.                                                                                                            | Each subclass calls the parent check first.                        |
-| 32  | Adds request fields to the data.                                                                                                                    | API response events carry status and URI.                          |
-| 33  | Adds error fields to the data.                                                                                                                      | Error events carry code, text, and reason.                         |
-| 34  | Creates one publisher instance.                                                                                                                     | One instance per plugin.                                           |
-| 35  | Reuses the New Relic publisher.                                                                                                                     | No second publisher to maintain.                                   |
-| 36  | Maps the `nrEvent` type to its model.                                                                                                               | The type string picks the model class.                             |
-| 37  | Creates one publisher instance.                                                                                                                     | One instance per plugin.                                           |
-| 38  | Creates the shared logger.                                                                                                                          | Catalogs and the service log through it.                           |
-| 39  | Maps each event type to its model class, `base` by default.                                                                                         | Catalogs look up models here.                                      |
-| 40  | Reads event types and product metadata, and registers event IDs.                                                                                    | IDs stay unique within a catalog.                                  |
-| 41  | Checks its ID against the registered IDs.                                                                                                           | A duplicate ID fails validation.                                   |
-| 42  | Declares the plugin's publishers.                                                                                                                   | A plugin bundles its destinations.                                 |
-| 43  | Declares the plugin's event types and their models.                                                                                                 | Event types map to model classes.                                  |
-| 44  | `onRegister` receives the injector.                                                                                                                 | Plugins read shared state when added.                              |
-| 45  | Lists accepted models and takes the event model on each step.                                                                                       | Each publisher picks the models it handles.                        |
-| 46  | `onInitialize` receives the injector.                                                                                                               | Publishers read shared state when registered.                      |
-| 47  | Takes the event model when mapping output.                                                                                                          | Same signature as the base publisher.                              |
-| 48  | Takes the event model when mapping output.                                                                                                          | Same signature as the base publisher.                              |
-| 49  | Maps the `nrApiResponse` type to its model.                                                                                                         | The type string picks the model class.                             |
-| 50  | Maps the `nrError` type to its model.                                                                                                               | The type string picks the model class.                             |
-| 51  | Reads the event model's data, ID, and type.                                                                                                         | The event part of the snapshot.                                    |
-| 52  | Reads the catalog's ID and metadata.                                                                                                                | Every event names its catalog.                                     |
-| 53  | Reads each publisher's plugin name to pick its context and options.                                                                                 | Each publisher gets its own plugin's view.                         |
+| A   | Creates the injector in the constructor and calls `registerPlugin`.                                                                                 | All shared state hangs off one injector.                           |
+| B   | Constructs catalogs, or calls `addItems` on an existing ID.                                                                                         | Duplicate catalog IDs merge instead of failing.                    |
+| C   | Filters, checks, maps, and publishes through each publisher in its own microtask.                                                                   | A slow destination never blocks the app.                           |
+| D   | Builds one snapshot per publish call.                                                                                                               | Listeners and publishers share one source of truth.                |
+| E   | Instantiates the model class registered for the item's event type.                                                                                  | Validation lives on the model.                                     |
+| F   | `registerPlugin` collects each plugin's publishers and tags them with the plugin name.                                                              | A publisher with no model list accepts only its plugin's models.   |
+| G   | Owns the A/B test manager.                                                                                                                          | One manager per service instance.                                  |
+| H   | Reads plugins, context, tests, and metadata.                                                                                                        | Copied from state, but listeners share and can change one object.  |
+| I   | Inherits from the base plugin.                                                                                                                      | Bundled and custom plugins share one contract.                     |
+| J   | Inherits from the base plugin.                                                                                                                      | Same contract, with typed options.                                 |
+| K   | Inherits from the base plugin.                                                                                                                      | Same contract, nothing extra.                                      |
+| L   | Inherits from the base publisher.                                                                                                                   | Overrides `shouldPublishEvent` to accept everything.               |
+| M   | Inherits from the base publisher.                                                                                                                   | Overrides `shouldPublishEvent` to accept everything.               |
+| N   | Adds the `name` rule to the base checks.                                                                                                            | Each subclass calls the parent check first.                        |
+| O   | Adds request fields to the data.                                                                                                                    | API response events carry status and URI.                          |
+| P   | Adds error fields to the data.                                                                                                                      | Error events carry code, text, and reason.                         |
+| Q   | Creates one publisher instance.                                                                                                                     | One instance per plugin.                                           |
+| R   | Reuses the New Relic publisher.                                                                                                                     | No second publisher to maintain.                                   |
+| S   | Maps the `nrEvent` type to its model.                                                                                                               | The type string picks the model class.                             |
+| T   | Creates one publisher instance.                                                                                                                     | One instance per plugin.                                           |
+| U   | Creates the shared logger.                                                                                                                          | Catalogs and the service log through it.                           |
+| V   | Maps each event type to its model class, `base` by default.                                                                                         | Catalogs look up models here.                                      |
+| W   | Reads event types and product metadata, and registers event IDs.                                                                                    | IDs stay unique within a catalog.                                  |
+| X   | Checks its ID against the registered IDs.                                                                                                           | A duplicate ID fails validation.                                   |
+| Y   | Declares the plugin's publishers.                                                                                                                   | A plugin bundles its destinations.                                 |
+| Z   | Declares the plugin's event types and their models.                                                                                                 | Event types map to model classes.                                  |
+| AA  | `onRegister` receives the injector.                                                                                                                 | Plugins read shared state when added.                              |
+| BB  | Lists accepted models and takes the event model on each step.                                                                                       | Each publisher picks the models it handles.                        |
+| CC  | `onInitialize` receives the injector.                                                                                                               | Publishers read shared state when registered.                      |
+| DD  | Takes the event model when mapping output.                                                                                                          | Same signature as the base publisher.                              |
+| EE  | Takes the event model when mapping output.                                                                                                          | Same signature as the base publisher.                              |
+| FF  | Maps the `nrApiResponse` type to its model.                                                                                                         | The type string picks the model class.                             |
+| GG  | Maps the `nrError` type to its model.                                                                                                               | The type string picks the model class.                             |
+| HH  | Reads the event model's data, ID, and type.                                                                                                         | The event part of the snapshot.                                    |
+| II  | Reads the catalog's ID and metadata.                                                                                                                | Every event names its catalog.                                     |
+| JJ  | Reads each publisher's plugin name to pick its context and options.                                                                                 | Each publisher gets its own plugin's view.                         |
 
 ## Publish outcomes
 

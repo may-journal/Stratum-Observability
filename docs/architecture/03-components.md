@@ -24,20 +24,20 @@ C4Component
         Component(browserConsole, "13 Browser console plugin", "TypeScript", "src/plugins/browser-console")
     }
 
-    Rel(developer, service, "14")
-    Rel(service, injector, "15")
-    Rel(service, catalog, "16")
-    Rel(service, snapshot, "17")
-    Rel(service, globalPlugins, "18")
-    Rel(catalog, base, "19")
-    Rel(injector, base, "20")
-    Rel(injector, abTests, "21")
-    Rel(injector, env, "22")
-    Rel(snapshot, injector, "23")
-    Rel(newRelicPlugin, base, "24")
-    Rel(newRelicPlus, base, "25")
-    Rel(newRelicPlus, newRelicPlugin, "26")
-    Rel(browserConsole, base, "27")
+    Rel(developer, service, "A")
+    Rel(service, injector, "B")
+    Rel(service, catalog, "C")
+    Rel(service, snapshot, "D")
+    Rel(service, globalPlugins, "E")
+    Rel(catalog, base, "F")
+    Rel(injector, base, "G")
+    Rel(injector, abTests, "H")
+    Rel(injector, env, "I")
+    Rel(snapshot, injector, "J")
+    Rel(newRelicPlugin, base, "K")
+    Rel(newRelicPlus, base, "L")
+    Rel(newRelicPlus, newRelicPlugin, "M")
+    Rel(browserConsole, base, "N")
 ```
 
 ```mermaid
@@ -67,17 +67,17 @@ Numbers on nodes and arrows match the callout table. Every product source has on
 | 11  | [`NewRelicPlugin`](../../src/plugins/new-relic/index.ts#L12-L15) with [`NewRelicPublisher`](../../src/plugins/new-relic/publisher.ts#L16-L163).                   | Saves one New Relic SPA interaction per event, for any event type.          |
 | 12  | [`NewRelicPlusPlugin`](../../src/plugins/new-relic-plus/index.ts#L24-L41) adds three validated event models and plugin context.                                   | Stricter New Relic events with required fields.                             |
 | 13  | [`BrowserConsolePlugin`](../../src/plugins/browser-console/index.ts#L8-L11) with [`BrowserConsolePublisher`](../../src/plugins/browser-console/publisher.ts#L7-L49). | Logs each event as JSON; the smallest working plugin.                       |
-| 14  | Constructs the service with product name, version, catalog, and plugins; then calls `publish`.                                                                    | The full public workflow.                                                   |
-| 15  | Registers each plugin and hands its publishers back to the service.                                                                                               | Plugin wiring lives in one method.                                          |
-| 16  | Creates or extends a catalog and passes it the service's publish function.                                                                                        | `catalog.publish(key)` reaches the same pipeline.                           |
-| 17  | Builds a snapshot, then clones it once per publisher with that plugin's event options.                                                                            | One publisher cannot mutate another's view.                                 |
-| 18  | Reads global plugins after constructor plugins.                                                                                                                   | Page-level plugins join every service.                                      |
-| 19  | Instantiates the event model class mapped to each item's `eventType`.                                                                                             | Plugins add event types without touching catalogs.                          |
-| 20  | Maps event types to model classes and sets each publisher's accepted models.                                                                                      | Base publishers then skip other types; the bundled ones accept every event. |
-| 21  | Owns one A/B test manager per service.                                                                                                                            | Tests are scoped to the instance.                                           |
-| 22  | Uses the logger and session ID helpers.                                                                                                                           | Debug output and session tracking stay guarded.                             |
-| 23  | Reads plugins, A/B tests, session ID, and product metadata.                                                                                                       | The snapshot is the injector's state at publish time.                       |
-| 24  | Extends `BasePlugin` and `BasePublisher`.                                                                                                                          | Same contract as any custom plugin.                                         |
-| 25  | Extends `BasePlugin` and `BaseEventModel`.                                                                                                                         | Validation rides on the base model's checks.                                |
-| 26  | Reuses `NewRelicPublisher` and the shared `NEW_RELIC_PLUGIN_NAME`.                                                                                                 | The shared name stops both plugins loading at once.                         |
-| 27  | Extends `BasePlugin` and `BasePublisher`.                                                                                                                          | Same contract as any custom plugin.                                         |
+| A   | Constructs the service with product name, version, catalog, and plugins; then calls `publish`.                                                                    | The full public workflow.                                                   |
+| B   | Registers each plugin and hands its publishers back to the service.                                                                                               | Plugin wiring lives in one method.                                          |
+| C   | Creates or extends a catalog and passes it the service's publish function.                                                                                        | `catalog.publish(key)` reaches the same pipeline.                           |
+| D   | Builds a snapshot, then clones it once per publisher with that plugin's event options.                                                                            | One publisher cannot mutate another's view.                                 |
+| E   | Reads global plugins after constructor plugins.                                                                                                                   | Page-level plugins join every service.                                      |
+| F   | Instantiates the event model class mapped to each item's `eventType`.                                                                                             | Plugins add event types without touching catalogs.                          |
+| G   | Maps event types to model classes and sets each publisher's accepted models.                                                                                      | Base publishers then skip other types; the bundled ones accept every event. |
+| H   | Owns one A/B test manager per service.                                                                                                                            | Tests are scoped to the instance.                                           |
+| I   | Uses the logger and session ID helpers.                                                                                                                           | Debug output and session tracking stay guarded.                             |
+| J   | Reads plugins, A/B tests, session ID, and product metadata.                                                                                                       | The snapshot is the injector's state at publish time.                       |
+| K   | Extends `BasePlugin` and `BasePublisher`.                                                                                                                          | Same contract as any custom plugin.                                         |
+| L   | Extends `BasePlugin` and `BaseEventModel`.                                                                                                                         | Validation rides on the base model's checks.                                |
+| M   | Reuses `NewRelicPublisher` and the shared `NEW_RELIC_PLUGIN_NAME`.                                                                                                 | The shared name stops both plugins loading at once.                         |
+| N   | Extends `BasePlugin` and `BasePublisher`.                                                                                                                          | Same contract as any custom plugin.                                         |
