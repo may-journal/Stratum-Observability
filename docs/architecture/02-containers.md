@@ -26,6 +26,14 @@ C4Container
     Rel(library, console, "D")
     Rel(library, browserState, "E")
     Rel(hostApp, registry, "F")
+
+    UpdateElementStyle(developer, $bgColor="#334155", $borderColor="#1e293b", $fontColor="#ffffff")
+    UpdateElementStyle(library, $bgColor="#0f766e", $borderColor="#115e59", $fontColor="#ffffff")
+    UpdateElementStyle(hostApp, $bgColor="#64748b", $borderColor="#475569", $fontColor="#ffffff")
+    UpdateElementStyle(newRelic, $bgColor="#64748b", $borderColor="#475569", $fontColor="#ffffff")
+    UpdateElementStyle(console, $bgColor="#64748b", $borderColor="#475569", $fontColor="#ffffff")
+    UpdateElementStyle(browserState, $bgColor="#64748b", $borderColor="#475569", $fontColor="#ffffff")
+    UpdateElementStyle(registry, $bgColor="#64748b", $borderColor="#475569", $fontColor="#ffffff")
 ```
 
 ```mermaid
@@ -37,9 +45,13 @@ C4Container
         Container(c, "Container", "Tech", "Runnable or deployable unit")
     }
     System_Ext(e, "External", "Outside our boundary")
+
+    UpdateElementStyle(p, $bgColor="#334155", $borderColor="#1e293b", $fontColor="#ffffff")
+    UpdateElementStyle(c, $bgColor="#0f766e", $borderColor="#115e59", $fontColor="#ffffff")
+    UpdateElementStyle(e, $bgColor="#64748b", $borderColor="#475569", $fontColor="#ffffff")
 ```
 
-Numbers on nodes and arrows match the callout table. Stratum ships one unit, the package, and runs inside the host app.
+Numbers on nodes and letters on arrows match the callout table. Stratum ships one unit, the package, and runs inside the host app.
 
 | #   | Description                                                                                                  | Why                                                        |
 | --- | ------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------- |

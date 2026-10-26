@@ -38,6 +38,19 @@ C4Component
     Rel(newRelicPlus, base, "L")
     Rel(newRelicPlus, newRelicPlugin, "M")
     Rel(browserConsole, base, "N")
+
+    UpdateElementStyle(developer, $bgColor="#334155", $borderColor="#1e293b", $fontColor="#ffffff")
+    UpdateElementStyle(service, $bgColor="#b45309", $borderColor="#92400e", $fontColor="#ffffff")
+    UpdateElementStyle(catalog, $bgColor="#b45309", $borderColor="#92400e", $fontColor="#ffffff")
+    UpdateElementStyle(injector, $bgColor="#b45309", $borderColor="#92400e", $fontColor="#ffffff")
+    UpdateElementStyle(base, $bgColor="#b45309", $borderColor="#92400e", $fontColor="#ffffff")
+    UpdateElementStyle(snapshot, $bgColor="#b45309", $borderColor="#92400e", $fontColor="#ffffff")
+    UpdateElementStyle(abTests, $bgColor="#b45309", $borderColor="#92400e", $fontColor="#ffffff")
+    UpdateElementStyle(globalPlugins, $bgColor="#b45309", $borderColor="#92400e", $fontColor="#ffffff")
+    UpdateElementStyle(env, $bgColor="#b45309", $borderColor="#92400e", $fontColor="#ffffff")
+    UpdateElementStyle(newRelicPlugin, $bgColor="#b45309", $borderColor="#92400e", $fontColor="#ffffff")
+    UpdateElementStyle(newRelicPlus, $bgColor="#b45309", $borderColor="#92400e", $fontColor="#ffffff")
+    UpdateElementStyle(browserConsole, $bgColor="#b45309", $borderColor="#92400e", $fontColor="#ffffff")
 ```
 
 ```mermaid
@@ -48,9 +61,12 @@ C4Component
     Container_Boundary(cb, "Container boundary") {
         Component(c, "Component", "Tech", "Logical unit")
     }
+
+    UpdateElementStyle(p, $bgColor="#334155", $borderColor="#1e293b", $fontColor="#ffffff")
+    UpdateElementStyle(c, $bgColor="#b45309", $borderColor="#92400e", $fontColor="#ffffff")
 ```
 
-Numbers on nodes and arrows match the callout table. Every product source has one owner; tests and the Rollup and Vitest configs are tools and need none.
+Numbers on nodes and letters on arrows match the callout table. Every product source has one owner; tests and the Rollup and Vitest configs are tools and need none.
 
 | #   | Description                                                                                                                                                          | Why                                                                         |
 | --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |

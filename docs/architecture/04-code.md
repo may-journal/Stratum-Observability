@@ -109,6 +109,24 @@ classDiagram
     generateStratumSnapshot --> BaseEventModel : HH
     generateStratumSnapshot --> RegisteredStratumCatalog : II
     generateStratumSnapshot --> BasePublisher : JJ
+
+    style StratumService fill:#6d28d9,stroke:#4c1d95,color:#ffffff
+    style RegisteredStratumCatalog fill:#6d28d9,stroke:#4c1d95,color:#ffffff
+    style Injector fill:#6d28d9,stroke:#4c1d95,color:#ffffff
+    style BaseEventModel fill:#6d28d9,stroke:#4c1d95,color:#ffffff
+    style BasePlugin fill:#6d28d9,stroke:#4c1d95,color:#ffffff
+    style BasePublisher fill:#6d28d9,stroke:#4c1d95,color:#ffffff
+    style generateStratumSnapshot fill:#6d28d9,stroke:#4c1d95,color:#ffffff
+    style AbTestManager fill:#6d28d9,stroke:#4c1d95,color:#ffffff
+    style NewRelicPlugin fill:#6d28d9,stroke:#4c1d95,color:#ffffff
+    style NewRelicPublisher fill:#6d28d9,stroke:#4c1d95,color:#ffffff
+    style NewRelicPlusPlugin fill:#6d28d9,stroke:#4c1d95,color:#ffffff
+    style NewRelicEventModel fill:#6d28d9,stroke:#4c1d95,color:#ffffff
+    style NewRelicApiResponseEventModel fill:#6d28d9,stroke:#4c1d95,color:#ffffff
+    style NewRelicErrorEventModel fill:#6d28d9,stroke:#4c1d95,color:#ffffff
+    style BrowserConsolePlugin fill:#6d28d9,stroke:#4c1d95,color:#ffffff
+    style BrowserConsolePublisher fill:#6d28d9,stroke:#4c1d95,color:#ffffff
+    style Logger fill:#6d28d9,stroke:#4c1d95,color:#ffffff
 ```
 
 ```mermaid
@@ -121,9 +139,13 @@ classDiagram
     class Child
     Parent <|-- Child : inherits
     Parent --> Child : uses
+
+    style Example fill:#6d28d9,stroke:#4c1d95,color:#ffffff
+    style Parent fill:#6d28d9,stroke:#4c1d95,color:#ffffff
+    style Child fill:#6d28d9,stroke:#4c1d95,color:#ffffff
 ```
 
-Numbers on classes and relationships match the callout table.
+Numbers on classes and letters on relationships match the callout table.
 
 | #   | Description                                                                                                                                              | Why                                                               |
 | --- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
