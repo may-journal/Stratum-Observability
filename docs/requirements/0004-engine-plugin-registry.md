@@ -12,8 +12,6 @@ plugins whose event types and publishers join publishing
 
 plugins registered
 
-Source: `src/utils/injector.ts:133`
-
 ## Requirements
 
 - 0004.1

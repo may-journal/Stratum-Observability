@@ -12,8 +12,6 @@ publish calls that resolve true only when every destination got the event
 
 publish calls
 
-Source: `src/service.ts:171`
-
 ## Requirements
 
 - 0007.1

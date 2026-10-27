@@ -12,8 +12,6 @@ New Relic Plus events saved with their checked fields and context
 
 New Relic Plus events published
 
-Source: `src/plugins/new-relic-plus/index.ts:24`
-
 ## Requirements
 
 - 0121.1

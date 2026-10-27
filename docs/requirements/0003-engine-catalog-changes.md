@@ -12,8 +12,6 @@ run-time catalog changes that publishing reflects
 
 run-time catalog changes
 
-Source: `src/utils/catalog.ts:228`
-
 ## Requirements
 
 - 0003.1

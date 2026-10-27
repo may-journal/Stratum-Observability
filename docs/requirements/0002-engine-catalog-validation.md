@@ -12,8 +12,6 @@ malformed catalog items held back with an error
 
 malformed catalog items registered
 
-Source: `src/utils/catalog.ts:139`
-
 ## Requirements
 
 - 0002.1

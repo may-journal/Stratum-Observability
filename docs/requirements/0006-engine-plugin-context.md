@@ -12,8 +12,6 @@ context keys accepted that the plugin declares
 
 context keys set
 
-Source: `src/base/plugin.ts:95`
-
 ## Requirements
 
 - 0006.1
