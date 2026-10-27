@@ -1,7 +1,3 @@
----
-relatedConfigurations: ["../../vitest.config.mts"]
----
-
 # 0101 Browser Console Output
 
 ## Why
@@ -15,8 +11,6 @@ events logged as one console line
 -
 
 events published with the console plugin
-
-Source: `src/plugins/browser-console/publisher.ts:46`
 
 ## Requirements
 

@@ -1,7 +1,3 @@
----
-relatedConfigurations: ["../../vitest.config.mts"]
----
-
 # 0001 Install and Construct
 
 ## Why
@@ -15,8 +11,6 @@ apps whose service reports the product and session it was built for
 -
 
 apps that construct a service
-
-Source: `src/service.ts:74`
 
 ## Requirements
 

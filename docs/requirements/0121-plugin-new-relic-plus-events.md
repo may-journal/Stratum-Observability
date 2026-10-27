@@ -1,7 +1,3 @@
----
-relatedConfigurations: ["../../vitest.config.mts"]
----
-
 # 0121 New Relic Plus Events
 
 ## Why
@@ -15,8 +11,6 @@ New Relic Plus events saved with their checked fields and context
 -
 
 New Relic Plus events published
-
-Source: `src/plugins/new-relic-plus/index.ts:24`
 
 ## Requirements
 

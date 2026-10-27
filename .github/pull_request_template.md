@@ -1,9 +1,3 @@
-<!--
----
-fitnessFunctions: ['markdown-front-matter']
----
--->
-
 #### 📣 For new features and bugfixes, please create an issue first
 
 #### ✔️ Checklist

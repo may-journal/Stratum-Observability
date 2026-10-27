@@ -1,7 +1,3 @@
----
-relatedConfigurations: ["../../vitest.config.mts"]
----
-
 # 0111 New Relic Interactions
 
 ## Why
@@ -15,8 +11,6 @@ events saved as one New Relic interaction
 -
 
 events published with the New Relic plugin on a page running the agent
-
-Source: `src/plugins/new-relic/publisher.ts:135`
 
 ## Requirements
 

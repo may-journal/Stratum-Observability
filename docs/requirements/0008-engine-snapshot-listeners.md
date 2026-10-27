@@ -1,7 +1,3 @@
----
-relatedConfigurations: ["../../vitest.config.mts"]
----
-
 # 0008 Snapshot Listeners
 
 ## Why
@@ -15,8 +11,6 @@ published events each listener receives
 -
 
 published events
-
-Source: `src/service.ts:221`
 
 ## Requirements
 

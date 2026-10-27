@@ -1,8 +1,3 @@
----
-# Release history, judged by the changelog checks
-fitnessFunctions: ["changelog"]
----
-
 # Changelog
 
 ## Unreleased

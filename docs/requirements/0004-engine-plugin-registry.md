@@ -1,7 +1,3 @@
----
-relatedConfigurations: ["../../vitest.config.mts"]
----
-
 # 0004 Plugin Registry
 
 ## Why
@@ -15,8 +11,6 @@ plugins whose event types and publishers join publishing
 -
 
 plugins registered
-
-Source: `src/utils/injector.ts:133`
 
 ## Requirements
 

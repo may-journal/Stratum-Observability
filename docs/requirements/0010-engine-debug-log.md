@@ -1,7 +1,3 @@
----
-relatedConfigurations: ["../../vitest.config.mts"]
----
-
 # 0010 Debug Log
 
 ## Why
@@ -15,8 +11,6 @@ debug lines shown only while the tab's debug flag is on
 -
 
 debug lines Stratum writes
-
-Source: `src/utils/env.ts:100`
 
 ## Requirements
 

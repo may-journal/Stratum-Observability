@@ -1,7 +1,3 @@
----
-relatedConfigurations: ["../../vitest.config.mts"]
----
-
 # 0007 Publish Events by Key
 
 ## Why
@@ -15,8 +11,6 @@ publish calls that resolve true only when every destination got the event
 -
 
 publish calls
-
-Source: `src/service.ts:171`
 
 ## Requirements
 

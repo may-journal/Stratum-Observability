@@ -1,7 +1,3 @@
----
-relatedConfigurations: ["../../vitest.config.mts"]
----
-
 # 0006 Plugin Context
 
 ## Why
@@ -15,8 +11,6 @@ context keys accepted that the plugin declares
 -
 
 context keys set
-
-Source: `src/base/plugin.ts:95`
 
 ## Requirements
 

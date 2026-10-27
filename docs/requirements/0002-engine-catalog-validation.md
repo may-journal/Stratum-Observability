@@ -1,7 +1,3 @@
----
-relatedConfigurations: ["../../vitest.config.mts"]
----
-
 # 0002 Catalog Validation
 
 ## Why
@@ -15,8 +11,6 @@ malformed catalog items held back with an error
 -
 
 malformed catalog items registered
-
-Source: `src/utils/catalog.ts:139`
 
 ## Requirements
 

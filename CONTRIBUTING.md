@@ -1,7 +1,3 @@
----
-fitnessFunctions: ["markdown-front-matter"]
----
-
 # Contributions
 
 We love to hear feedback from the community. We encourage developers to contribute bugfixes, feature requests, and new plugins whenever possible.

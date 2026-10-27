@@ -1,7 +1,3 @@
----
-relatedConfigurations: ["../../vitest.config.mts"]
----
-
 # 0003 Catalog Identity and Changes
 
 ## Why
@@ -15,8 +11,6 @@ run-time catalog changes that publishing reflects
 -
 
 run-time catalog changes
-
-Source: `src/utils/catalog.ts:228`
 
 ## Requirements
 
