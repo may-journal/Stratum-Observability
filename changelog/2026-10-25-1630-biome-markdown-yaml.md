@@ -1,8 +1,3 @@
----
-# The changelog check folds this entry into CHANGELOG.md
-fitnessFunctions: ["changelog"]
----
-
 ### 2026.10.25.1630
 
 - build(deps): Require `@biomejs/biome` 2.6.3 or later, and drop the Markdown formatter switch-off and the single-quote YAML style from `biome.jsonc`.

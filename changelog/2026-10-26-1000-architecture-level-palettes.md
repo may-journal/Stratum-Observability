@@ -1,8 +1,3 @@
----
-# The changelog check folds this entry into CHANGELOG.md
-fitnessFunctions: ["changelog"]
----
-
 ### 2026.10.26.1000
 
 > Each architecture view takes its level's palette, so fitness 1.31 passes.

@@ -1,7 +1,3 @@
----
-fitnessFunctions: ["markdown-front-matter"]
----
-
 # Stratum Observability | standardization as you publish
 
 A no-dependency library defining a framework for sending analytics and observability events in a standardized format.
