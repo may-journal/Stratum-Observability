@@ -1,5 +1,7 @@
 # Components
 
+Level 3 splits the package into the service, the core and the bundled plugins. Up: [Containers](02-containers.md). Down: [Code](04-code.md).
+
 ```mermaid
 C4Component
     title Stratum package
@@ -66,4 +68,4 @@ Numbers on nodes and letters on arrows match the callout table. Every product so
 | B   | The service registers catalogs and plugins through the injector, builds snapshots, and reads global plugins.                                                                                                                                                                                                                                                              | Plugin wiring lives in one method.                                                                |
 | C   | Plugins extend the base classes and read the public types; the New Relic publisher also uses a general helper.                                                                                                                                                                                                                                                            | Same contract as any custom plugin.                                                               |
 | D   | Reuses `NewRelicPublisher` and the shared `NEW_RELIC_PLUGIN_NAME`.                                                                                                                                                                                                                                                                                                        | The shared name stops both plugins loading at once.                                               |
-| E   | Utilities build models and type every value; the base classes reach the injector and the snapshot builder.                                                                                                                                                                                                                                                                | These are the back references worth cutting.                                                      |
+| E   | Utilities build models and type every value; the base classes reach the injector and the event helpers.                                                                                                                                                                                                                                                                   | These are the back references worth cutting.                                                      |
