@@ -1,5 +1,7 @@
 # System Context
 
+Stratum validates app events once and sends them to every destination an app chooses. Down: [Containers](02-containers.md). Start: [Architecture](README.md).
+
 ```mermaid
 C4Context
     title Stratum Observability

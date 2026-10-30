@@ -281,4 +281,4 @@ We welcome and appreciate your contributions!
 
 If you have suggestions or find a bug, please [open an issue](https://github.com/capitalone/Stratum-Observability/issues/new/choose).
 
-If you want to contribute, visit the [contributing page](https://github.com/capitalone/Stratum-Observability/blob/main/CONTRIBUTING.md).
+If you want to contribute, visit the [contributing page](https://github.com/capitalone/Stratum-Observability/blob/main/CONTRIBUTING.md). To learn how Stratum fits together, read the [architecture guide](docs/architecture/README.md).

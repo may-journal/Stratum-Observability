@@ -1,5 +1,7 @@
 # Code
 
+Level 4 shows the classes behind the components, then the two flows that matter: publishing and plugin registration. Up: [Components](03-components.md). Start: [Architecture](README.md).
+
 ```mermaid
 classDiagram
     class StratumService["1 StratumService"] {
@@ -9,9 +11,13 @@ classDiagram
         +injector
         +addCatalog(UserDefinedCatalogOptions~T, K~) RegisteredStratumCatalog~T, K~
         +addPlugin(GenericPlugin | GenericPlugin[])
+        +removeCatalog(string)
         +publish(CatalogKey, Partial~UserDefinedEventOptions~) Promise~boolean~
         +publishFromCatalog(string, CatalogKey, Partial~UserDefinedEventOptions~) Promise~boolean~
+        +addSnapshotListener(StratumSnapshotListenerFn) boolean
         +startAbTest(AbTestSchema) AbTest
+        +endAbTest(string | AbTest)
+        +endAllAbTests()
     }
     class RegisteredStratumCatalog["2 RegisteredStratumCatalog"] {
         +id
@@ -42,11 +48,17 @@ classDiagram
         +publishers
         +eventTypes
         +context
+        +options
+        +useGlobalContextPrefix
+        +globalContextPrefix
+        +setContext(K, T[K]) boolean
         +onRegister(Injector, PluginHooks)
     }
     class BasePublisher["6 BasePublisher"] {
         +name
+        +pluginName
         +acceptedEventModels
+        +onInitialize(Injector)
         +shouldPublishEvent(BaseEventModel) boolean
         +isAvailable(BaseEventModel, StratumSnapshot) Promise~boolean~
         +getEventOutput(BaseEventModel, StratumSnapshot) T
@@ -150,7 +162,7 @@ Numbers on classes and letters on relationships match the callout table.
 | 3   | [Source](../../src/utils/injector.ts#L16-L184); [`registerPlugin`](../../src/utils/injector.ts#L133-L168) returns `{ publishers }` and skips duplicates. | Plugin, event type, and event ID registry.                        |
 | 4   | [Source](../../src/base/model.ts#L11-L143); the constructor clones the item and validates ID, uniqueness, and description.                               | Default model for the `base` event type.                          |
 | 5   | [Source](../../src/base/plugin.ts#L13-L125); `setContext` only changes keys the context already has.                                                     | The shape every plugin declares.                                  |
-| 6   | [Source](../../src/base/publisher.ts#L13-L86); `shouldPublishEvent` accepts only models listed in `acceptedEventModels`.                                 | The four steps every destination implements.                      |
+| 6   | [Source](../../src/base/publisher.ts#L13-L86); `shouldPublishEvent` accepts only models listed in `acceptedEventModels`.                                 | Three required steps, plus a default model filter.                |
 | 7   | [Source](../../src/utils/event.ts#L64-L121); prefixes each plugin's context keys unless the plugin opts out.                                             | A free function, so it is drawn as a node with no members.        |
 | 8   | [Source](../../src/utils/ab-test-manager.ts#L9-L119); IDs come from a static counter, `t1`, `t2`, and so on.                                             | Running tests plus per-publish extras.                            |
 | 9   | [Source](../../src/plugins/new-relic/index.ts#L12-L15); named `newRelic`, no event types.                                                                | Accepts every event type.                                         |
@@ -188,7 +200,7 @@ Numbers on classes and letters on relationships match the callout table.
 | X   | Checks its ID against the registered IDs.                                                                                                                | A duplicate ID fails validation.                                  |
 | Y   | Declares the plugin's publishers.                                                                                                                        | A plugin bundles its destinations.                                |
 | Z   | Declares the plugin's event types and their models.                                                                                                      | Event types map to model classes.                                 |
-| AA  | `onRegister` receives the injector.                                                                                                                      | Plugins read shared state when added.                             |
+| AA  | `onRegister` receives the injector and a hook to `addCatalog`.                                                                                           | Plugins read shared state and may register their own catalog.     |
 | BB  | Lists accepted models and takes the event model on each step.                                                                                            | Each publisher picks the models it handles.                       |
 | CC  | `onInitialize` receives the injector.                                                                                                                    | Publishers read shared state when registered.                     |
 | DD  | Takes the event model when mapping output.                                                                                                               | Same signature as the base publisher.                             |
@@ -198,6 +210,49 @@ Numbers on classes and letters on relationships match the callout table.
 | HH  | Reads the event model's data, ID, and type.                                                                                                              | The event part of the snapshot.                                   |
 | II  | Reads the catalog's ID and metadata.                                                                                                                     | Every event names its catalog.                                    |
 | JJ  | Reads each publisher's plugin name to pick its context and options.                                                                                      | Each publisher gets its own plugin's view.                        |
+
+## Publish flow
+
+One `publish` call, in order. Each publisher runs in its own microtask, so one slow destination never blocks the rest.
+
+```mermaid
+sequenceDiagram
+    participant App as Host app
+    participant Svc as StratumService
+    participant Snap as generateStratumSnapshot
+    participant Pub as BasePublisher
+    App->>Svc: publish(key, options)
+    Svc->>Svc: find the valid model, or resolve false
+    Svc->>Pub: shouldPublishEvent(model)
+    Svc->>Snap: build the snapshot
+    Svc-->>App: snapshot listeners called in a microtask
+    loop each accepting publisher
+        Svc->>Pub: isAvailable(model, snapshot)
+        Pub-->>Svc: true or false
+        Svc->>Pub: getEventOutput(model, snapshot)
+        Svc->>Pub: publish(output, snapshot)
+    end
+    Svc-->>App: true, or false if any publisher was unavailable or threw
+```
+
+## Plugin registration
+
+`addPlugin` runs once per plugin, from the constructor or later. A duplicate plugin name is skipped.
+
+```mermaid
+sequenceDiagram
+    participant Svc as StratumService
+    participant Inj as Injector
+    participant Pub as BasePublisher
+    participant Plg as BasePlugin
+    Svc->>Inj: registerPlugin(plugin)
+    Inj-->>Svc: the plugin's publishers
+    loop each publisher
+        Svc->>Pub: onInitialize(injector)
+    end
+    Svc->>Plg: onRegister(injector, hooks)
+    Plg->>Svc: hooks.addCatalog(options), optional
+```
 
 ## Publish outcomes
 
