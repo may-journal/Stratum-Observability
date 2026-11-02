@@ -7,19 +7,8 @@ import { NewRelicApiResponseEventModel, NewRelicErrorEventModel, NewRelicEventMo
 import type { NewRelicPluginOptions } from './types';
 
 /**
- * New Relic+ plugin
- *
- * This plugin is an extension of the base New Relic plugin that
- * adds support for defining custom NR-only event types within your
- * Stratum catalog in addition to streaming interaction events to New Relic.
- *
- * This plugin adds 3 new event types:
- *   - General NR event
- *   - API response
- *   - Error event
- *
- * Use this plugin instead of NewRelicPlugin if you would like to publish
- * application-specific New Relic events. Otherwise, use the base plugin.
+ * NewRelicPlusPlugin extends the base New Relic plugin with custom NR-only event types in your Stratum catalog.
+ * It adds general NR, API response and error event types for application-specific events, which the base plugin does not publish.
  */
 export class NewRelicPlusPlugin extends BasePlugin<PluginContext, NewRelicPluginOptions> {
   name = NEW_RELIC_PLUGIN_NAME;

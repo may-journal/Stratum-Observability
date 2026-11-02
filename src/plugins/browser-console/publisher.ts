@@ -2,7 +2,7 @@ import { type BaseEventModel, BasePublisher } from '../../base';
 import type { StratumSnapshot } from '../../types';
 
 /**
- * Browser Console Publisher
+ * BrowserConsolePublisher logs stringified event data to the browser console.
  */
 export class BrowserConsolePublisher extends BasePublisher {
   name = 'browserConsole';

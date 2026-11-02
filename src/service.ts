@@ -17,21 +17,8 @@ import { normalizeToArray } from './utils/general';
 import { Injector } from './utils/injector';
 
 /**
- * The main Stratum service class. This class is the main entry point for the
- * functionality within this package.
- *
- * The functionality encapsulated by this class can be summarized as follows:
- *   1. Starts default catalog validation on initialization and creates event model instances
- *   2. Loads and instantiates publishers on initialization
- *   3. Store global variables and global stratum context info
- *   4. Exposes functions for application to publish from catalogs and register plugins
- *
- * This class is designed to operate in a singleton-scope. However, this is dependent on use case.
- * We recommend that applications use a single reference to the same StratumService instance
- * across their codebase to avoid syncing data across service instances.
- *
- * Different instances of the StratumService are independent from one another which is useful
- * for testing and implementation.
+ * StratumService is the main entry point for the functionality within this package.
+ * It is designed for singleton scope, so applications should share one instance across their codebase, while separate instances stay independent for testing.
  */
 export class StratumService {
   /**
@@ -60,20 +47,14 @@ export class StratumService {
   readonly injector: Injector;
 
   /**
-   * Initializes the StratumService class. On initialization, the following
-   * processes occur:
-   *  1. Set up default state for the service including global context data
-   *  1. Register plugins, if any
-   *  3. Register the default catalog, if any
-   *
-   * Typically, this is done using a singleton pattern. In most cases, you should have one
-   * instance of the service per application.
-   *
+   * Initializes the StratumService class, ideally as a single instance per application.
    * @param {StratumServiceOptions} options - Incoming options used to initialize StratumService
    */
   constructor(options: StratumServiceOptions) {
+    // Set up default state for the service, including global context data.
     this.injector = new Injector(options.productName, options.productVersion);
 
+    // Register the plugins passed in the options, if any.
     if (options.plugins) {
       this.addPlugin(options.plugins);
     }
@@ -82,7 +63,7 @@ export class StratumService {
     const globalPlugins = getGlobalPlugins();
     if (globalPlugins?.length > 0) {
       this.addPlugin(globalPlugins);
-    } // if
+    }
 
     // Register the default catalog
     if (options.catalog) {
@@ -91,32 +72,23 @@ export class StratumService {
   }
 
   /**
-   * Register a new catalog within the service or return an existing catalog.
-   * On registration, the catalog validation and conversion into models occurs.
-   * The service will create a composite catalog id for the catalog based on
-   * the provided metadata.
-   *
-   * If a catalog with same id already exists, the provided items are added to
-   * the existing catalog via addItems and that catalog is returned.
-   *
-   * Returns the registered catalog instance for direct publishing via
-   * `catalog.publish(key)`
-   *
-   * Note: catalog item ids do not need to be unique across catalogs.
-   *
+   * Register a new catalog within the service, validating and converting its items into models, or return the existing catalog.
    * @param {UserDefinedCatalogOptions<T, K>} options - Catalog items and optional catalog version
    * @return {RegisteredStratumCatalog<T, K>} The registered catalog instance
    */
   addCatalog<T extends CatalogEvent = CatalogEvent, K extends CatalogKey = CatalogKey>(
     options: UserDefinedCatalogOptions<T, K>
   ): RegisteredStratumCatalog<T, K> {
+    // The service creates a composite catalog id from the provided metadata, and item ids need not be unique across catalogs.
     const id = generateCatalogId(options, this.injector.productName, this.injector.productVersion);
+    // A catalog with the same id gets the provided items through addItems and is returned.
     if (this.catalogs[id]) {
       const existing = this.catalogs[id] as RegisteredStratumCatalog<T, K>;
       existing.addItems(options.items);
       return existing;
     }
 
+    // The returned catalog instance supports direct publishing through `catalog.publish(key)`.
     const catalog = new RegisteredStratumCatalog(id, options, this.injector, this.publishFromCatalog.bind(this));
     this.catalogs[id] = catalog;
     return catalog;
@@ -138,9 +110,7 @@ export class StratumService {
   }
 
   /**
-   * Register a plugin within stratum.
-   * This function registers the new plugins' publishers and event types.
-   *
+   * Register a plugin within stratum, including the plugin's publishers and event types.
    * @param {GenericPlugin | GenericPlugin[]} plugins - Incoming plugins to register in the service
    */
   addPlugin(plugins: GenericPlugin | GenericPlugin[]) {
@@ -156,17 +126,10 @@ export class StratumService {
   }
 
   /**
-   * Publishes valid catalog items StratumService given a catalog key and
-   * (optional) context-specific event options.
-   *
-   * This function is syntactic sugar for `publishFromCatalog` where the
-   * catalog is implied to be the default catalog. If there is no
-   * default catalog, this function will fail.
-   *
+   * Publishes from the default catalog as sugar for `publishFromCatalog`, and fails when no default catalog exists.
    * @param {CatalogKey} key - Key within the default catalog
-   * @param {Partial<UserDefinedEventOptions>} options - Additional options to apply to the specific publish action
-   * @return {Promise<boolean>} - This promise will always resolve with a boolean representing
-   *  the success of the publisher
+   * @param {Partial<UserDefinedEventOptions>} options - Extra publish options
+   * @return {Promise<boolean>} - Always resolves with publisher success
    */
   async publish(key: CatalogKey, options?: Partial<UserDefinedEventOptions>): Promise<boolean> {
     const catalogId = this.defaultCatalog?.id ?? '';
@@ -174,25 +137,11 @@ export class StratumService {
   }
 
   /**
-   * Publishes valid catalog items StratumService given a catalog key and
-   * (optional) context-specific event options.
-   *
-   * The model corresponding to the key provided is sent to sequentially to each model
-   * in the publishers list, queuing a separate microtask for each publisher.
-   *
-   * Logic for each publisher:
-   * 1. Check `shouldPublishEvent`. This allows publishers to implement their own
-   * custom logic to filter event models based on the underlying model data. A microtask is not
-   * queued if this check does not pass.
-   * 2. Check `isAvailable`. If unavailable, the publisher is skipped.
-   * 3. Map the model content to a format that can be sent to the publisher.
-   * 3. Send mapped content to the publisher's `publish` method.
-   *
-   * @param {string} catalogId - Id of catalog to publish search for the key from
-   * @param {CatalogKey} key - Key of catalog item to publish
-   * @param {Partial<UserDefinedEventOptions>} options - Additional options to apply on publish
-   * @return {Promise<boolean>} - This promise will always resolve with a boolean representing
-   *  the success of the publisher
+   * Publishes the valid catalog item for a key to each publisher, queuing a separate microtask per publisher.
+   * @param {string} catalogId - Catalog id
+   * @param {CatalogKey} key - Item key
+   * @param {Partial<UserDefinedEventOptions>} options - Extra options
+   * @return {Promise<boolean>} - Always resolves with publisher success
    */
   async publishFromCatalog(
     catalogId: string,
@@ -207,7 +156,7 @@ export class StratumService {
 
     const model = catalog.validModels[key];
 
-    // Determine event publishers
+    // Publishers filter event models with `shouldPublishEvent`, and no microtask is queued when the check fails.
     const publishers = this.publishers.filter((publisher) => publisher.shouldPublishEvent(model));
 
     // Generate an atomic Stratum snapshot
@@ -233,9 +182,8 @@ export class StratumService {
     }
 
     /**
-     * Wait for all promises to resolve/reject. In this case we're looping over the
-     * registered publishers to queue up tasks, which either resolves with `true` given
-     * a success or `false` given a failure.
+     * Wait for all promises to settle after queuing a task for each registered publisher.
+     * The result resolves with `true` given a success or `false` given a failure.
      */
     return Promise.all(
       publishers.map(
@@ -245,6 +193,7 @@ export class StratumService {
               const internalSnapshot = cloneStratumSnapshot(snapshot);
               try {
                 internalSnapshot.eventOptions = populateDynamicEventOptions(publisher, options);
+                // An unavailable publisher is skipped, otherwise the mapped model content goes to its `publish` method.
                 const isAvailable = await publisher.isAvailable(model, internalSnapshot);
                 if (isAvailable) {
                   const content = publisher.getEventOutput(model, internalSnapshot);
@@ -269,15 +218,8 @@ export class StratumService {
   }
 
   /**
-   * Shortcut functions
-   */
-
-  /**
-   * Helper function to add a Stratum snapshot listener callback
-   * function to the globalThis object, if available.
-   *
-   * The provided function will be executed each time the
-   * StratumService instance publishes an event.
+   * Helper function to add a Stratum snapshot listener callback to the globalThis object, if available.
+   * The provided function runs each time the StratumService instance publishes an event.
    */
   addSnapshotListener(fn: StratumSnapshotListenerFn): boolean {
     return addStratumSnapshotListener(this.id, fn);

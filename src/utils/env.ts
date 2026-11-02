@@ -3,11 +3,7 @@ import type { StratumSnapshotListenerFn } from '../types';
 import { isDefined } from './general';
 
 /**
- * Helper function to append a given listener callback function to globalThis (or provided).
- * Expected keys:
- *  - `stratum_config_${STRATUM_ID}` - if listener should be scoped to a given application
- *  - `stratum_global` - if listener should be called on any stratum instance available
- *
+ * Helper function to append a listener callback to globalThis (or the provided host) under `stratum_config_${STRATUM_ID}` for one application or `stratum_global` for any instance.
  * @return {boolean} Returns whether the attempt to set the provided function was successful
  */
 // biome-ignore lint/suspicious/noExplicitAny: legacy support
@@ -30,15 +26,7 @@ function _instantiateStratumSnapshotListener(key: string, fn: StratumSnapshotLis
 }
 
 /**
- * Function to add a Stratum snapshot listener callback
- * function to a parent.
- *
- * The provided function will be executed each time a
- * StratumService with a matching id publishes an event.
- *
- * Using this function ensures that any other listeners added in
- * parallel will not be accidentally overwritten.
- *
+ * Function to add a Stratum snapshot listener callback to a parent, run when a StratumService with a matching id publishes, without overwriting others.
  * @return {boolean} Returns whether the attempt to set the provided function was successful
  */
 // biome-ignore lint/suspicious/noExplicitAny: legacy support
@@ -47,15 +35,7 @@ export function addStratumSnapshotListener(id: string, fn: StratumSnapshotListen
 }
 
 /**
- * Global function to add a Stratum snapshot listener callback
- * function to the global parent, if available.
- *
- * The provided function will be executed any time any event is
- * published within the specified parent (or globalThis, if unspecified)
- *
- * Using this function ensures that any other listeners added in
- * parallel will not be accidentally overwritten.
- *
+ * Global function to add a Stratum snapshot listener callback to the global parent, run on any published event, without overwriting parallel listeners.
  * @return {boolean} Returns whether the attempt to set the provided function was successful
  */
 // biome-ignore lint/suspicious/noExplicitAny: legacy support
@@ -64,12 +44,8 @@ export function addGlobalStratumSnapshotListener(fn: StratumSnapshotListenerFn, 
 }
 
 /**
- * Function to generate a new id using Stratum's default
- * session id logic.
- *
- * Returns a UUID, preferring a session storage value if present.
- * Otherwise a random uuid is generated and added to session storage
- * for future retrievals.
+ * Function to generate a new id using Stratum's default session id logic, preferring a stored session value.
+ * Without one, a random uuid is generated and kept in session storage for future retrievals.
  */
 export function generateDefaultSessionId(): string {
   let id = '';
@@ -105,11 +81,7 @@ export class Logger {
 }
 
 /**
- * Utility function to check if the Stratum debug key is
- * set in session storage.
- *
- * If debug mode is enabled, logging output will be sent to the
- * console and custom event listeners will be enabled.
+ * Utility function to check if the Stratum debug key is set in session storage, which enables console logging and custom event listeners.
  *
  * @return {boolean} Flag indicating if debug mode is enabled.
  */
@@ -122,8 +94,7 @@ export function debugModeEnabled(): boolean {
 }
 
 /**
- * Utility function to return a random uuid. Returns a
- * nil uuid if generation fails
+ * Utility function to return a random uuid, or a nil uuid if generation fails.
  *
  * @return {string} Random or nil uuid string
  */

@@ -3,7 +3,7 @@ import type { PluginFactory } from '../../types';
 import { BrowserConsolePublisher } from './publisher';
 
 /**
- * Browser Console plugin
+ * BrowserConsolePlugin logs stringified catalog event data to the browser console.
  */
 export class BrowserConsolePlugin extends BasePlugin<never, never> {
   name = 'browserConsole';
