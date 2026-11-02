@@ -14,18 +14,18 @@ export function getGlobalPlugins(): GenericPlugin[] {
 /**
  * Adds a plugin to the global namespace
  * @param plugin - GenericPlugin - Plugin to add
- * @returns - GenericPlugin[] - Returns the full list of global plugins after adding.
+ * @returns - GenericPlugin[] - Full list of global plugins after adding
  */
 export function addGlobalPlugin(plugin: GenericPlugin): GenericPlugin[] {
   // initialize stratum namespace if not exist
   if (!g[GLOBAL_LISTENER_KEY]) {
     g[GLOBAL_LISTENER_KEY] = {};
-  } // if
+  }
 
   // initialize stratum globalPlugins if not exists
   if (!g[GLOBAL_LISTENER_KEY].globalPlugins) {
     g[GLOBAL_LISTENER_KEY].globalPlugins = [];
-  } // if
+  }
 
   g[GLOBAL_LISTENER_KEY].globalPlugins.push(plugin);
 
@@ -33,9 +33,9 @@ export function addGlobalPlugin(plugin: GenericPlugin): GenericPlugin[] {
 }
 
 /**
- * Removes a Stratum plugin from the global namespace. If there are duplicate plugin names, it will only remove the first one that was added.
- * @param pluginName - string - Name of plugin to remove from global plugins list.
- * @returns - GenericPlugin[] - Returns the full list of global plugins after removal.
+ * Removes a Stratum plugin from the global namespace, only the first one added when plugin names are duplicated.
+ * @param pluginName - string - Name of plugin to remove from global plugins list
+ * @returns - GenericPlugin[] - Returns the full list of global plugins after removal
  */
 export function removeGlobalPlugin(pluginName: string) {
   if (pluginName && g[GLOBAL_LISTENER_KEY]?.globalPlugins?.length > 0) {
@@ -43,8 +43,8 @@ export function removeGlobalPlugin(pluginName: string) {
 
     if (idx > -1) {
       g[GLOBAL_LISTENER_KEY].globalPlugins.splice(idx, 1);
-    } // if
-  } // if
+    }
+  }
 
   return getGlobalPlugins();
 }

@@ -6,7 +6,7 @@ import { readdirSync, statSync } from 'node:fs';
 const buildDir = 'temp';
 const compressedFiles = 'artifact-*.tar.gz';
 
-// Helpers
+// The helpers below measure, compress and print the sizes of the built bundles.
 
 const getSize = (path) => {
   let size = 0;
@@ -44,7 +44,7 @@ const displaySize = (n) => {
 const getPlugins = () =>
   readdirSync(`${buildDir}/plugins`).filter((f) => statSync(`${buildDir}/plugins/${f}`).isDirectory());
 
-// Execute
+// This function runs the analysis immediately when the script starts.
 (function () {
   cleanup();
 

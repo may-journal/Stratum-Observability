@@ -1,4 +1,4 @@
-// @vitest-environment node
+// This test imports the rollup config, so it needs the Node environment from @vitest-environment node
 import { expect, it } from 'vitest';
 
 it('0001.8 injects the package version without build metadata', async () => {

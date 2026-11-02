@@ -4,9 +4,7 @@ import { NEW_RELIC_PLUGIN_NAME } from './constants';
 import { NewRelicPublisher } from './publisher';
 
 /**
- * New Relic plugin
- *
- * Use this plugin to send existing Stratum Catalog events to New Relic.
+ * NewRelicPlugin sends existing Stratum Catalog events to New Relic.
  * This enables near real-time dashboards and alerting.
  */
 export class NewRelicPlugin extends BasePlugin<never, never> {

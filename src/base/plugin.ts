@@ -12,11 +12,8 @@ import type { BasePublisher } from './publisher';
  */
 export abstract class BasePlugin<T extends PluginContext, U extends PluginOptions> {
   /**
-   * Short name of the plugin. This value must be unique
-   * for all plugins passed into the service instance.
-   *
-   * This value is used to specify custom dynamic data to
-   * pass to plugin publishers via EventOptions.pluginData.
+   * Short name of the plugin, unique among all plugins passed into the service instance.
+   * It also specifies custom dynamic data to pass to plugin publishers via EventOptions.pluginData.
    */
   abstract name: string;
 
@@ -28,19 +25,13 @@ export abstract class BasePlugin<T extends PluginContext, U extends PluginOption
   publishers?: BasePublisher[];
 
   /**
-   * Mapping of eventTypes strings in catalog items to a
-   * respective event model.
-   *
-   * If defined as:
+   * Mapping of eventTypes strings in catalog items to a respective event model.
+   * Defined as the example below, any catalog item with `eventType: 'simple'` is registered in Stratum as a SimpleEventModel instance.
    * ```
    * {
    *   simple: SimpleEventModel
    * }
    * ```
-   *
-   * then any catalog item with `eventType: 'simple'` will
-   * will be registered in Stratum as a SimpleEventModel
-   * instance.
    */
   // biome-ignore lint/suspicious/noExplicitAny: legacy support
   eventTypes?: { [key: string]: typeof BaseEventModel<any> };
@@ -63,26 +54,14 @@ export abstract class BasePlugin<T extends PluginContext, U extends PluginOption
   context!: T;
 
   /**
-   * Flag to indicate whether the plugin should apply a prefix
-   * to all context keys when loaded into the global context
-   * object at publish.
-   *
-   * The global context is a collection of all
-   * plugin context vars active on the stratum
-   * service instance.
-   *
-   * Plugins may use this data to be context-aware even when a
-   * specific plugin does not apply to the event being published.
+   * Flag to indicate whether the plugin should apply a prefix to all context keys loaded into the global context at publish.
+   * The global context collects all plugin context vars active on the stratum service instance, so plugins stay context-aware.
    */
   useGlobalContextPrefix = true;
 
   /**
-   * If useGlobalContextPrefix is true, this value defines
-   * the prefix to apply to all context keys.
-   *
-   * If undefined (default), the plugin's name will be used.
-   *
-   * Prefixes are delimited by an underscore when applied.
+   * If useGlobalContextPrefix is true, this value defines the prefix to apply to all context keys.
+   * When undefined, the plugin's name is the prefix, delimited from the key by an underscore.
    */
   globalContextPrefix: string | undefined;
 
@@ -90,7 +69,7 @@ export abstract class BasePlugin<T extends PluginContext, U extends PluginOption
    * Helper method to set particular context var value stored by the plugin.
    * @param {K} key - Key of variable name
    * @param {T[K]} value - Value to apply to variable
-   * @return {boolean} Flag indicating whether the variable was set successfully
+   * @return {boolean} Whether the variable was set successfully
    */
   setContext<K extends keyof T>(key: K, value: T[K]): boolean {
     if (!this.context || !(key in this.context)) {
@@ -112,9 +91,7 @@ export abstract class BasePlugin<T extends PluginContext, U extends PluginOption
   }
 
   /**
-   * Hook to execute when the plugin instance is registered by the
-   * StratumService. Can be used to provide additional context
-   * to the plugin or to perform any additional setup.
+   * Hook to execute when the StratumService registers the plugin instance, to provide additional context or setup.
    *
    * @property {Injector} injector - Stratum service injector instance
    * @property {PluginHooks} hooks - Scoped service capabilities

@@ -45,11 +45,8 @@ export class NewRelicPublisher extends BasePublisher {
   }
 
   /**
-   * Helper method to get the NewRelic object from the window.
-   * This object should be added by the host application for consumption
-   * by lower-level applications and MFEs.
-   *
-   * If the window does not exist, then return undefined.
+   * Helper method to get the NewRelic object from the window, or undefined if the window does not exist.
+   * The host application should add this object for consumption by lower-level applications and MFEs.
    */
   protected get publisher() {
     if (typeof window !== 'undefined') {
@@ -61,16 +58,11 @@ export class NewRelicPublisher extends BasePublisher {
 
   /**
    * Helper method to get the default interaction event from the publisher.
-   * This method defines the initial browser interaction and the default
-   * attributes should be populated on all New Relic events,
-   * independent of the event type.
+   * This method defines the initial browser interaction and the default attributes for all New Relic events.
    */
   protected getDefaultInteraction(snapshot: StratumSnapshot) {
     /**
-     * End current interaction, if any exists.
-     * This is so we don't accidentally overwrite an existing
-     * interaction if New Relic has not ended it automatically
-     *
+     * End the current interaction, if any exists, so we never overwrite one New Relic has not ended automatically.
      * See also: https://forum.newrelic.com/s/hubtopic/aAX8W0000008ZIqWAM/how-do-we-track-start-and-stop-in-browser-spa-interactions
      */
     this.publisher.interaction().end();
@@ -98,14 +90,8 @@ export class NewRelicPublisher extends BasePublisher {
   }
 
   /**
-   * Reach into all plugins and set the context data as attributes.
-   *
-   * This function will apply the context data for ALL registered plugins, regardless
-   * of if the plugin is associated being published.
-   *
-   * NOTE: An edge case exists where two plugins with identical context keys collide.
-   * In this case, only one attribute will be set on the NR event and the data is
-   * ambiguous (most likely dependent on the order the plugins are registered).
+   * Reach into all plugins and set the context data as attributes, regardless of which plugin is being published.
+   * Two plugins with identical context keys collide, leaving one ambiguous attribute that most likely depends on registration order.
    */
   protected setPluginContextData(interaction: NrSpaInteraction, snapshot: StratumSnapshot) {
     Object.values(snapshot.globalContext).forEach((context) => {
@@ -127,9 +113,8 @@ export class NewRelicPublisher extends BasePublisher {
   }
 
   /**
-   * Given a set of event data, begin the interaction tracking, set
-   * related attributes and save BrowserInteraction event to
-   * New Relic based off the default New Relic event.
+   * Given a set of event data, begin the interaction tracking and set related attributes.
+   * It saves a BrowserInteraction event to New Relic based off the default New Relic event.
    */
   // biome-ignore lint/suspicious/noExplicitAny: legacy support
   async publish(content: any, snapshot: StratumSnapshot) {

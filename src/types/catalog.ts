@@ -9,12 +9,8 @@ import type { AbTestSchema } from './ab-test';
 export type EventId = number | string;
 
 /**
- * Union of types that can be used to reference items
- * within a stratum catalog.
- *
- * Object keys are coerced to strings, so even if
- * the key is defined and referenced numerically,
- * the actual key values stored will be a string.
+ * Union of types that can be used to reference items within a stratum catalog.
+ * Object keys are coerced to strings, so numerically defined keys are stored as strings.
  */
 export type CatalogKey = number | string;
 
@@ -44,10 +40,7 @@ export interface CatalogEvent<EventType extends string = string> {
 
 /**
  * Collection of CatalogEvents keyed by a CatalogKey.
- *
- * For improved type hinting, explicitly define the catalog item
- * type via the generic T. The K generic constrains the keys allowed
- * in the catalog for type-safe publishing.
+ * Define the catalog item type via the generic T for type hinting, and constrain the allowed keys via K for type-safe publishing.
  */
 export type StratumCatalog<
   T extends CatalogEvent = CatalogEvent<typeof BASE_EVENT_TYPE>,
@@ -57,9 +50,8 @@ export type StratumCatalog<
 };
 
 /**
- * List of keys associated with invalid catalog items determined during
- * validation. An item is invalid if its associated model validation
- * rules fail. The model is provided by a plugin and mapped to the event type.
+ * List of keys associated with invalid catalog items determined during validation.
+ * An item is invalid if the validation rules of its model fail, where a plugin provides the model mapped to the event type.
  */
 export type CatalogErrors = {
   /**
@@ -84,20 +76,14 @@ export interface CatalogMetadata {
   catalogVersion: string;
 
   /**
-   * The name of the component or shared library responsible for
-   * publishing a catalog's items. This can be used to denote cases where
-   * Stratum is initialized separately from the event publishing logic.
-   *
-   * If unspecified, this defaults to the productName.
+   * The name of the component or shared library responsible for publishing a catalog's items.
+   * It denotes cases where Stratum is initialized separately from the publishing logic, and defaults to the productName.
    */
   componentName: string;
 
   /**
-   * The version of the component or shared library responsible for
-   * publishing a catalog's items. This can be used to denote cases where
-   * Stratum is initialized separately from the event publishing logic.
-   *
-   * If unspecified, this defaults to the productVersion.
+   * The version of the component or shared library responsible for publishing a catalog's items.
+   * It denotes cases where Stratum is initialized separately from the publishing logic, and defaults to the productVersion.
    */
   componentVersion: string;
 }
@@ -127,9 +113,8 @@ export interface DefaultCatalogOptions<T extends CatalogEvent = CatalogEvent, K 
 }
 
 /**
- * A stratum catalog is made up of a collection of items and associated
- * catalog metadata. All fields in a catalog are required, but the metadata can
- * has default values and does not necessarily have to be defined by the user
+ * A stratum catalog is made up of a collection of items and associated catalog metadata.
+ * All fields are required, but the metadata has default values and need not be defined by the user.
  */
 export type CatalogOptions<T extends CatalogEvent = CatalogEvent, K extends CatalogKey = CatalogKey> = Required<
   UserDefinedCatalogOptions<T, K>
@@ -147,34 +132,18 @@ export interface EventOptions {
   abTestSchemas: AbTestSchema | AbTestSchema[];
 
   /**
-   * Key-value mapping of dynamic placeholder name to associated
-   * value.
+   * Key-value mapping of dynamic placeholder name to associated value.
    *
    * @example
-   * A replacement map of { 'abc123': 'xyz' } will replace all dynamic
-   * placeholders within the catalog item matching "{{abc123}}" with the given
-   * value of "xyz"
+   * A replacement map of { 'abc123': 'xyz' } replaces every "{{abc123}}" placeholder in the catalog item with "xyz"
    */
   replacements: { [key: string]: EventReplacement };
 
   /**
-   * Generic catch-all for additional data to be sent to plugin
-   * events when a catalog item is published.
-   *
-   * The format of this object entries should be:
-   *    "pluginName" => \\{ pluginSpecificData \\}
-   *
-   * Note: This keyed data is only made available to publishers loaded
-   * via the plugin matching the key-value.
-   *
-   * When passed in via StratumService.publish, the data will be
-   * available via the options.data argument in the getModelOutput()
-   * function of the publisher.
-   *
-   * **Basic usage:**
-   *
-   * Initialize plugin and integrate into the service instance
+   * Generic catch-all for additional data sent to plugin events, in entries shaped "pluginName" => \\{ pluginSpecificData \\}.
+   * Passed via StratumService.publish, it reaches only publishers of the matching plugin through options.data in getModelOutput().
    * ```
+   * // Initialize the plugin and integrate it into the service instance
    * const simplePlugin = new Plugin({
    *    name: 'mySimplePluginName',
    *    publishers: new MySimplePublisher(),
@@ -184,8 +153,8 @@ export interface EventOptions {
    * })
    * ```
    *
-   * Publish catalog item and optionally pass dynamic data to publishers
    * ```
+   * // Publish the catalog item and optionally pass dynamic data to publishers
    * stratum.publish(CatalogKey.EXAMPLE_ITEM, {
    *   pluginData: {
    *      mySimplePluginName: {
@@ -195,18 +164,15 @@ export interface EventOptions {
    * })
    * ```
    *
-   * Receive dynamic data, if any, in publisher model
    * ```
+   * // Receive dynamic data, if any, in the publisher model.
+   * // Nothing guarantees the existence or format of this data, so validate it before use.
    * // In SimpleModel
    * getModelOutput(model: BaseEventModel, options?: Partial<EventOptions>) {
    *   // Expected value { foo: 'bar' }
    *   console.log(options.data);
    * }
    * ```
-   *
-   * No guarantees of the existence or format of this data are made.
-   * It's a good idea to validate the incoming data within your publisher
-   * before using it.
    */
   // biome-ignore lint/suspicious/noExplicitAny: legacy support
   pluginData: { [key: string]: any };

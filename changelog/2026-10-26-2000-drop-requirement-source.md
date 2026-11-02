@@ -1,8 +1,3 @@
----
-# The changelog check folds this entry into CHANGELOG.md
-fitnessFunctions: ["changelog"]
----
-
 ### 2026.10.26.2000
 
 - Docs: requirement docs no longer end their Measurement with a `Source:` line, which went stale whenever code moved

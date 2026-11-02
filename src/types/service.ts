@@ -27,13 +27,8 @@ export interface StratumServiceOptions {
   productVersion: string;
 
   /**
-   * Plugins to dynamically add to the service.
-   *
-   * A plugin is composed of one or more custom event models and
-   * publisher models.
-   *
-   * Plugins can be used to leverage the catalog functionality
-   * in new ways.
+   * Plugins to dynamically add to the service, each composed of custom event models and publisher models.
+   * Plugins can be used to leverage the catalog functionality in new ways.
    */
   plugins?: GenericPlugin | GenericPlugin[];
 }

@@ -33,11 +33,8 @@ export interface NewRelicEvent<T extends string = NewRelicEventType.EVENT> exten
 }
 
 /**
- * API response New Relic event that should be used when recording the success/failure of an API
- * request. We defer whether or not what responses should be deemed a "failure" vs. "success" to the
- * downstream New Relic query/alert/dashboard.
- *
- * Specified by eventType `NewRelicEventType.API_RESPONSE`
+ * NewRelicApiResponseEvent records the success or failure of an API request, specified by eventType `NewRelicEventType.API_RESPONSE`.
+ * We defer what counts as a failure to the downstream New Relic query, alert or dashboard.
  */
 export interface NewRelicApiResponseEvent extends NewRelicEvent<NewRelicEventType.API_RESPONSE> {
   /**

@@ -3,7 +3,7 @@ import { BaseEventModel, BasePlugin, BasePublisher } from '../../src';
 import type { CatalogEvent, PluginFactory, PluginFactoryWithRequiredOptions, StratumSnapshot } from '../../src/types';
 
 /**
- * Constants & types
+ * This section holds the constants and types shared by the sample plugins.
  */
 
 export const PLUGIN_A_NAME = 'pluginA';
@@ -52,7 +52,7 @@ export interface BEvent extends CatalogEvent<SampleEventType.B> {
 }
 
 /**
- * Models
+ * These models extend the base event model for the sample plugins.
  */
 
 export class EmptyModel extends BaseEventModel {}
@@ -60,7 +60,7 @@ export class AModel extends BaseEventModel<AEvent> {}
 export class BModel extends BaseEventModel<BEvent> {}
 
 /**
- * Publishers
+ * These publishers extend the base publisher for the sample plugins.
  */
 
 export const samplePublisherSdk = vi.fn();
@@ -90,7 +90,7 @@ export class SamplePublisher extends BasePublisher {
 }
 
 /**
- * Plugin definitions
+ * These definitions build the sample plugins from the models and publishers.
  */
 
 export class PluginA extends BasePlugin<PluginAContext, PluginAOptions> {

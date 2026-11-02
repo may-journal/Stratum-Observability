@@ -1,4 +1,4 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# This workflow installs dependencies cleanly with caching, then builds the source and runs the tests.
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
 name: Node.js CI
@@ -23,6 +23,10 @@ jobs:
       - name: Build library
         run: npm run build
 
+      - name: Summarize outcome
+        if: ${{ always() }}
+        run: echo "Build finished with status ${{ job.status }}" >> "$GITHUB_STEP_SUMMARY"
+
   test-unit:
     name: Unit tests
     needs:
@@ -38,6 +42,10 @@ jobs:
       - name: Run unit tests
         run: npm test
 
+      - name: Summarize outcome
+        if: ${{ always() }}
+        run: echo "Unit tests finished with status ${{ job.status }}" >> "$GITHUB_STEP_SUMMARY"
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
@@ -47,3 +55,7 @@ jobs:
 
       - name: Lint code
         run: npm run lint:check
+
+      - name: Summarize outcome
+        if: ${{ always() }}
+        run: echo "Lint finished with status ${{ job.status }}" >> "$GITHUB_STEP_SUMMARY"
