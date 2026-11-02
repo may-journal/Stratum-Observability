@@ -59,7 +59,7 @@ export class StratumService {
       this.addPlugin(options.plugins);
     }
 
-    // then register global plugins, if any exist
+    // global plugins register after the constructor plugins, if any exist
     const globalPlugins = getGlobalPlugins();
     if (globalPlugins?.length > 0) {
       this.addPlugin(globalPlugins);
