@@ -11,9 +11,8 @@ import { isDefined, isRecord, safeStringify } from './general';
 import type { Injector } from './injector';
 
 /**
- * Utility function to deep clone a given variable.
- * This function only handles simple and nested objects and arrays. Complex
- * types and functions may not be handled properly.
+ * Utility function to deep clone a given variable, handling only simple and nested objects and arrays.
+ * Complex types and functions may not be handled properly.
  */
 export function clone<T>(source: T): T {
   return source && typeof source === 'object'
@@ -30,11 +29,8 @@ export function clone<T>(source: T): T {
 }
 
 /**
- * Given an object, search through keys for dynamic placeholders {{ ... }} and replace values
- * based on those found in the given replacement map.
- *
- * If the replacement of a given key is a function, replace the placeholder with the return
- * value of the function, given an instance of the underlying event model.
+ * Given an object, search through keys for dynamic placeholders {{ ... }} and replace values based on the given replacement map.
+ * A function replacement supplies the return value, given an instance of the underlying event model.
  */
 // biome-ignore lint/suspicious/noExplicitAny: legacy support
 export function performReplacements(model: BaseEventModel, obj: any, map: { [key: string]: EventReplacement }): void {
@@ -121,21 +117,14 @@ export function generateStratumSnapshot(
 }
 
 /**
- * Since StratumSnapshots contain nested objects that can be updated before
- * the event is processed asynchronously, we deep-clone the event to create a
- * "snapshot" at the time of creation.
+ * StratumSnapshots hold nested objects that can change before asynchronous processing, so we deep-clone the event at creation.
  */
 export function cloneStratumSnapshot(event: StratumSnapshot): StratumSnapshot {
   return JSON.parse(safeStringify(event));
 }
 
 /**
- * Populate dynamic event options based on the event model and
- * publisher.
- *
- * If publisher and event belong to the same plugin, move any
- * plugin-specific data from incomingOptions into
- * `EventOptions.data`
+ * Populate dynamic event options from the event model and publisher, moving plugin-specific data into `EventOptions.data` when both share a plugin.
  *
  * @param {BasePublisher} publisher - Publisher instance to publish the specific event
  * @param {Partial<UserDefinedEventOptions>} incomingOptions - User-defined event options provided

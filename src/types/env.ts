@@ -3,14 +3,8 @@ import type { CatalogMetadata, EventId, EventOptions } from './catalog';
 import type { PluginContext, PluginOptions } from './plugin';
 
 /**
- * Snapshot view of all Stratum properties associated
- * with an event on publish.
- *
- * 1) Passed to any registered dynamic event listener
- *    functions
- * 2) Passed into publisher hooks to process data
- *    at time of initial publish call
- * 2) Used by dev tooling to debug Stratum data
+ * Snapshot view of all Stratum properties associated with an event on publish.
+ * It goes to registered dynamic event listeners and publisher hooks at the initial publish call, and to dev tooling for debugging.
  */
 export interface StratumSnapshot {
   abTestSchemas: AbTestSchema[];
@@ -22,13 +16,8 @@ export interface StratumSnapshot {
   data: any;
 
   /**
-   * Snapshot of context data stored across all plugins, whether
-   * associated with the specific eventType or not. This is used
-   * by plugins that add global observability to the
-   * all data stored by the library at a point-in-time.
-   *
-   * In most cases, you won't need  to use this. Rely on the data
-   * associated to the associated plugin instead.
+   * Snapshot of context data across all plugins, used by plugins that add global observability at a point in time.
+   * Most code should rely on the data of the associated plugin instead.
    */
   globalContext: {
     [pluginName: string]: {

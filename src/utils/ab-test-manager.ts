@@ -36,11 +36,7 @@ export class AbTestManager {
   }
 
   /**
-   * Register a new AbTest within the AbTestManager.
-   *
-   * Do not call this function directly, use `StratumService.startAbTest`
-   * instead.
-   *
+   * Register a new AbTest within the AbTestManager, called through `StratumService.startAbTest` instead of directly.
    * @param {AbTestSchema} obj - The AbTestSchema information to convert to AbTest
    * @return {AbTest} Generated AbTest object
    */
@@ -51,12 +47,7 @@ export class AbTestManager {
   }
 
   /**
-   * Removes an AbTest from the AbTestManager matching the AbTest id.
-   * If an AbTest object is passed in, the id is retrieved from the instance.
-   *
-   * Do not call this function directly, use `StratumService.endAbTest`
-   * instead.
-   *
+   * Removes an AbTest matching the AbTest id, or the id of a passed AbTest object, called through `StratumService.endAbTest`.
    * @param {string | AbTest} key - AbTest id or AbTest object to remove
    */
   endAbTest(key: string | AbTest) {
@@ -90,11 +81,8 @@ export class AbTestManager {
   }
 
   /**
-   * Function to generate SchemaObjects for each AbTest instance in the AbTestManager.
-   * Additionally, can optionally add transient one-time AbTest(Schema)s to generate as well.
-   * This option is typically used when processing EventOptions on publish.
-   *
-   * @param {AbTestSchema | AbTest | (AbTestSchema | AbTest)[]} [transient] - One-time AbTest instances or schemas to generate schemas for
+   * Function to generate SchemaObjects for each AbTest instance, plus optional transient one-time AbTests typically from EventOptions on publish.
+   * @param {AbTestSchema | AbTest | (AbTestSchema | AbTest)[]} [transient] - One-time AbTest instances or schemas
    */
   generateContexts(transient?: AbTestSchema | AbTest | (AbTestSchema | AbTest)[]): AbTestSchema[] {
     let arr: (AbTest | AbTestSchema)[] = Object.values(this._tests);

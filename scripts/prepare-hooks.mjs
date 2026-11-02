@@ -1,13 +1,7 @@
 #!/usr/bin/env node
 
-// Purpose: choose the git hooks that `npm install` activates (the `prepare` script).
-// Usage: node scripts/prepare-hooks.mjs
-// Inputs: the HOME environment variable and the current git checkout.
-// Output: sets core.hooksPath and always exits 0.
-//   - outside a git checkout, or without git: does nothing
-//   - org Fitness installer present: points git at .fitness-hooks
-//   - otherwise: installs husky's hooks, which run the biome pre-commit lint
-//   - when the hooks cannot be set up: prints a one-line notice
+// Usage: node scripts/prepare-hooks.mjs chooses the git hooks that `npm install` activates as its `prepare` script.
+// It reads the HOME environment variable and the current checkout, sets core.hooksPath and always exits 0.
 
 import { execFileSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
@@ -19,12 +13,14 @@ const installer = join(homedir(), '.local/share/may-journal/fitness/fitness-inst
 // Windows ships npx as npx.cmd, which Node runs only through a shell.
 const run = (command, args) => execFileSync(command, args, { stdio: 'ignore', shell: process.platform === 'win32' });
 
+// Outside a git checkout, or without git, this script does nothing.
 try {
   run('git', ['rev-parse', '--git-dir']);
 } catch {
   process.exit(0);
 }
 
+// The org Fitness installer points git at .fitness-hooks, otherwise husky installs hooks that run the biome pre-commit lint.
 try {
   if (existsSync(installer)) {
     run('git', ['config', '--local', 'core.hooksPath', '.fitness-hooks']);
@@ -32,5 +28,6 @@ try {
     run('npx', ['--no-install', 'husky']);
   }
 } catch (error) {
+  // When the hooks cannot be set up, this prints a one-line notice.
   console.log(`prepare-hooks: git hooks were not set up (${error.code ?? error.message}); commit hooks will not run.`);
 }

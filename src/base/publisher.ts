@@ -3,11 +3,8 @@ import type { Injector } from '../utils/injector';
 import type { BaseEventModel } from './model';
 
 /**
- * Base publisher class. All publishers should extend this class
- * and implement their own specific functionality.
- *
- * The associated generic type should reference the mapped output of the
- * models `getModelOutput`.
+ * BasePublisher is the class every publisher should extend to implement its own specific functionality.
+ * Its generic type should reference the mapped output of the models `getModelOutput`.
  */
 // biome-ignore lint/suspicious/noExplicitAny: legacy support
 export abstract class BasePublisher<T = any> {
@@ -24,14 +21,8 @@ export abstract class BasePublisher<T = any> {
   pluginName!: string;
 
   /**
-   * Optional array to define an accept-list of
-   * event model classes to handle with this publisher.
-   *
-   * This array is a shortcut to hardcoding event types in the
-   * isAvailable check for each publisher model.
-   *
-   * To accept all event types, do not override
-   * this variable on child instances.
+   * Optional accept-list of event model classes this publisher handles, a shortcut to hardcoding event types in each isAvailable check.
+   * To accept all event types, do not override this variable on child instances.
    */
   // biome-ignore lint/suspicious/noExplicitAny: legacy support
   acceptedEventModels?: (typeof BaseEventModel<any>)[];
@@ -45,15 +36,8 @@ export abstract class BasePublisher<T = any> {
   }
 
   /**
-   * Function that returns true or false depending on whether
-   * a given event type should be handled by the publisher. This allows
-   * publishers to selectively filter event types based on contents.
-   *
-   * If this function does not return true, the publisher
-   * will not attempt to process the event model on publish().
-   *
-   * Unless overridden, all models in acceptedEventModels will be handled
-   * by the publisher.
+   * Function that returns whether a given event type should be handled, letting publishers filter event types by contents.
+   * When it does not return true, the publisher skips the event model on publish(), and unless overridden it accepts every model in acceptedEventModels.
    */
   shouldPublishEvent(event: BaseEventModel): boolean {
     if (Array.isArray(this.acceptedEventModels)) {

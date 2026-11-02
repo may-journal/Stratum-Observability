@@ -81,12 +81,8 @@ export class BaseEventModel<T extends CatalogEvent = CatalogEvent> {
   }
 
   /**
-   * Function that provides the logic to check if the underlying
-   * catalog item contains valid data (run-time checking). This
-   * validation is performed on class instantiation.
-   *
-   * This function should make use of/mirror the inheritance of the
-   * underlying event types.
+   * Function that checks at run time whether the underlying catalog item contains valid data on class instantiation.
+   * It should mirror the inheritance of the underlying event types.
    */
   protected checkValidity(): boolean {
     if (typeof this.item !== 'object') {
@@ -125,12 +121,8 @@ export class BaseEventModel<T extends CatalogEvent = CatalogEvent> {
   }
 
   /**
-   * Function to return data from the EventModel to a publisher.
-   * This function is the main way the data is exposed outside the model
-   * to other parts of the service.
-   *
-   * The underlying catalog item data is cloned to avoid changing the data
-   * when it's mapped by a publisher.
+   * Function to return data from the EventModel to a publisher, exposing it to other parts of the service.
+   * The underlying catalog item data is cloned so a publisher's mapping cannot change it.
    */
   getData(options?: Partial<EventOptions>) {
     // biome-ignore lint/suspicious/noExplicitAny: legacy support

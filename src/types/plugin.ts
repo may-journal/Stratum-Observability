@@ -15,14 +15,8 @@ export type GenericPlugin = BasePlugin<any, any>;
 export type PluginOptions = Record<string, any>;
 
 /**
- * Format of a general plugin context object. This object defines
- * all keys that can be set via the `setContext` helper for a given
- * plugin instance.
- *
- * This should be defined within a `BasePlugin`, if applicable.
- *
- * By default, any keys that are not initially provided within
- * the BasePlugin class will fail validation.
+ * Format of a general plugin context object, defining all keys that `setContext` can set for a plugin instance.
+ * Define it within a `BasePlugin`, where keys not initially provided fail validation by default.
  */
 // biome-ignore lint/suspicious/noExplicitAny: legacy support
 export type PluginContext = Record<string, any>;
@@ -38,43 +32,16 @@ export type RegisteredPlugins = {
 };
 
 /**
- * A "plugin factory" is a function that returns an
- * instantiated Plugin object.
- *
- * Use this PluginFactory type if your plugin either
- *   1. has no PluginOptions or
- *   2. options are not required to be specified
- *
- * When creating this function,
- *  - Provide your specific plugin class as T
- *  - Provide the plugin factory options as U. This may or
- *     may not be identical to the plugin options
- *
- * If the plugin does not have plugin options, set U
- * as type `never`.
- *
- * If at least one plugin option is required, use
- * `PluginFactoryWithRequiredOptions` instead.
+ * PluginFactory returns an instantiated Plugin, where T is your plugin class and U the factory options, `never` without plugin options.
+ * It suits plugins without required options, otherwise use `PluginFactoryWithRequiredOptions`.
  */
 export type PluginFactory<T extends GenericPlugin, U extends PluginOptions = T['options']> = [U] extends [never]
   ? () => T
   : (options?: U) => T;
 
 /**
- * A "plugin factory" is a function that returns an
- * instantiated Plugin object.
- *
- * Use this PluginFactory type if your plugin has
- * at least one required option that must be specified before
- * the plugin can be used.
- *
- * When creating this function,
- *  - Provide your specific plugin class as T
- *  - Provide the plugin factory options as U. This may or
- *     may not be identical to the plugin options
- *
- * If the plugin does not have plugin options, use `PluginFactory`
- * instead.
+ * PluginFactoryWithRequiredOptions returns an instantiated Plugin, where T is your plugin class and U the factory options.
+ * It suits plugins with at least one required option, otherwise use `PluginFactory`.
  */
 export type PluginFactoryWithRequiredOptions<T extends GenericPlugin, U extends PluginOptions = T['options']> = (
   options: U

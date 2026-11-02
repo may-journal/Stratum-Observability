@@ -6,12 +6,8 @@ import { generateDefaultSessionId, Logger } from './env';
 import { normalizeToArray } from './general';
 
 /**
- * DI-like utility class that is created in the Stratum service.
- * This class instance serves as a singleton within each service instance and
- * is passed into registered publishers and event models.
- *
- * Contains any shared data that should be accessible across the service instance
- * lifetime.
+ * Injector is a DI-like utility class created in the Stratum service as a singleton passed into registered publishers and event models.
+ * It holds any shared data that should be accessible across the service instance lifetime.
  */
 export class Injector {
   /**
@@ -117,18 +113,9 @@ export class Injector {
   }
 
   /**
-   * Register a plugin and underlying models/publishers.
-   *
-   * This function is responsible for populating new eventTypes within eventTypeModelMap
-   * returns a flat list of publishers that need to be registered within the service.
-   *
-   * For each publisher model:
-   *   1. Attaches the respective `pluginName` value to the property of the instance
-   *   2. Overrides the acceptedEventModels property of the instance to restrict received
-   *       event models to only those provided by the plugin.
-   *
+   * Register a plugin and its models and publishers, populating new eventTypes within eventTypeModelMap.
    * @param {GenericPlugin} plugin - Plugin to register
-   * @return Plugin output
+   * @return A flat list of publishers to register within the service
    */
   registerPlugin(plugin: GenericPlugin): { publishers: BasePublisher[] } {
     const publishers: BasePublisher[] = [];
@@ -154,8 +141,8 @@ export class Injector {
 
     normalizeToArray(plugin.publishers).forEach((publisher) => {
       /**
-       * If acceptedEventModels array is not specified, restrict acceptedEventModels of all
-       * publishers to the plugin-specific events models.
+       * Without a specified acceptedEventModels array, restrict every publisher to the plugin-specific event models.
+       * Each publisher also gets the respective `pluginName` value attached.
        */
       if (!Array.isArray(publisher.acceptedEventModels)) {
         publisher.acceptedEventModels = acceptedEventModels;
