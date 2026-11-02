@@ -1,5 +1,7 @@
 # Containers
 
+Level 2 adds one fact to level 1: Stratum ships as a single package that runs inside the host app. Up: [System context](01-system-context.md). Down: [Components](03-components.md).
+
 ```mermaid
 C4Container
     title Stratum Observability
