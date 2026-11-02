@@ -1,5 +1,7 @@
 # Code
 
+Level 4 shows the classes behind the components, then the two flows that matter: publishing and plugin registration. Up: [Components](03-components.md). Start: [Architecture](README.md).
+
 ```mermaid
 classDiagram
     class StratumService["1 StratumService"] {
@@ -9,9 +11,13 @@ classDiagram
         +injector
         +addCatalog(UserDefinedCatalogOptions~T, K~) RegisteredStratumCatalog~T, K~
         +addPlugin(GenericPlugin | GenericPlugin[])
+        +removeCatalog(string)
         +publish(CatalogKey, Partial~UserDefinedEventOptions~) Promise~boolean~
         +publishFromCatalog(string, CatalogKey, Partial~UserDefinedEventOptions~) Promise~boolean~
+        +addSnapshotListener(StratumSnapshotListenerFn) boolean
         +startAbTest(AbTestSchema) AbTest
+        +endAbTest(string | AbTest)
+        +endAllAbTests()
     }
     class RegisteredStratumCatalog["2 RegisteredStratumCatalog"] {
         +id
@@ -42,11 +48,17 @@ classDiagram
         +publishers
         +eventTypes
         +context
+        +options
+        +useGlobalContextPrefix
+        +globalContextPrefix
+        +setContext(K, T[K]) boolean
         +onRegister(Injector, PluginHooks)
     }
     class BasePublisher["6 BasePublisher"] {
         +name
+        +pluginName
         +acceptedEventModels
+        +onInitialize(Injector)
         +shouldPublishEvent(BaseEventModel) boolean
         +isAvailable(BaseEventModel, StratumSnapshot) Promise~boolean~
         +getEventOutput(BaseEventModel, StratumSnapshot) T
@@ -188,7 +200,7 @@ Numbers on classes and letters on relationships match the callout table.
 | X   | Checks its ID against the registered IDs.                                                                                                                | A duplicate ID fails validation.                                  |
 | Y   | Declares the plugin's publishers.                                                                                                                        | A plugin bundles its destinations.                                |
 | Z   | Declares the plugin's event types and their models.                                                                                                      | Event types map to model classes.                                 |
-| AA  | `onRegister` receives the injector.                                                                                                                      | Plugins read shared state when added.                             |
+| AA  | `onRegister` receives the injector and a hook to `addCatalog`.                                                                                           | Plugins read shared state and may register their own catalog.     |
 | BB  | Lists accepted models and takes the event model on each step.                                                                                            | Each publisher picks the models it handles.                       |
 | CC  | `onInitialize` receives the injector.                                                                                                                    | Publishers read shared state when registered.                     |
 | DD  | Takes the event model when mapping output.                                                                                                               | Same signature as the base publisher.                             |
@@ -198,6 +210,26 @@ Numbers on classes and letters on relationships match the callout table.
 | HH  | Reads the event model's data, ID, and type.                                                                                                              | The event part of the snapshot.                                   |
 | II  | Reads the catalog's ID and metadata.                                                                                                                     | Every event names its catalog.                                    |
 | JJ  | Reads each publisher's plugin name to pick its context and options.                                                                                      | Each publisher gets its own plugin's view.                        |
+
+## Publish flow
+
+One `publish` call, in order. Each publisher runs in its own microtask, so one slow destination never blocks the rest.
+
+1. The host app calls `publish(key, options)` on `StratumService`.
+2. The service finds the valid model for the key, or resolves `false`.
+3. The service asks each publisher `shouldPublishEvent(model)`, then builds the snapshot with `generateStratumSnapshot`. Any registered snapshot listeners run in a microtask.
+4. If no publisher accepts the model, the service resolves `true`.
+5. Otherwise, for each accepting publisher, the service calls `isAvailable(model, snapshot)`, then `getEventOutput(model, snapshot)`, then `publish(output, snapshot)`.
+6. The service resolves `true`, or `false` if any publisher was unavailable or threw.
+
+## Plugin registration
+
+`addPlugin` runs once per plugin, from the constructor or later. A duplicate plugin name is skipped.
+
+1. The service calls `registerPlugin(plugin)` on the injector, which returns the plugin's publishers.
+2. For each publisher, the service calls `onInitialize(injector)`.
+3. The service calls the plugin's `onRegister(injector, hooks)`.
+4. The plugin may call `hooks.addCatalog(options)`.
 
 ## Publish outcomes
 
