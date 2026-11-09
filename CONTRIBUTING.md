@@ -33,6 +33,7 @@ Once an issue is created, a maintainer will review the issue and provide feedbac
 If we need more information, we label the issue "engaged" to show it is mid-process. We also add the right request category, such as "bug", "enhancement" or "documentation".
 
 Once we've looked over the issue, we'll label your PR as one of the following:
+
 - "ready for contribution" - your intake is approved and awaiting contributions
 - "duplicate" - the issue outlines a request that's already been decided on
 - "wontfix" - we do not plan to incorporate your intake into Stratum. It may be better suited as a custom plugin.
@@ -60,6 +61,7 @@ npm run build
 #### build:watch
 
 To continuously build the application as you make changes, run
+
 ```
 npm run build:watch
 ```
@@ -67,6 +69,7 @@ npm run build:watch
 #### build:analyze
 
 Since Stratum is a build-time integration, bundle size is definitely one of our priorities. Run
+
 ```
 npm run build:analyze
 ```
@@ -75,6 +78,7 @@ to get an estimate of the gzipped size of the library.
 #### Watching for changes
 
 For continuous building on changes, use the `build:watch` script instead.
+
 ```
 npm run build:watch
 ```
@@ -89,7 +93,6 @@ Run code quality checks via BiomeJS and attempt to fix any violations. The repo 
 npm run lint
 ```
 
-
 ### 5. Unit tests
 
 Unit tests are run via Jest.
@@ -97,6 +100,7 @@ Unit tests are run via Jest.
 #### test
 
 Run full unit test suite.
+
 ```
 npm run test
 ```
@@ -104,6 +108,7 @@ npm run test
 #### test:coverage
 
 Run full unit test suite and calculate code coverage reports.
+
 ```
 npm run test:coverage
 ```
@@ -113,6 +118,7 @@ npm run test:coverage
 Once you are ready to merge your changes, open a pull request (PR) from your forked repository to the main project repository. Complete the provided template to help reviewers understand your changes.
 
 The template will prompt you for the following information:
+
 - A link to the connected Stratum intake request GitHub issue (include the "Fixes" prefix so that your issue will auto-close on PR merge)
 - Testing steps so that we can test your changes locally
 - A pre-release checklist to document the scope of your changes

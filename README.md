@@ -5,6 +5,7 @@ Stratum is a plugin-based framework. Create your own custom plugins to define, v
 to your observability stack. We also offer community-driven plugins for popular integrations.
 
 Common problems that Stratum helps solve:
+
 1. Standardized data for clean queries, clear ownership, and strongest possible signals for alerting/reporting
 1. Being the first to know when your app is down, up, or sideways (let alone determining what any of those mean to you)
 1. Clear cataloging of what your product is capable of and who's using what
@@ -12,6 +13,7 @@ Common problems that Stratum helps solve:
 ## Getting started
 
 A typical Stratum implementation consists of:
+
 1. Stratum Catalog - single source of truth for the voice of your application
 1. Shared StratumService instance to load plugins and publish events from
 1. Functional code aka your application code! Any files containing logic you'd like to observe
@@ -86,11 +88,13 @@ stratumService.publish(EventKey.LOADED);
 ## Installation
 
 Via npm:
+
 ```bash
 npm install @capitalone/stratum-observability
 ```
 
 Via yarn:
+
 ```bash
 yarn add @capitalone/stratum-observability
 ```
@@ -100,6 +104,7 @@ yarn add @capitalone/stratum-observability
 ### Creating a new plugin
 
 Plugins are composed of 3 pieces of data:
+
 1. Name as a string identifier (required)
 2. Map of eventTypes to the correspond EventModel class (optional)
 3. One or more instantiated publishers to handle specific event type(s) (optional)
