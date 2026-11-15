@@ -35,12 +35,11 @@
     }
   },
   "scripts": {
-    "build": "npm run build:clean && npm run build:lib",
+    "build": "npm run build:lib",
     "build:analyze": "node scripts/analyze.mjs",
-    "build:clean": "rimraf dist",
     "build:lib": "rollup -c && npm run build:types",
     "build:types": "tsc -p . --noEmit false --emitDeclarationOnly",
-    "build:watch": "npm run build:clean && (trap 'kill 0' EXIT; npm run build:types -- --watch & rollup -c --watch)",
+    "build:watch": "trap 'kill 0' EXIT; npm run build:types -- --watch & rollup -c --watch",
     "ci:pipeline": "npm ci --ignore-scripts",
     "lint": "biome check --fix --no-errors-on-unmatched --error-on-warnings",
     "lint:check": "biome check --no-errors-on-unmatched --error-on-warnings",
@@ -59,8 +58,6 @@
     "@vitest/coverage-v8": "^5.1.0",
     "esbuild": "^0.28.2",
     "husky": "^9.1.7",
-    "jsdom": "^31.0.1",
-    "rimraf": "^6.1.4",
     "rollup": "^4.68.3",
     "rollup-plugin-esbuild": "^6.2.1",
     "typescript": "^7.0.2",

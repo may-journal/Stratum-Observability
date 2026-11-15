@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "declaration": false,
+    "declarationDir": null,
+    "paths": {
+      "@": ["../src"],
+      "@plugins/*": ["../src/plugins/*"],
+      "@types": ["../src/types"]
+    },
+    "rootDir": ".."
+  },
+  "include": ["."]
+}

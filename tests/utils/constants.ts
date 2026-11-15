@@ -1,4 +1,4 @@
-import type { AbTestSchema, CatalogMetadata } from '../../src/types';
+import type { AbTestSchema, CatalogMetadata } from '@types';
 
 export const STRATUM_LIBRARY_VERSION_PLACEHOLDER = '__stratumLibraryVersion__';
 
@@ -41,5 +41,5 @@ export const GENERATED_DEFAULT_METADATA = {
   catalogVersion: ''
 };
 
-// biome-ignore lint/suspicious/noExplicitAny: legacy support
-export const globalWindow = window as any;
+// biome-ignore lint/suspicious/noExplicitAny: tests read and write arbitrary globals
+export const globalWindow = globalThis as any;

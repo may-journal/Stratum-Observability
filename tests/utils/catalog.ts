@@ -1,6 +1,6 @@
-import { BASE_EVENT_TYPE } from '../../src';
-import { type NewRelicEvents, NewRelicEventType } from '../../src/plugins/new-relic-plus';
-import type { StratumCatalog } from '../../src/types';
+import { type NewRelicEvents, NewRelicEventType } from '@plugins/new-relic-plus';
+import type { StratumCatalog } from '@types';
+import { BASE_EVENT_TYPE } from '@';
 import { type AEvent, type BEvent, SampleEventType } from './sample-plugin';
 
 export const ADDED_KEY = 'abc';
