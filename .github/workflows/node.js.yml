@@ -56,6 +56,9 @@ jobs:
       - name: Lint code
         run: npm run lint:check
 
+      - name: Type-check source and tests
+        run: npm run typecheck
+
       - name: Summarize outcome
         if: ${{ always() }}
         run: echo "Lint finished with status ${{ job.status }}" >> "$GITHUB_STEP_SUMMARY"

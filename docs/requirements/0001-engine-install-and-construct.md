@@ -45,4 +45,4 @@ apps that construct a service
 - 0001.8
   - Given App developer installs a package whose version carries build metadata
     - When the library is built
-      - Then the library reports its version without that metadata
+      - Then the built library reports its version without that metadata

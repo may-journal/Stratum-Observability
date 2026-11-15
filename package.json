@@ -48,7 +48,8 @@
     "prepare": "node scripts/prepare-hooks.mjs",
     "prepublishOnly": "npm run build",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc -p . && tsc -p tests"
   },
   "sideEffects": false,
   "types": "dist/types/index.d.ts",

@@ -95,6 +95,14 @@ Run code quality checks via BiomeJS and attempt to fix any violations. The repo 
 npm run lint
 ```
 
+#### typecheck
+
+Type-check the source and the tests with the TypeScript compiler. The repo workflow runs it on PR build next to lint.
+
+```
+npm run typecheck
+```
+
 ### 5. Unit tests
 
 Unit tests are run via Jest.

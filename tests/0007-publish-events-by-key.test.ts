@@ -8,7 +8,7 @@ import {
   safeStringify
 } from '../src';
 import { NewRelicPluginFactory } from '../src/plugins/new-relic';
-import type { StratumSnapshot } from '../src/types';
+import type { EventOptions, StratumSnapshot } from '../src/types';
 import { BASE_CATALOG, SAMPLE_A_CATALOG } from './utils/catalog';
 import {
   AB_TEST_SCHEMA,
@@ -32,6 +32,14 @@ import {
   spyOnDebugLog
 } from './utils/helpers';
 import { DEFAULT_VAR1, PLUGIN_A_NAME, PluginAFactory, SamplePublisher, VAR1 } from './utils/sample-plugin';
+
+interface ReplacementCase {
+  replacement: string;
+  item: object;
+  replacements: EventOptions['replacements'];
+  read: (data: ReturnType<BaseEventModel['getData']>) => unknown;
+  expected: string;
+}
 
 const LABEL_PLACEHOLDER = '{{LABEL}}';
 
@@ -90,9 +98,9 @@ describe('0007 Publish Events by Key', () => {
     }
   });
 
-  it('0007.4 the event carries the value or what the function returns', () => {
+  it('0007.4 the event carries the value, or what the function returns for that event', () => {
     const injector = createInjector();
-    const cases = [
+    const cases: ReplacementCase[] = [
       {
         replacement: 'a value in a nested field',
         item: { details: { label: LABEL_PLACEHOLDER } },

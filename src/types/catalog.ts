@@ -1,6 +1,6 @@
 import type { BaseEventModel } from '../base';
 import type { BASE_EVENT_TYPE } from '../constants';
-import type { AbTestSchema } from './ab-test';
+import type { AbTest, AbTestSchema } from './ab-test';
 
 /**
  * Types that can be used to define the required
@@ -127,9 +127,9 @@ export type CatalogOptions<T extends CatalogEvent = CatalogEvent, K extends Cata
  */
 export interface EventOptions {
   /**
-   * A/B test schemas to attach to this specific catalog item publish
+   * A/B test schemas or registered A/B tests to attach to this specific catalog item publish
    */
-  abTestSchemas: AbTestSchema | AbTestSchema[];
+  abTestSchemas: AbTestSchema | AbTest | (AbTestSchema | AbTest)[];
 
   /**
    * Key-value mapping of dynamic placeholder name to associated value.

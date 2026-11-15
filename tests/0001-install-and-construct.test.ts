@@ -1,4 +1,7 @@
 import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { rollup } from 'rollup';
+import { loadConfigFile } from 'rollup/loadConfigFile';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as core from '../src';
 import { generateDefaultSessionId, STORED_SESSION_ID_KEY, uuid } from '../src';
@@ -76,11 +79,16 @@ describe('0001 Install and Construct', () => {
     expect(uuid()).toEqual('00000000-0000-0000-0000-000000000000');
   });
 
-  it('0001.8 the library reports its version without that metadata', async () => {
-    const { default: config } = await import('../rollup.config.mjs');
-    const replacer = config.plugins.find((plugin: { name: string }) => plugin.name === 'replace');
-    const built = replacer.transform("readonly version = '__stratumLibraryVersion__';", 'injector.ts');
-    expect(built.code).toMatch(/'\d+\.\d+\.\d+'/);
-    expect(built.code).not.toContain('+');
+  it('0001.8 the built library reports its version without that metadata', async () => {
+    const fromRoot = (path: string) => fileURLToPath(new URL(`../${path}`, import.meta.url));
+    const { options, warnings } = await loadConfigFile(fromRoot('rollup.config.mjs'), {});
+    warnings.flush();
+    const bundle = await rollup({ ...options[0], input: fromRoot('src/utils/injector.ts'), external: () => true });
+    const { output } = await bundle.generate({ format: 'es' });
+    await bundle.close();
+    const [, version] = output[0].code.match(/version = ["'](.+?)["']/) ?? [];
+    const { version: packageVersion } = JSON.parse(readFileSync(fromRoot('package.json'), 'utf8'));
+    expect(version).toBe(packageVersion.split('+')[0]);
+    expect(version).not.toContain('+');
   });
 });
