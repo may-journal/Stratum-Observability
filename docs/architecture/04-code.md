@@ -1,6 +1,6 @@
 # Code
 
-Level 4 shows the classes behind the components, then the two flows that matter: publishing and plugin registration. Up: [Components](03-components.md). Start: [Architecture](README.md).
+Up: [Components](03-components.md). Down: [User journey](05-user-journey.md).
 
 ```mermaid
 classDiagram
@@ -157,8 +157,8 @@ Numbers on classes and letters on relationships match the callout table.
 
 | #   | Description                                                                                                                                              | Why                                                               |
 | --- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| 1   | [Source](../../src/service.ts#L23-L283); [`publishFromCatalog`](../../src/service.ts#L146-L218) runs the publish outcomes below.                         | Public entry point.                                               |
-| 2   | [Source](../../src/utils/catalog.ts#L19-L178); [`addItems`](../../src/utils/catalog.ts#L100-L115) runs the item outcomes below.                          | Catalog state and its typed publish shortcut.                     |
+| 1   | [Source](../../src/service.ts#L23-L283); [`publishFromCatalog`](../../src/service.ts#L146-L218) resolves false on a missing key or a failed publisher.   | Public entry point.                                               |
+| 2   | [Source](../../src/utils/catalog.ts#L19-L178); [`addItems`](../../src/utils/catalog.ts#L100-L115) keeps valid items and records errors.                  | Catalog state and its typed publish shortcut.                     |
 | 3   | [Source](../../src/utils/injector.ts#L12-L171); [`registerPlugin`](../../src/utils/injector.ts#L120-L155) returns `{ publishers }` and skips duplicates. | Plugin, event type, and event ID registry.                        |
 | 4   | [Source](../../src/base/model.ts#L11-L135); the constructor clones the item and validates ID, uniqueness, and description.                               | Default model for the `base` event type.                          |
 | 5   | [Source](../../src/base/plugin.ts#L13-L102); `setContext` only changes keys the context already has.                                                     | The shape every plugin declares.                                  |
@@ -210,42 +210,3 @@ Numbers on classes and letters on relationships match the callout table.
 | HH  | Reads the event model's data, ID, and type.                                                                                                              | The event part of the snapshot.                                   |
 | II  | Reads the catalog's ID and metadata.                                                                                                                     | Every event names its catalog.                                    |
 | JJ  | Reads each publisher's plugin name to pick its context and options.                                                                                      | Each publisher gets its own plugin's view.                        |
-
-## Publish flow
-
-One `publish` call, in order. Each publisher runs in its own microtask, so one slow destination never blocks the rest.
-
-1. The host app calls `publish(key, options)` on `StratumService`.
-2. The service finds the valid model for the key, or resolves `false`.
-3. The service asks each publisher `shouldPublishEvent(model)`, then builds the snapshot with `generateStratumSnapshot`. Any registered snapshot listeners run in a microtask.
-4. If no publisher accepts the model, the service resolves `true`.
-5. Otherwise, for each accepting publisher, the service calls `isAvailable(model, snapshot)`, then `getEventOutput(model, snapshot)`, then `publish(output, snapshot)`.
-6. The service resolves `true`, or `false` if any publisher was unavailable or threw.
-
-## Plugin registration
-
-`addPlugin` runs once per plugin, from the constructor or later. A duplicate plugin name is skipped.
-
-1. The service calls `registerPlugin(plugin)` on the injector, which returns the plugin's publishers.
-2. For each publisher, the service calls `onInitialize(injector)`.
-3. The service calls the plugin's `onRegister(injector, hooks)`.
-4. The plugin may call `hooks.addCatalog(options)`.
-
-## Publish outcomes
-
-| Outcome                 | When                                                 | Result                         |
-| ----------------------- | ---------------------------------------------------- | ------------------------------ |
-| Missing or invalid key  | The catalog ID or the key has no valid model         | `false`, debug line logged     |
-| No publishers           | No publisher accepts the model                       | `true`, listeners still called |
-| All published           | Every accepting publisher is available and publishes | `true`                         |
-| A publisher unavailable | Any `isAvailable` resolves `false`                   | `false`, debug line logged     |
-| A publisher throws      | `isAvailable`, `getEventOutput`, or `publish` throws | `false`, debug line logged     |
-
-## Catalog item outcomes
-
-| Outcome            | When                                             | Recorded in                        |
-| ------------------ | ------------------------------------------------ | ---------------------------------- |
-| Valid              | Known event type and every model check passes    | `validModels`, event ID registered |
-| Duplicate key      | The key is already a valid model in this catalog | `errors`                           |
-| Unknown event type | No plugin registered the item's `eventType`      | `errors`                           |
-| Model rejected     | The model's checks fail, such as a duplicate ID  | `errors`, with each message        |

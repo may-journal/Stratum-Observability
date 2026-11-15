@@ -1,6 +1,6 @@
 # Components
 
-Level 3 splits the package into the service, the core and the bundled plugins. Up: [Containers](02-containers.md). Down: [Code](04-code.md).
+Up: [Containers](02-containers.md). Down: [Code](04-code.md).
 
 ```mermaid
 C4Component
