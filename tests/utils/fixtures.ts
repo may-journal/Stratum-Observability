@@ -1,4 +1,4 @@
-import type { CatalogEvent, StratumSnapshot, UserDefinedEventOptions } from '../../src/types';
+import type { CatalogEvent, StratumSnapshot, UserDefinedEventOptions } from '@types';
 import { BASE_CATALOG, NR_CATALOG, SAMPLE_A_CATALOG } from './catalog';
 import {
   AB_TEST_SCHEMA,

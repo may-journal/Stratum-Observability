@@ -1,4 +1,5 @@
 import { webcrypto } from 'node:crypto';
+import type { GenericPlugin } from '@types';
 import { expect, type MockInstance, vi } from 'vitest';
 import {
   type BasePublisher,
@@ -9,14 +10,15 @@ import {
   StratumService,
   type StratumServiceOptions,
   type StratumSnapshot
-} from '../../src';
-import type { GenericPlugin } from '../../src/types';
+} from '@';
 import { globalWindow, PRODUCT_NAME, PRODUCT_VERSION, SESSION_ID } from './constants';
 import { PLUGIN_B_OPTIONS, PluginA, PluginB, SamplePublisher } from './sample-plugin';
 
 const NEW_RELIC_METHODS = ['end', 'interaction', 'save', 'setAttribute', 'setName'] as const;
 
 export type NewRelicSpies = Record<(typeof NEW_RELIC_METHODS)[number], MockInstance>;
+
+type NewRelicApi = Record<(typeof NEW_RELIC_METHODS)[number], () => NewRelicApi>;
 
 export function createService(options: Partial<StratumServiceOptions> = {}) {
   return new StratumService({ productName: PRODUCT_NAME, productVersion: PRODUCT_VERSION, ...options });
@@ -68,7 +70,11 @@ export async function captureSnapshot(stratum: StratumService, act: () => unknow
 }
 
 export function mockNewRelic() {
-  globalWindow.newrelic = Object.fromEntries(NEW_RELIC_METHODS.map((method) => [method, () => globalWindow.newrelic]));
+  const newrelic = {} as NewRelicApi;
+  for (const method of NEW_RELIC_METHODS) {
+    newrelic[method] = () => newrelic;
+  }
+  vi.stubGlobal('newrelic', newrelic);
 }
 
 export function spyOnNewRelic(): NewRelicSpies {
@@ -95,10 +101,7 @@ export function expectNewRelicEvent(spies: NewRelicSpies, attributes: object, na
 }
 
 export function mockCrypto() {
-  Object.defineProperty(globalThis, 'crypto', {
-    value: webcrypto,
-    configurable: true
-  });
+  vi.stubGlobal('crypto', webcrypto);
 }
 
 export function setGlobalPlugins(globalPlugins?: GenericPlugin[]) {
@@ -110,17 +113,12 @@ export function createSamplePlugins(): [PluginA, PluginB] {
 }
 
 export function restoreStratumMocks() {
-  Object.keys(globalWindow).forEach((k) => {
-    if (k.startsWith('stratum')) {
-      delete globalWindow[k];
+  for (const key of Reflect.ownKeys(globalThis)) {
+    if (typeof key === 'string' && key.startsWith('stratum')) {
+      Reflect.deleteProperty(globalThis, key);
     }
-  });
-  delete globalWindow[GLOBAL_LISTENER_KEY];
-  delete globalWindow.newrelic;
-  localStorage.clear();
+  }
   sessionStorage.clear();
-
-  delete globalWindow.crypto;
 }
 
 export function removeAllPublishers(stratum: StratumService) {

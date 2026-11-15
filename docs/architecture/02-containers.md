@@ -58,7 +58,7 @@ Numbers on nodes and letters on arrows match the callout table. Stratum ships on
 | 3   | The package, built from `src`. Rollup turns the core and plugin entry points into `dist/esm` and `dist/cjs`. | One shipped unit; it runs in-process in the host app.      |
 | 4   | Same host app as the system context. It bundles the built package.                                           | Stratum has no runtime of its own.                         |
 | 5   | Present only when the page loads the agent script; publishers check for it before each event.                | A missing agent skips the publisher instead of throwing.   |
-| 6   | Present in every browser and in the jsdom test environment.                                                  | Always-available fallback destination.                     |
+| 6   | Present in every browser and in the Node test environment.                                                   | Always-available fallback destination.                     |
 | 7   | Shared by every Stratum instance and every script on the page.                                               | Cross-bundle listeners and plugins need a common home.     |
 | 8   | Serves the scoped `stratum-observability` package; `package.json` maps four export paths to the built files. | Subpath exports keep unused plugins out of the app bundle. |
 | A   | Imports the service and the chosen plugins.                                                                  | Setup is code, not configuration.                          |

@@ -1,6 +1,6 @@
+import type { CatalogEvent, PluginFactory, PluginFactoryWithRequiredOptions, StratumSnapshot } from '@types';
 import { vi } from 'vitest';
-import { BaseEventModel, BasePlugin, BasePublisher } from '../../src';
-import type { CatalogEvent, PluginFactory, PluginFactoryWithRequiredOptions, StratumSnapshot } from '../../src/types';
+import { BaseEventModel, BasePlugin, BasePublisher } from '@';
 
 /**
  * This section holds the constants and types shared by the sample plugins.
