@@ -1,5 +1,7 @@
 # Code
 
+Up: [Components](03-components.md). Down: [User journey](05-user-journey.md).
+
 ```mermaid
 classDiagram
     class StratumService["1 StratumService"] {
@@ -9,9 +11,13 @@ classDiagram
         +injector
         +addCatalog(UserDefinedCatalogOptions~T, K~) RegisteredStratumCatalog~T, K~
         +addPlugin(GenericPlugin | GenericPlugin[])
+        +removeCatalog(string)
         +publish(CatalogKey, Partial~UserDefinedEventOptions~) Promise~boolean~
         +publishFromCatalog(string, CatalogKey, Partial~UserDefinedEventOptions~) Promise~boolean~
+        +addSnapshotListener(StratumSnapshotListenerFn) boolean
         +startAbTest(AbTestSchema) AbTest
+        +endAbTest(string | AbTest)
+        +endAllAbTests()
     }
     class RegisteredStratumCatalog["2 RegisteredStratumCatalog"] {
         +id
@@ -42,11 +48,17 @@ classDiagram
         +publishers
         +eventTypes
         +context
+        +options
+        +useGlobalContextPrefix
+        +globalContextPrefix
+        +setContext(K, T[K]) boolean
         +onRegister(Injector, PluginHooks)
     }
     class BasePublisher["6 BasePublisher"] {
         +name
+        +pluginName
         +acceptedEventModels
+        +onInitialize(Injector)
         +shouldPublishEvent(BaseEventModel) boolean
         +isAvailable(BaseEventModel, StratumSnapshot) Promise~boolean~
         +getEventOutput(BaseEventModel, StratumSnapshot) T
@@ -145,8 +157,8 @@ Numbers on classes and letters on relationships match the callout table.
 
 | #   | Description                                                                                                                                              | Why                                                               |
 | --- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| 1   | [Source](../../src/service.ts#L23-L283); [`publishFromCatalog`](../../src/service.ts#L146-L218) runs the publish outcomes below.                         | Public entry point.                                               |
-| 2   | [Source](../../src/utils/catalog.ts#L19-L178); [`addItems`](../../src/utils/catalog.ts#L100-L115) runs the item outcomes below.                          | Catalog state and its typed publish shortcut.                     |
+| 1   | [Source](../../src/service.ts#L23-L283); [`publishFromCatalog`](../../src/service.ts#L146-L218) resolves false on a missing key or a failed publisher.   | Public entry point.                                               |
+| 2   | [Source](../../src/utils/catalog.ts#L19-L178); [`addItems`](../../src/utils/catalog.ts#L100-L115) keeps valid items and records errors.                  | Catalog state and its typed publish shortcut.                     |
 | 3   | [Source](../../src/utils/injector.ts#L12-L171); [`registerPlugin`](../../src/utils/injector.ts#L120-L155) returns `{ publishers }` and skips duplicates. | Plugin, event type, and event ID registry.                        |
 | 4   | [Source](../../src/base/model.ts#L11-L135); the constructor clones the item and validates ID, uniqueness, and description.                               | Default model for the `base` event type.                          |
 | 5   | [Source](../../src/base/plugin.ts#L13-L102); `setContext` only changes keys the context already has.                                                     | The shape every plugin declares.                                  |
@@ -188,7 +200,7 @@ Numbers on classes and letters on relationships match the callout table.
 | X   | Checks its ID against the registered IDs.                                                                                                                | A duplicate ID fails validation.                                  |
 | Y   | Declares the plugin's publishers.                                                                                                                        | A plugin bundles its destinations.                                |
 | Z   | Declares the plugin's event types and their models.                                                                                                      | Event types map to model classes.                                 |
-| AA  | `onRegister` receives the injector.                                                                                                                      | Plugins read shared state when added.                             |
+| AA  | `onRegister` receives the injector and a hook to `addCatalog`.                                                                                           | Plugins read shared state and may register their own catalog.     |
 | BB  | Lists accepted models and takes the event model on each step.                                                                                            | Each publisher picks the models it handles.                       |
 | CC  | `onInitialize` receives the injector.                                                                                                                    | Publishers read shared state when registered.                     |
 | DD  | Takes the event model when mapping output.                                                                                                               | Same signature as the base publisher.                             |
@@ -198,22 +210,3 @@ Numbers on classes and letters on relationships match the callout table.
 | HH  | Reads the event model's data, ID, and type.                                                                                                              | The event part of the snapshot.                                   |
 | II  | Reads the catalog's ID and metadata.                                                                                                                     | Every event names its catalog.                                    |
 | JJ  | Reads each publisher's plugin name to pick its context and options.                                                                                      | Each publisher gets its own plugin's view.                        |
-
-## Publish outcomes
-
-| Outcome                 | When                                                 | Result                         |
-| ----------------------- | ---------------------------------------------------- | ------------------------------ |
-| Missing or invalid key  | The catalog ID or the key has no valid model         | `false`, debug line logged     |
-| No publishers           | No publisher accepts the model                       | `true`, listeners still called |
-| All published           | Every accepting publisher is available and publishes | `true`                         |
-| A publisher unavailable | Any `isAvailable` resolves `false`                   | `false`, debug line logged     |
-| A publisher throws      | `isAvailable`, `getEventOutput`, or `publish` throws | `false`, debug line logged     |
-
-## Catalog item outcomes
-
-| Outcome            | When                                             | Recorded in                        |
-| ------------------ | ------------------------------------------------ | ---------------------------------- |
-| Valid              | Known event type and every model check passes    | `validModels`, event ID registered |
-| Duplicate key      | The key is already a valid model in this catalog | `errors`                           |
-| Unknown event type | No plugin registered the item's `eventType`      | `errors`                           |
-| Model rejected     | The model's checks fail, such as a duplicate ID  | `errors`, with each message        |

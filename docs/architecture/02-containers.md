@@ -1,5 +1,7 @@
 # Containers
 
+Up: [System context](01-system-context.md). Down: [Components](03-components.md).
+
 ```mermaid
 C4Container
     title Stratum Observability

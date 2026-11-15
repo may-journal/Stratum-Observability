@@ -40,6 +40,8 @@ Once we've looked over the issue, we'll label your PR as one of the following:
 
 ## Local development
 
+Before changing code, read the [architecture docs](docs/architecture/01-system-context.md).
+
 ### 1. Fork the Repository
 
 Start by forking the [@capitalone/Stratum-Observability repository](https://github.com/capitalone/Stratum-Observability/), and cloning that forked repository onto your local machine.

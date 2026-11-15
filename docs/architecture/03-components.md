@@ -1,5 +1,7 @@
 # Components
 
+Up: [Containers](02-containers.md). Down: [Code](04-code.md).
+
 ```mermaid
 C4Component
     title Stratum package
