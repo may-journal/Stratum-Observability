@@ -48,7 +48,8 @@
     "prepare": "node scripts/prepare-hooks.mjs",
     "prepublishOnly": "npm run build",
     "test": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc -p . && tsc -p tests"
   },
   "sideEffects": false,
   "types": "dist/types/index.d.ts",
@@ -56,6 +57,7 @@
     "@biomejs/biome": "^2.6.8",
     "@rollup/plugin-replace": "^6.0.3",
     "@rollup/plugin-terser": "^1.0.0",
+    "@types/node": "^26.6.6",
     "@vitest/coverage-v8": "^5.1.0",
     "esbuild": "^0.28.2",
     "husky": "^9.1.7",

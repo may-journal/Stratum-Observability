@@ -25,7 +25,7 @@ publish calls
 - 0007.4
   - Given App developer has an item with a placeholder, also in a nested field
     - When I publish it with a replacement value or function
-      - Then the event carries the value or what the function returns
+      - Then the event carries the value, or what the function returns for that event
 - 0007.5
   - Given App developer passes event data that refers to itself
     - When the event is copied for each destination
