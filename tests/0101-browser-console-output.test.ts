@@ -1,11 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, type Mock, vi } from 'vitest';
-import type { StratumService } from '../../src';
-import { type BrowserConsolePlugin, BrowserConsolePluginFactory } from '../../src/plugins/browser-console';
-import { BASE_CATALOG } from '../utils/catalog';
-import { CATALOG_METADATA } from '../utils/constants';
-import { createService, restoreStratumMocks, spyOnPublish } from '../utils/helpers';
+import type { StratumService } from '../src';
+import { type BrowserConsolePlugin, BrowserConsolePluginFactory } from '../src/plugins/browser-console';
+import { BASE_CATALOG } from './utils/catalog';
+import { CATALOG_METADATA } from './utils/constants';
+import { createService, resetStratum, spyOnPublish } from './utils/helpers';
 
-describe('browser console plugin', () => {
+describe('0101 Browser Console Output', () => {
   let stratum: StratumService;
   let plugin: BrowserConsolePlugin;
   let consoleSpy: Mock;
@@ -17,11 +17,10 @@ describe('browser console plugin', () => {
   });
 
   afterEach(() => {
-    restoreStratumMocks();
-    vi.restoreAllMocks();
+    resetStratum();
   });
 
-  it('0101.1 publishes and logs one line per event to the console', async () => {
+  it("0101.1 the console shows one line, naming the plugin, with the event's type, ID and key", async () => {
     const publishSpy = spyOnPublish(plugin.publishers[0]);
     const expectedContent = JSON.stringify({ eventType: BASE_CATALOG[1].eventType, id: BASE_CATALOG[1].id, key: '1' });
 

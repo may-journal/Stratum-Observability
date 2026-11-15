@@ -17,11 +17,11 @@ plugins registered
 - 0004.1
   - Given Plugin author has a plugin with event types and a publisher
     - When the app adds it after construction
-      - Then its types validate items and its publisher gets events
+      - Then the plugin's event types validate items and its publisher gets events
 - 0004.2
   - Given App developer has two plugins with the same name
     - When I pass both to the service
-      - Then only the first and its publisher are registered
+      - Then only the first plugin and its publisher are registered
 - 0004.3
   - Given Plugin author has a plugin declaring an event type another plugin owns
     - When the app adds it
@@ -41,4 +41,4 @@ plugins registered
 - 0004.7
   - Given Plugin author has a publisher outside any plugin that names no accepted event types
     - When I ask whether it handles an event
-      - Then it accepts every event
+      - Then the publisher accepts every event

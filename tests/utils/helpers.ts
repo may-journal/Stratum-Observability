@@ -1,18 +1,31 @@
 import { webcrypto } from 'node:crypto';
-import type { GenericPlugin } from '@types';
+import type { GenericPlugin, StratumCatalog } from '@types';
 import { expect, type MockInstance, vi } from 'vitest';
 import {
+  BASE_EVENT_TYPE,
+  BaseEventModel,
   type BasePublisher,
   DEBUG_KEY,
   GLOBAL_LISTENER_KEY,
+  Injector,
   Logger,
+  RegisteredStratumCatalog,
   STORED_SESSION_ID_KEY,
   StratumService,
   type StratumServiceOptions,
   type StratumSnapshot
 } from '@';
-import { globalWindow, PRODUCT_NAME, PRODUCT_VERSION, SESSION_ID } from './constants';
-import { PLUGIN_B_OPTIONS, PluginA, PluginB, SamplePublisher } from './sample-plugin';
+import { SAMPLE_A_CATALOG } from './catalog';
+import {
+  CATALOG_ID,
+  CATALOG_METADATA,
+  globalWindow,
+  MODEL_KEY,
+  PRODUCT_NAME,
+  PRODUCT_VERSION,
+  SESSION_ID
+} from './constants';
+import { PLUGIN_B_OPTIONS, PluginA, PluginAFactory, PluginB, SamplePublisher } from './sample-plugin';
 
 const NEW_RELIC_METHODS = ['end', 'interaction', 'save', 'setAttribute', 'setName'] as const;
 
@@ -22,6 +35,38 @@ type NewRelicApi = Record<(typeof NEW_RELIC_METHODS)[number], () => NewRelicApi>
 
 export function createService(options: Partial<StratumServiceOptions> = {}) {
   return new StratumService({ productName: PRODUCT_NAME, productVersion: PRODUCT_VERSION, ...options });
+}
+
+/**
+ * A service holding the sample catalog as its default catalog and the
+ * sample plugin.
+ */
+export function createSampleService() {
+  return createService({ catalog: { items: SAMPLE_A_CATALOG }, plugins: [PluginAFactory()] });
+}
+
+/**
+ * An injector with the sample plugin registered, for building catalogs
+ * and items without a service.
+ */
+export function createInjector() {
+  const injector = new Injector(PRODUCT_NAME, PRODUCT_VERSION);
+  injector.registerPlugin(PluginAFactory());
+  return injector;
+}
+
+export function createCatalog(injector: Injector, items: StratumCatalog | object = SAMPLE_A_CATALOG) {
+  const options = { items: items as StratumCatalog, ...CATALOG_METADATA };
+  return new RegisteredStratumCatalog(CATALOG_ID, options, injector, vi.fn());
+}
+
+export function createModel(injector: Injector, item: object) {
+  return new BaseEventModel(
+    MODEL_KEY,
+    { eventType: BASE_EVENT_TYPE, description: 'model', ...item },
+    CATALOG_ID,
+    injector
+  );
 }
 
 export function getPublishers(service: StratumService) {
@@ -39,8 +84,12 @@ export function isUuid(uuid: string) {
 
 const DEBUG_METHOD = 'debug';
 
+/**
+ * Silences Stratum's debug logger and returns its spy, to assert on the
+ * lines it would write.
+ */
 export function spyOnDebugLog() {
-  return vi.spyOn(Logger.prototype, DEBUG_METHOD);
+  return vi.spyOn(Logger.prototype, DEBUG_METHOD).mockImplementation(() => {});
 }
 
 /**
@@ -112,13 +161,19 @@ export function createSamplePlugins(): [PluginA, PluginB] {
   return [new PluginA(), new PluginB(PLUGIN_B_OPTIONS, new SamplePublisher('sample'))];
 }
 
-export function restoreStratumMocks() {
+/**
+ * Clears Stratum's globals, session storage, every spy and every stubbed
+ * global, so the next case of a test starts clean.
+ */
+export function resetStratum() {
   for (const key of Reflect.ownKeys(globalThis)) {
     if (typeof key === 'string' && key.startsWith('stratum')) {
       Reflect.deleteProperty(globalThis, key);
     }
   }
   sessionStorage.clear();
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
 }
 
 export function removeAllPublishers(stratum: StratumService) {

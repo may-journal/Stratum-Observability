@@ -17,7 +17,7 @@ events published while A/B tests run
 - 0009.1
   - Given App developer has a service with no A/B tests
     - When I start an A/B test
-      - Then the service lists it
+      - Then the service lists the started test
 - 0009.2
   - Given App developer has one or several running A/B tests
     - When I end one or end all of them

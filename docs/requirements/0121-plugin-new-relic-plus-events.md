@@ -17,7 +17,7 @@ New Relic Plus events published
 - 0121.1
   - Given App developer has New Relic Plus items missing a name, request or error field
     - When I register their catalog
-      - Then each is held back with one error per missing field
+      - Then each item is held back with one error per missing field
 - 0121.2
   - Given App developer has New Relic Plus and an event, API response or error item
     - When I publish its key

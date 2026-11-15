@@ -25,4 +25,4 @@ context keys set
 - 0006.3
   - Given Plugin author has turned off the context prefix
     - When an event is delivered
-      - Then its context keys carry no plugin name
+      - Then the event's context keys carry no plugin name

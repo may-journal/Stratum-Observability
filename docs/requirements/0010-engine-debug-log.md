@@ -17,7 +17,7 @@ debug lines Stratum writes
 - 0010.1
   - Given App developer has a tab with the debug flag off, then on
     - When Stratum writes a debug line
-      - Then the console shows it, marked as Stratum, only while the flag is on
+      - Then the console shows the line, marked as Stratum, only while the flag is on
 - 0010.2
   - Given App developer has a page that blocks session storage
     - When Stratum checks for debug mode
