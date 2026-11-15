@@ -1,3 +1,6 @@
 {
-  "policy": "external"
+  "policy": "external",
+  "checkVersions": {
+    "*": "v1"
+  }
 }
