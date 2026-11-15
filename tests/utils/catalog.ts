@@ -1,5 +1,5 @@
 import { type NewRelicEvents, NewRelicEventType } from '@plugins/new-relic-plus';
-import type { StratumCatalog } from '@types';
+import type { CatalogEvent, StratumCatalog } from '@types';
 import { BASE_EVENT_TYPE } from '@';
 import { type AEvent, type BEvent, SampleEventType } from './sample-plugin';
 
@@ -18,7 +18,7 @@ const FIRST_A_ITEM = {
   prop2: 'prop2',
   description: 'event 1',
   id: 1
-};
+} satisfies Partial<AEvent>;
 
 export const SAMPLE_A_CATALOG = {
   1: { ...FIRST_A_ITEM, name: '{{PLACEHOLDER_2}}' },
@@ -77,12 +77,15 @@ export const SAMPLE_B_CATALOG = {
   }
 } satisfies StratumCatalog<BEvent>;
 
-export const INVALID_SAMPLE_CATALOG = {
+export const INVALID_SAMPLE_CATALOG: StratumCatalog<CatalogEvent> = {
+  // @ts-expect-error testing runtime handling with invalid types
   0: {},
   1: {
     eventType: SampleEventType.A,
+    // @ts-expect-error testing runtime handling with invalid types
     prop1: FIRST_A_ITEM.prop1
   },
+  // @ts-expect-error testing runtime handling with invalid types
   3: {
     eventType: SampleEventType.B
   },

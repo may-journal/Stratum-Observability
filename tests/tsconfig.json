@@ -8,7 +8,8 @@
       "@plugins/*": ["../src/plugins/*"],
       "@types": ["../src/types"]
     },
-    "rootDir": ".."
+    "rootDir": "..",
+    "types": ["node"]
   },
   "include": ["."]
 }

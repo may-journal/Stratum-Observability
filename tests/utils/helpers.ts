@@ -1,5 +1,5 @@
 import { webcrypto } from 'node:crypto';
-import type { GenericPlugin, StratumCatalog } from '@types';
+import type { CatalogEvent, GenericPlugin, StratumCatalog } from '@types';
 import { expect, type MockInstance, vi } from 'vitest';
 import {
   BASE_EVENT_TYPE,
@@ -55,8 +55,8 @@ export function createInjector() {
   return injector;
 }
 
-export function createCatalog(injector: Injector, items: StratumCatalog | object = SAMPLE_A_CATALOG) {
-  const options = { items: items as StratumCatalog, ...CATALOG_METADATA };
+export function createCatalog(injector: Injector, items: StratumCatalog<CatalogEvent> | object = SAMPLE_A_CATALOG) {
+  const options = { items: items as StratumCatalog<CatalogEvent>, ...CATALOG_METADATA };
   return new RegisteredStratumCatalog(CATALOG_ID, options, injector, vi.fn());
 }
 
@@ -127,9 +127,14 @@ export function mockNewRelic() {
 }
 
 export function spyOnNewRelic(): NewRelicSpies {
-  return Object.fromEntries(
-    NEW_RELIC_METHODS.map((method) => [method, vi.spyOn(globalWindow.newrelic, method)])
-  ) as NewRelicSpies;
+  const newrelic: NewRelicApi = globalWindow.newrelic;
+  return {
+    end: vi.spyOn(newrelic, 'end'),
+    interaction: vi.spyOn(newrelic, 'interaction'),
+    save: vi.spyOn(newrelic, 'save'),
+    setAttribute: vi.spyOn(newrelic, 'setAttribute'),
+    setName: vi.spyOn(newrelic, 'setName')
+  };
 }
 
 export function newRelicAttributes(spies: NewRelicSpies): Record<string, unknown> {
