@@ -29,4 +29,4 @@ events published with the New Relic plugin on a page running the agent
 - 0111.4
   - Given App developer has the New Relic plugin outside a browser window
     - When Stratum checks the New Relic destination
-      - Then it reports the destination unavailable
+      - Then Stratum reports the New Relic destination unavailable

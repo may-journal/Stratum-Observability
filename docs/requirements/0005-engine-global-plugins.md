@@ -21,7 +21,7 @@ services constructed on a page with global plugins
 - 0005.2
   - Given App developer has a page with no, empty or filled global plugin list
     - When a script adds a global plugin
-      - Then it is added to the end of the list
+      - Then the plugin is added to the end of the list
 - 0005.3
   - Given App developer has global plugins on the page
     - When a script removes a plugin by name

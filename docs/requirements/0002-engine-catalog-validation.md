@@ -25,7 +25,7 @@ malformed catalog items registered
 - 0002.3
   - Given App developer has items with an unknown type, missing fields or a reused ID
     - When I register them in a new catalog or add them to a valid one
-      - Then each is held back with one error and the catalog is invalid
+      - Then each item is held back with one error and the catalog is invalid
 - 0002.4
   - Given App developer has an item whose ID is negative, empty or not a number or text
     - When I register its catalog

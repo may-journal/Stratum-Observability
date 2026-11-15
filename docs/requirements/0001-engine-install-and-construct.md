@@ -21,11 +21,11 @@ apps that construct a service
 - 0001.2
   - Given App developer has a product name and version
     - When I construct the service with them
-      - Then it reports them with the library version
+      - Then the service reports the product name and version with the library version
 - 0001.3
   - Given App developer passes no catalog or plugins
     - When I construct the service
-      - Then it holds no catalogs, plugins, publishers or listeners
+      - Then the service holds no catalogs, plugins, publishers or listeners
 - 0001.4
   - Given App developer has a tab with no stored session ID
     - When I construct services one after another
@@ -37,7 +37,7 @@ apps that construct a service
 - 0001.6
   - Given App developer has a page that blocks session storage
     - When the service starts
-      - Then it still gets a random session ID
+      - Then the service still gets a random session ID
 - 0001.7
   - Given App developer has a page with no crypto library
     - When the service creates a session ID
@@ -45,4 +45,4 @@ apps that construct a service
 - 0001.8
   - Given App developer installs a package whose version carries build metadata
     - When the library is built
-      - Then the library version it reports is the version without that metadata
+      - Then the library reports its version without that metadata

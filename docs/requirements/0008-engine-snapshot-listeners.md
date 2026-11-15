@@ -17,7 +17,7 @@ published events
 - 0008.1
   - Given App developer has listeners for every product and for this one
     - When the service gathers listeners
-      - Then the ones for every product come first
+      - Then the listeners for every product come first
 - 0008.2
   - Given App developer has a page that refuses new globals
     - When I add a snapshot listener

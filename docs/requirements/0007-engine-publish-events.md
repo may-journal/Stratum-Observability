@@ -33,7 +33,7 @@ publish calls
 - 0007.6
   - Given App developer changes plugin context or ends an A/B test right after a publish
     - When that event is delivered
-      - Then it carries the context and A/B tests from the moment of publishing
+      - Then the event carries the context and A/B tests from the moment of publishing
 - 0007.7
   - Given Plugin author has a publisher that no plugin registered
     - When I build an event snapshot for it
@@ -41,7 +41,7 @@ publish calls
 - 0007.8
   - Given App developer has a null value or a list
     - When I run placeholder replacement on it
-      - Then it returns and leaves the value unchanged
+      - Then replacement returns and leaves the value unchanged
 - 0007.9
   - Given Plugin author has a publisher that throws while publishing
     - When I publish a key

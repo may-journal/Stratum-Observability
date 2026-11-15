@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { StratumService } from '../../src';
-import { NEW_RELIC_PLUGIN_NAME, NewRelicPluginFactory, NewRelicPublisher } from '../../src/plugins/new-relic';
-import { NewRelicPlusPluginFactory } from '../../src/plugins/new-relic-plus';
-import { NR_API_KEY, NR_CATALOG, SAMPLE_A_CATALOG } from '../utils/catalog';
-import { AB_TEST_SCHEMA, CATALOG_METADATA, METADATA_CATALOG_ID } from '../utils/constants';
-import { NR_MOCK, PLUGIN_A_CONTEXT } from '../utils/fixtures';
+import type { StratumService } from '../src';
+import { NEW_RELIC_PLUGIN_NAME, NewRelicPluginFactory, NewRelicPublisher } from '../src/plugins/new-relic';
+import { NewRelicPlusPluginFactory } from '../src/plugins/new-relic-plus';
+import { NR_API_KEY, NR_CATALOG, SAMPLE_A_CATALOG } from './utils/catalog';
+import { AB_TEST_SCHEMA, CATALOG_METADATA, METADATA_CATALOG_ID } from './utils/constants';
+import { NR_MOCK, PLUGIN_A_CONTEXT } from './utils/fixtures';
 import {
   createService,
   expectNewRelicEvent,
@@ -12,12 +12,12 @@ import {
   mockNewRelic,
   mockSessionId,
   newRelicAttributes,
-  restoreStratumMocks,
+  resetStratum,
   spyOnNewRelic
-} from '../utils/helpers';
-import { PLUGIN_A_NAME, type PluginA, PluginAFactory } from '../utils/sample-plugin';
+} from './utils/helpers';
+import { PLUGIN_A_NAME, type PluginA, PluginAFactory } from './utils/sample-plugin';
 
-describe('publishing events via NewRelicPublisher', () => {
+describe('0111 New Relic Interactions', () => {
   let stratum: StratumService;
   let pluginA: PluginA;
 
@@ -32,11 +32,10 @@ describe('publishing events via NewRelicPublisher', () => {
   });
 
   afterEach(() => {
-    restoreStratumMocks();
-    vi.restoreAllMocks();
+    resetStratum();
   });
 
-  it('0111.1 sends the event, its context and ab test data to window.newrelic', async () => {
+  it("0111.1 New Relic saves one interaction with that name and Stratum's attributes", async () => {
     const spies = spyOnNewRelic();
     const eventName = 'testEvent';
 
@@ -48,7 +47,7 @@ describe('publishing events via NewRelicPublisher', () => {
     expectNewRelicEvent(spies, NR_MOCK.sampleA, eventName);
   });
 
-  it('0111.2 applies the isValid attribute, if provided', async () => {
+  it('0111.2 the interaction is saved as valid', async () => {
     const spies = spyOnNewRelic();
 
     const result = await stratum.publishFromCatalog(METADATA_CATALOG_ID, 1, {
@@ -59,7 +58,7 @@ describe('publishing events via NewRelicPublisher', () => {
     expect(newRelicAttributes(spies).isValid).toBe(true);
   });
 
-  it('0111.3 applies context data from other plugins', async () => {
+  it("0111.3 the interaction carries that plugin's prefixed context", async () => {
     stratum = createService({ plugins: [pluginA] });
     stratum.addPlugin(NewRelicPlusPluginFactory());
     const spies = spyOnNewRelic();
@@ -67,11 +66,11 @@ describe('publishing events via NewRelicPublisher', () => {
 
     expect(await stratum.publishFromCatalog(id, NR_API_KEY)).toBe(true);
     for (const [key, value] of Object.entries(PLUGIN_A_CONTEXT)) {
-      expect(spies.setAttribute).toHaveBeenCalledWith(`${PLUGIN_A_NAME}_${key}`, value);
+      expect.soft(spies.setAttribute).toHaveBeenCalledWith(`${PLUGIN_A_NAME}_${key}`, value);
     }
   });
 
-  it('0111.4 is unavailable outside a browser window', async () => {
+  it('0111.4 Stratum reports the New Relic destination unavailable', async () => {
     vi.stubGlobal('window', undefined);
     expect(await new NewRelicPublisher().isAvailable()).toBe(false);
   });

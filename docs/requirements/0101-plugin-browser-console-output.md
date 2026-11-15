@@ -17,4 +17,4 @@ events published with the console plugin
 - 0101.1
   - Given App developer has the console plugin and a catalog
     - When I publish a key
-      - Then the console shows one line with the event's type, ID and key
+      - Then the console shows one line, naming the plugin, with the event's type, ID and key
