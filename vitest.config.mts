@@ -1,6 +1,7 @@
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
-const r = (p: string) => new URL(p, import.meta.url).pathname;
+const r = (p: string) => fileURLToPath(new URL(p, import.meta.url));
 
 export default defineConfig({
   resolve: {
@@ -11,7 +12,8 @@ export default defineConfig({
     ]
   },
   test: {
-    include: ['tests/**/*.test.ts'],
+    unstubGlobals: true,
+    include: ['tests/**/*.{spec,test}.{ts,tsx}'],
     setupFiles: ['tests/vitest.setup.ts'],
     coverage: {
       provider: 'v8',

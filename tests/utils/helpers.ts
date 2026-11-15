@@ -101,10 +101,7 @@ export function expectNewRelicEvent(spies: NewRelicSpies, attributes: object, na
 }
 
 export function mockCrypto() {
-  Object.defineProperty(globalThis, 'crypto', {
-    value: webcrypto,
-    configurable: true
-  });
+  vi.stubGlobal('crypto', webcrypto);
 }
 
 export function setGlobalPlugins(globalPlugins?: GenericPlugin[]) {
