@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { rollup } from 'rollup';
 import { loadConfigFile } from 'rollup/loadConfigFile';
@@ -9,7 +9,9 @@ import * as newRelic from '../src/plugins/new-relic';
 import { globalWindow, PRODUCT_NAME, PRODUCT_VERSION, STRATUM_LIBRARY_VERSION_PLACEHOLDER } from './utils/constants';
 import { createSampleService, createService, getPublishers, isUuid, mockCrypto, resetStratum } from './utils/helpers';
 
-const PLUGIN_ENTRY_POINTS = ['./plugins/browser-console', './plugins/new-relic', './plugins/new-relic-plus'];
+const PLUGIN_ENTRY_POINTS = readdirSync(new URL('../src/plugins', import.meta.url))
+  .sort()
+  .map((folder) => `./plugins/${folder}`);
 
 describe('0001 Install and Construct', () => {
   beforeEach(() => {

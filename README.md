@@ -280,6 +280,18 @@ export class SimplePublisher extends BasePublisher<ExternalEventSchema> {
 }
 ```
 
+## Data layer plugin
+
+The data layer plugin pushes every published event onto the page's `dataLayer` array, where a tag manager reads it.
+Each entry has `event: 'stratum_event'` and a `stratum` object with the event's key, ID, type and your product.
+
+```ts
+import { DataLayerPluginFactory } from '@capitalone/stratum-observability/plugins/data-layer';
+
+// Pass { name: 'myLayer' } to push onto another global array.
+const dataLayerPlugin = DataLayerPluginFactory();
+```
+
 ## Contributing
 
 We welcome and appreciate your contributions!
