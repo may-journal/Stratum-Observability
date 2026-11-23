@@ -19,6 +19,7 @@ C4Component
             Component(newRelicPlus, "9 New Relic Plus plugin", "TypeScript", "src/plugins/new-relic-plus")
             Component(browserConsole, "10 Browser console plugin", "TypeScript", "src/plugins/browser-console")
             Component(dataLayer, "11 Data layer plugin", "TypeScript", "src/plugins/data-layer")
+            Component(beacon, "12 Beacon plugin", "TypeScript", "src/plugins/beacon")
         }
     }
 
@@ -36,6 +37,7 @@ C4Component
     UpdateElementStyle(newRelicPlus, $bgColor="#b45309", $borderColor="#92400e", $fontColor="#ffffff")
     UpdateElementStyle(browserConsole, $bgColor="#b45309", $borderColor="#92400e", $fontColor="#ffffff")
     UpdateElementStyle(dataLayer, $bgColor="#b45309", $borderColor="#92400e", $fontColor="#ffffff")
+    UpdateElementStyle(beacon, $bgColor="#b45309", $borderColor="#92400e", $fontColor="#ffffff")
     UpdateLayoutConfig($c4ShapeInRow=" 3", $c4BoundaryInRow=" 3")
 ```
 
@@ -67,6 +69,7 @@ Numbers on nodes and letters on arrows match the callout table. Every product so
 | 9   | [`NewRelicPlusPlugin`](../../src/plugins/new-relic-plus/index.ts#L13-L30) adds three validated event models and plugin context.                                                                                                                                                                                                                                          | Stricter New Relic events with required fields.                                                   |
 | 10  | [`BrowserConsolePlugin`](../../src/plugins/browser-console/index.ts#L8-L11) with [`BrowserConsolePublisher`](../../src/plugins/browser-console/publisher.ts#L7-L49).                                                                                                                                                                                                     | Logs each event as JSON; the smallest working plugin.                                             |
 | 11  | [`DataLayerPlugin`](../../src/plugins/data-layer/index.ts#L10-L19) with [`DataLayerPublisher`](../../src/plugins/data-layer/publisher.ts#L9-L51).                                                                                                                                                                                                                        | Tag managers read events from the page's data layer.                                              |
+| 12  | [`BeaconPlugin`](../../src/plugins/beacon/index.ts#L11-L20) with [`BeaconPublisher`](../../src/plugins/beacon/publisher.ts#L15-L59).                                                                                                                                                                                                                                     | Teams with their own collector need no publisher of their own.                                    |
 | A   | Constructs the service with product name, version, catalog, and the plugins it picks; then calls `publish`.                                                                                                                                                                                                                                                              | The full public workflow.                                                                         |
 | B   | The service registers catalogs and plugins through the injector, builds snapshots, and reads global plugins.                                                                                                                                                                                                                                                             | Plugin wiring lives in one method.                                                                |
 | C   | Plugins extend the base classes and read the public types; the New Relic publisher also uses a general helper.                                                                                                                                                                                                                                                           | Same contract as any custom plugin.                                                               |

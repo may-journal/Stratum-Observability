@@ -82,6 +82,8 @@ classDiagram
     class Logger["17 Logger"]
     class DataLayerPlugin["18 DataLayerPlugin"]
     class DataLayerPublisher["19 DataLayerPublisher"]
+    class BeaconPlugin["20 BeaconPlugin"]
+    class BeaconPublisher["21 BeaconPublisher"]
 
     StratumService --> Injector : A
     StratumService --> RegisteredStratumCatalog : B
@@ -123,6 +125,10 @@ classDiagram
     BasePublisher <|-- DataLayerPublisher : LL
     DataLayerPlugin --> DataLayerPublisher : MM
     DataLayerPublisher --> BaseEventModel : NN
+    BasePlugin <|-- BeaconPlugin : OO
+    BasePublisher <|-- BeaconPublisher : PP
+    BeaconPlugin --> BeaconPublisher : QQ
+    BeaconPublisher --> BaseEventModel : RR
 
     style StratumService fill:#6d28d9,stroke:#4c1d95,color:#ffffff
     style RegisteredStratumCatalog fill:#6d28d9,stroke:#4c1d95,color:#ffffff
@@ -143,6 +149,8 @@ classDiagram
     style Logger fill:#6d28d9,stroke:#4c1d95,color:#ffffff
     style DataLayerPlugin fill:#6d28d9,stroke:#4c1d95,color:#ffffff
     style DataLayerPublisher fill:#6d28d9,stroke:#4c1d95,color:#ffffff
+    style BeaconPlugin fill:#6d28d9,stroke:#4c1d95,color:#ffffff
+    style BeaconPublisher fill:#6d28d9,stroke:#4c1d95,color:#ffffff
 ```
 
 ```mermaid
@@ -184,6 +192,8 @@ Numbers on classes and letters on relationships match the callout table.
 | 17  | [Source](../../src/utils/env.ts#L72-L81); `debug` writes only while the debug flag is set.                                                               | Every debug line passes one check.                                |
 | 18  | [Source](../../src/plugins/data-layer/index.ts#L10-L19); named `dataLayer`, takes an optional array name.                                                | Accepts every event type.                                         |
 | 19  | [Source](../../src/plugins/data-layer/publisher.ts#L9-L51); available only in a browser window.                                                          | Pushes one entry per event for a tag manager.                     |
+| 20  | [Source](../../src/plugins/beacon/index.ts#L11-L20); named `beacon`, requires a collector URL.                                                           | Accepts every event type.                                         |
+| 21  | [Source](../../src/plugins/beacon/publisher.ts#L15-L59); available where beacons or `fetch` exist.                                                       | Posts the snapshot as JSON.                                       |
 | A   | Creates the injector in the constructor and calls `registerPlugin`.                                                                                      | All shared state hangs off one injector.                          |
 | B   | Constructs catalogs, or calls `addItems` on an existing ID.                                                                                              | Duplicate catalog IDs merge instead of failing.                   |
 | C   | Filters, checks, maps, and publishes through each publisher in its own microtask.                                                                        | A slow destination never blocks the app.                          |
@@ -224,3 +234,7 @@ Numbers on classes and letters on relationships match the callout table.
 | LL  | Implements the four publisher steps.                                                                                                                     | The data layer is one more destination.                           |
 | MM  | Constructs the publisher with the array name from its options.                                                                                           | One plugin instance feeds one array.                              |
 | NN  | Receives the model but maps the snapshot only.                                                                                                           | The entry needs no model fields.                                  |
+| OO  | A plugin with one publisher and no event types.                                                                                                          | Same shape as the data layer plugin.                              |
+| PP  | Implements the four publisher steps.                                                                                                                     | A collector URL is one more destination.                          |
+| QQ  | Constructs the publisher with the URL from its options.                                                                                                  | One plugin instance feeds one collector.                          |
+| RR  | Receives the model but sends the snapshot only.                                                                                                          | The request needs no model fields.                                |

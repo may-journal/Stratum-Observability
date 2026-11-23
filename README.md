@@ -292,6 +292,17 @@ import { DataLayerPluginFactory } from '@capitalone/stratum-observability/plugin
 const dataLayerPlugin = DataLayerPluginFactory();
 ```
 
+## Beacon plugin
+
+The beacon plugin posts the snapshot of every published event to your own collector URL as JSON.
+It queues a beacon, which the browser still sends after the page closes, and falls back to a keepalive request.
+
+```ts
+import { BeaconPluginFactory } from '@capitalone/stratum-observability/plugins/beacon';
+
+const beaconPlugin = BeaconPluginFactory({ url: 'https://collector.example.com/events' });
+```
+
 ## Contributing
 
 We welcome and appreciate your contributions!
