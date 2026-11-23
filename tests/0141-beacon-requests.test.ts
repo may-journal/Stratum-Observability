@@ -30,7 +30,7 @@ function stubBeacon(accepted: boolean): Mock {
   return sendBeacon;
 }
 
-function stubFetch(result: Promise<unknown> = Promise.resolve()): Mock {
+function stubFetch(result: Promise<unknown> = Promise.resolve({ ok: true })): Mock {
   const fetchSpy = vi.fn(() => result);
   vi.stubGlobal(FETCH_GLOBAL, fetchSpy);
   return fetchSpy;
@@ -78,6 +78,14 @@ describe('0141 Beacon Requests', () => {
   it('0141.4 the publish reports failure and nothing is thrown into my app', async () => {
     vi.stubGlobal(NAVIGATOR_GLOBAL, {});
     const fetchSpy = stubFetch(Promise.reject(new Error('collector unreachable')));
+
+    expect(await createBeaconService().publish(1)).toBe(false);
+    expect(fetchSpy).toHaveBeenCalledOnce();
+  });
+
+  it('0141.6 the publish reports failure for the refused event', async () => {
+    vi.stubGlobal(NAVIGATOR_GLOBAL, undefined);
+    const fetchSpy = stubFetch(Promise.resolve({ ok: false, status: 500 }));
 
     expect(await createBeaconService().publish(1)).toBe(false);
     expect(fetchSpy).toHaveBeenCalledOnce();

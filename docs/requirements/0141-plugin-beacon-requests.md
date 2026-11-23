@@ -34,3 +34,7 @@ events published with the beacon plugin
   - Given App developer has the beacon plugin in a runtime with neither beacons nor requests
     - When Stratum checks the collector destination
       - Then Stratum reports the collector destination unavailable
+- 0141.6
+  - Given App developer has the beacon plugin and a collector that answers with an error status
+    - When the collector refuses the keepalive request
+      - Then the publish reports failure for the refused event

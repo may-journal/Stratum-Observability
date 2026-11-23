@@ -43,17 +43,20 @@ export class BeaconPublisher extends BasePublisher<string> {
 
   /**
    * Queues a beacon first and falls back to a keepalive request when the browser refuses it.
-   * A failed request rejects, which the service catches and reports as a failed publish.
+   * A failed request or an error status rejects, which the service reports as a failed publish.
    */
   async publish(content: string): Promise<void> {
     if (canQueueBeacon() && navigator.sendBeacon(this.url, new Blob([content], { type: BEACON_CONTENT_TYPE }))) {
       return;
     }
-    await fetch(this.url, {
+    const response = await fetch(this.url, {
       body: content,
       headers: { 'Content-Type': BEACON_CONTENT_TYPE },
       keepalive: true,
       method: 'POST'
     });
+    if (!response.ok) {
+      throw new Error(`Collector answered ${response.status}`);
+    }
   }
 }
