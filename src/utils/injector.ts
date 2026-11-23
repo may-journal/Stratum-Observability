@@ -1,6 +1,13 @@
 import { BaseEventModel, type BasePublisher } from '../base';
 import { BASE_EVENT_TYPE, GLOBAL_LISTENER_KEY } from '../constants';
-import type { EventId, EventTypeModelMap, GenericPlugin, RegisteredPlugins, StratumSnapshotListenerFn } from '../types';
+import type {
+  EventId,
+  EventTypeModelMap,
+  GenericPlugin,
+  RegisteredPlugins,
+  StratumLogger,
+  StratumSnapshotListenerFn
+} from '../types';
 import { AbTestManager } from './ab-test-manager';
 import { generateDefaultSessionId, Logger } from './env';
 import { normalizeToArray } from './general';
@@ -86,10 +93,10 @@ export class Injector {
    */
   productVersion: string;
 
-  constructor(productName: string, productVersion: string) {
+  constructor(productName: string, productVersion: string, logger?: StratumLogger) {
     this.productName = productName;
     this.productVersion = productVersion;
-    this.logger = new Logger();
+    this.logger = new Logger(logger);
     this.stratumSessionId = generateDefaultSessionId();
   }
 

@@ -31,4 +31,18 @@ export interface StratumServiceOptions {
    * Plugins can be used to leverage the catalog functionality in new ways.
    */
   plugins?: GenericPlugin | GenericPlugin[];
+
+  /**
+   * Logger that receives every debug line Stratum writes, in place of the console.
+   * When omitted, lines go to the console only while debug mode is on.
+   */
+  logger?: StratumLogger;
+}
+
+/**
+ * Shape of a logger an application can hand to Stratum.
+ * A function taking a message and any number of details satisfies it.
+ */
+export interface StratumLogger {
+  debug(...args: unknown[]): void;
 }

@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DEBUG_LOG_PREFIX, debugModeEnabled, Logger } from '../src';
-import { enableDebugMode, resetStratum, spyOnConsoleDebug } from './utils/helpers';
+import { createService, enableDebugMode, resetStratum, spyOnConsoleDebug } from './utils/helpers';
+
+const UNKNOWN_KEY = 'missing-key';
 
 describe('0010 Debug Log', () => {
   afterEach(() => {
@@ -25,5 +27,23 @@ describe('0010 Debug Log', () => {
       throw new Error();
     });
     expect(debugModeEnabled()).toEqual(false);
+  });
+
+  it('0010.3 my logger receives the line', async () => {
+    const logger = { debug: vi.fn() };
+    const consoleSpy = spyOnConsoleDebug();
+
+    expect(await createService({ logger }).publish(UNKNOWN_KEY)).toBe(false);
+    expect(logger.debug).toHaveBeenCalledExactlyOnceWith(expect.stringContaining(UNKNOWN_KEY));
+    expect(consoleSpy).not.toHaveBeenCalled();
+  });
+
+  it('0010.4 publishing carries on and nothing is thrown into my app', async () => {
+    const debug = vi.fn(() => {
+      throw new Error('logger failed');
+    });
+
+    expect(await createService({ logger: { debug } }).publish(UNKNOWN_KEY)).toBe(false);
+    expect(debug).toHaveBeenCalledOnce();
   });
 });

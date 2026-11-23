@@ -303,6 +303,19 @@ import { BeaconPluginFactory } from '@capitalone/stratum-observability/plugins/b
 const beaconPlugin = BeaconPluginFactory({ url: 'https://collector.example.com/events' });
 ```
 
+## Custom logger
+
+Stratum writes its debug lines to the console while the tab's debug flag is on.
+Pass a `logger` to send every debug line to your own logger instead.
+
+```ts
+const stratumService = new StratumService({
+  productName: 'stratumExampleApp',
+  productVersion: '1.0.0',
+  logger: { debug: (message, ...details) => myLogger.trace(message, ...details) }
+});
+```
+
 ## Contributing
 
 We welcome and appreciate your contributions!

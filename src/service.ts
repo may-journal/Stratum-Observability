@@ -52,7 +52,7 @@ export class StratumService {
    */
   constructor(options: StratumServiceOptions) {
     // Set up default state for the service, including global context data.
-    this.injector = new Injector(options.productName, options.productVersion);
+    this.injector = new Injector(options.productName, options.productVersion, options.logger);
 
     // Register the plugins passed in the options, if any.
     if (options.plugins) {

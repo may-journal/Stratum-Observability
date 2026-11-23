@@ -1,5 +1,5 @@
 import { DEBUG_KEY, DEBUG_LOG_PREFIX, GLOBAL_LISTENER_KEY, STORED_SESSION_ID_KEY } from '../constants';
-import type { StratumSnapshotListenerFn } from '../types';
+import type { StratumLogger, StratumSnapshotListenerFn } from '../types';
 import { isDefined } from './general';
 
 /**
@@ -70,11 +70,20 @@ export function generateDefaultSessionId(): string {
  * the package are subject to debug mode checks.
  */
 export class Logger {
+  constructor(private readonly custom?: StratumLogger) {}
+
   /**
-   * Write warnings to the console only if debug mode is enabled
+   * Hand the line to the application logger when one was given.
+   * Otherwise write it to the console only if debug mode is enabled.
    */
   debug(...args: unknown[]) {
-    if (debugModeEnabled()) {
+    if (this.custom) {
+      try {
+        this.custom.debug(...args);
+      } catch {
+        // A failing application logger must never break publishing.
+      }
+    } else if (debugModeEnabled()) {
       console.debug(DEBUG_LOG_PREFIX, ...args);
     }
   }
