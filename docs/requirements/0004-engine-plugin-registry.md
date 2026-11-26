@@ -14,31 +14,31 @@ plugins registered
 
 ## Requirements
 
-- 0004.1
-  - Given Plugin author has a plugin with event types and a publisher
-    - When the app adds it after construction
-      - Then the plugin's event types validate items and its publisher gets events
-- 0004.2
-  - Given App developer has two plugins with the same name
-    - When I pass both to the service
-      - Then only the first plugin and its publisher are registered
-- 0004.3
-  - Given Plugin author has a plugin declaring an event type another plugin owns
-    - When the app adds it
-      - Then the first plugin keeps the type and a debug line says why
-- 0004.4
-  - Given Plugin author has a publisher that accepts another plugin's event types
-    - When the app publishes one of those events
-      - Then that publisher gets the event with its plugin's options
-- 0004.5
-  - Given Plugin author has a publisher that names no accepted event types
-    - When the plugin is registered
-      - Then the publisher accepts only its own plugin's event types
-- 0004.6
-  - Given Plugin author has a plugin that adds a catalog when registered
-    - When it publishes from that catalog
-      - Then the snapshot listener gets the event
-- 0004.7
-  - Given Plugin author has a publisher outside any plugin that names no accepted event types
-    - When I ask whether it handles an event
-      - Then the publisher accepts every event
+1. Late plugins register
+   1. GIVEN Plugin author has a plugin with event types and a publisher
+      1. WHEN the app adds it after construction
+         1. THEN the plugin's event types validate items and its publisher gets events
+2. Duplicate names keep the first
+   1. GIVEN App developer has two plugins with the same name
+      1. WHEN I pass both to the service
+         1. THEN only the first plugin and its publisher are registered
+3. Event types keep their first owner
+   1. GIVEN Plugin author has a plugin declaring an event type another plugin owns
+      1. WHEN the app adds it
+         1. THEN the first plugin keeps the type and a debug line says why
+4. Publishers accept chosen event types
+   1. GIVEN Plugin author has a publisher that accepts another plugin's event types
+      1. WHEN the app publishes one of those events
+         1. THEN that publisher gets the event with its plugin's options
+5. Publishers default to their own types
+   1. GIVEN Plugin author has a publisher that names no accepted event types
+      1. WHEN the plugin is registered
+         1. THEN the publisher accepts only its own plugin's event types
+6. Plugin catalogs reach listeners
+   1. GIVEN Plugin author has a plugin that adds a catalog when registered
+      1. WHEN it publishes from that catalog
+         1. THEN the snapshot listener gets the event
+7. Loose publishers accept every event
+   1. GIVEN Plugin author has a publisher outside any plugin that names no accepted event types
+      1. WHEN I ask whether it handles an event
+         1. THEN the publisher accepts every event

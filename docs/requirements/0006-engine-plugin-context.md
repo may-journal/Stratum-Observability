@@ -14,15 +14,15 @@ context keys set
 
 ## Requirements
 
-- 0006.1
-  - Given Plugin author has a plugin with a default context
-    - When I set a context key the plugin declares
-      - Then the plugin reports the new value
-- 0006.2
-  - Given Plugin author has a plugin with a default context
-    - When I set a key the plugin does not declare
-      - Then the plugin refuses it and keeps no value
-- 0006.3
-  - Given Plugin author has turned off the context prefix
-    - When an event is delivered
-      - Then the event's context keys carry no plugin name
+1. Declared context keys update
+   1. GIVEN Plugin author has a plugin with a default context
+      1. WHEN I set a context key the plugin declares
+         1. THEN the plugin reports the new value
+2. Undeclared context keys are refused
+   1. GIVEN Plugin author has a plugin with a default context
+      1. WHEN I set a key the plugin does not declare
+         1. THEN the plugin refuses it and keeps no value
+3. Unprefixed context keys carry no plugin name
+   1. GIVEN Plugin author has turned off the context prefix
+      1. WHEN an event is delivered
+         1. THEN the event's context keys carry no plugin name

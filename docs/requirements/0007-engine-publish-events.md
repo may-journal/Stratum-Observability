@@ -14,35 +14,44 @@ publish calls
 
 ## Requirements
 
-- 0007.1
-  - Given App developer has a default catalog, or one added after construction, and a snapshot listener
-    - When I publish a key from it, through the service or the catalog
-      - Then the listener gets one event with the item, product, session, catalog ID and key
-- 0007.3
-  - Given App developer names a missing catalog or key, or a destination is missing
-    - When I publish
-      - Then the call resolves false and logs why in debug mode
-- 0007.4
-  - Given App developer has an item with a placeholder, also in a nested field
-    - When I publish it with a replacement value or function
-      - Then the event carries the value, or what the function returns for that event
-- 0007.5
-  - Given App developer passes event data that refers to itself
-    - When the event is copied for each destination
-      - Then the loop is marked as circular and the copy succeeds
-- 0007.6
-  - Given App developer changes plugin context or ends an A/B test right after a publish
-    - When that event is delivered
-      - Then the event carries the context and A/B tests from the moment of publishing
-- 0007.7
-  - Given Plugin author has a publisher that no plugin registered
-    - When I build an event snapshot for it
-      - Then the snapshot holds no plugin data
-- 0007.8
-  - Given App developer has a null value or a list
-    - When I run placeholder replacement on it
-      - Then replacement returns and leaves the value unchanged
-- 0007.9
-  - Given Plugin author has a publisher that throws while publishing
-    - When I publish a key
-      - Then the call resolves false and logs why in debug mode
+1. Publishing reaches listeners
+   1. GIVEN App developer has a default catalog
+   2. GIVEN or one added after construction
+   3. GIVEN a snapshot listener
+      1. WHEN I publish a key from it and through the service or the catalog
+         1. THEN the listener gets one event with the item
+         2. THEN product
+         3. THEN session
+         4. THEN catalog ID and key
+2. Removed in 2026.11.26.1135: never held
+3. Failed publishes resolve false
+   1. GIVEN App developer names a missing catalog or key
+   2. GIVEN or a destination is missing
+      1. WHEN I publish
+         1. THEN the call resolves false and logs why in debug mode
+4. Placeholders take replacements
+   1. GIVEN App developer has an item with a placeholder
+   2. GIVEN also in a nested field
+      1. WHEN I publish it with a replacement value or function
+         1. THEN the event carries the value
+         2. THEN or what the function returns for that event
+5. Circular data is copied
+   1. GIVEN App developer passes event data that refers to itself
+      1. WHEN the event is copied for each destination
+         1. THEN the loop is marked as circular and the copy succeeds
+6. Events keep their publish time state
+   1. GIVEN App developer changes plugin context or ends an A/B test right after a publish
+      1. WHEN that event is delivered
+         1. THEN the event carries the context and A/B tests from the moment of publishing
+7. Unregistered publishers get no plugin data
+   1. GIVEN Plugin author has a publisher that no plugin registered
+      1. WHEN I build an event snapshot for it
+         1. THEN the snapshot holds no plugin data
+8. Plain values pass through replacement
+   1. GIVEN App developer has a null value or a list
+      1. WHEN I run placeholder replacement on it
+         1. THEN replacement returns and leaves the value unchanged
+9. Throwing publishers resolve false
+   1. GIVEN Plugin author has a publisher that throws while publishing
+      1. WHEN I publish a key
+         1. THEN the call resolves false and logs why in debug mode

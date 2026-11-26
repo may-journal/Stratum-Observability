@@ -14,7 +14,10 @@ events published with the console plugin
 
 ## Requirements
 
-- 0101.1
-  - Given App developer has the console plugin and a catalog
-    - When I publish a key
-      - Then the console shows one line, naming the plugin, with the event's type, ID and key
+1. Console shows one line per event
+   1. GIVEN App developer has the console plugin and a catalog
+      1. WHEN I publish a key
+         1. THEN the console shows one line
+         2. THEN naming the plugin
+         3. THEN with the event's type
+         4. THEN ID and key
