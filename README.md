@@ -280,6 +280,29 @@ export class SimplePublisher extends BasePublisher<ExternalEventSchema> {
 }
 ```
 
+## Data layer plugin
+
+The data layer plugin pushes every published event onto the page's `dataLayer` array, where a tag manager reads it.
+Each entry has `event: 'stratum_event'` and a `stratum` object with the event's key, ID, type and your product.
+
+```ts
+import { DataLayerPluginFactory } from '@capitalone/stratum-observability/plugins/data-layer';
+
+// Pass { name: 'myLayer' } to push onto another global array.
+const dataLayerPlugin = DataLayerPluginFactory();
+```
+
+## Beacon plugin
+
+The beacon plugin posts the snapshot of every published event to your own collector URL as JSON.
+It queues a beacon, which the browser still sends after the page closes, and falls back to a keepalive request.
+
+```ts
+import { BeaconPluginFactory } from '@capitalone/stratum-observability/plugins/beacon';
+
+const beaconPlugin = BeaconPluginFactory({ url: 'https://collector.example.com/events' });
+```
+
 ## Contributing
 
 We welcome and appreciate your contributions!
