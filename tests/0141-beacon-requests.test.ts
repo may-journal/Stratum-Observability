@@ -46,7 +46,7 @@ describe('0141 Beacon Requests', () => {
     resetStratum();
   });
 
-  it('0141.1 the browser queues one beacon to my URL, holding the event snapshot as JSON', async () => {
+  it('0141.1 the browser queues one beacon to my URL', async () => {
     const sendBeacon = stubBeacon(true);
     const fetchSpy = stubFetch();
 
