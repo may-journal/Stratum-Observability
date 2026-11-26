@@ -54,17 +54,17 @@
   "sideEffects": false,
   "types": "dist/types/index.d.ts",
   "devDependencies": {
-    "@biomejs/biome": "^2.6.8",
+    "@biomejs/biome": "^2.6.9",
     "@rollup/plugin-replace": "^6.0.3",
     "@rollup/plugin-terser": "^1.0.0",
-    "@types/node": "^26.6.6",
-    "@vitest/coverage-v8": "^5.1.1",
+    "@types/node": "^26.6.11",
+    "@vitest/coverage-v8": "^5.1.2",
     "esbuild": "^0.28.2",
     "husky": "^9.1.7",
     "rollup": "^4.68.8",
     "rollup-plugin-esbuild": "^6.2.1",
     "typescript": "^7.0.2",
-    "vitest": "^5.1.1"
+    "vitest": "^5.1.2"
   },
   "typesVersions": {
     "*": {

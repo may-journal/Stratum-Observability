@@ -14,19 +14,21 @@ events published with the New Relic plugin on a page running the agent
 
 ## Requirements
 
-- 0111.1
-  - Given App developer has the New Relic plugin, a running A/B test and the agent on the page
-    - When I publish a key with a name replacement
-      - Then New Relic saves one interaction with that name and Stratum's attributes
-- 0111.2
-  - Given App developer has the New Relic plugin
-    - When I publish with plugin data marking the event valid
-      - Then the interaction is saved as valid
-- 0111.3
-  - Given Plugin author has a plugin with context, next to the New Relic plugin
-    - When the app publishes an event
-      - Then the interaction carries that plugin's prefixed context
-- 0111.4
-  - Given App developer has the New Relic plugin outside a browser window
-    - When Stratum checks the New Relic destination
-      - Then Stratum reports the New Relic destination unavailable
+1. Events save as interactions
+   1. GIVEN App developer has the New Relic plugin
+   2. GIVEN a running A/B test and the agent on the page
+      1. WHEN I publish a key with a name replacement
+         1. THEN New Relic saves one interaction with that name and Stratum's attributes
+2. Valid events save as valid
+   1. GIVEN App developer has the New Relic plugin
+      1. WHEN I publish with plugin data marking the event valid
+         1. THEN the interaction is saved as valid
+3. Other plugin context joins the interaction
+   1. GIVEN Plugin author has a plugin with context
+   2. GIVEN next to the New Relic plugin
+      1. WHEN the app publishes an event
+         1. THEN the interaction carries that plugin's prefixed context
+4. Missing windows report unavailable
+   1. GIVEN App developer has the New Relic plugin outside a browser window
+      1. WHEN Stratum checks the New Relic destination
+         1. THEN Stratum reports the New Relic destination unavailable

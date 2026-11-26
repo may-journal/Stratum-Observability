@@ -14,27 +14,29 @@ malformed catalog items registered
 
 ## Requirements
 
-- 0002.1
-  - Given App developer has a catalog of well-formed items
-    - When I register the catalog
-      - Then the catalog is valid and every item can be published
-- 0002.2
-  - Given App developer has an item with no ID
-    - When I register its catalog
-      - Then the item uses its key as its ID
-- 0002.3
-  - Given App developer has items with an unknown type, missing fields or a reused ID
-    - When I register them in a new catalog or add them to a valid one
-      - Then each item is held back with one error and the catalog is invalid
-- 0002.4
-  - Given App developer has an item whose ID is negative, empty or not a number or text
-    - When I register its catalog
-      - Then the item is held back as having an invalid ID
-- 0002.5
-  - Given App developer has an item that is not a plain object
-    - When I register its catalog
-      - Then the item is held back as having an unexpected format
-- 0002.6
-  - Given App developer has debug mode on and a catalog with malformed items
-    - When I register the catalog
-      - Then one debug line names the count and keys held back
+1. Valid items publish
+   1. GIVEN App developer has a catalog of well-formed items
+      1. WHEN I register the catalog
+         1. THEN the catalog is valid and every item can be published
+2. Items default to their key
+   1. GIVEN App developer has an item with no ID
+      1. WHEN I register its catalog
+         1. THEN the item uses its key as its ID
+3. Faulty items are held back
+   1. GIVEN App developer has items with an unknown type
+   2. GIVEN missing fields or a reused ID
+      1. WHEN I register them in a new catalog or add them to a valid one
+         1. THEN each item is held back with one error and the catalog is invalid
+4. Invalid IDs are held back
+   1. GIVEN App developer has an item whose ID is negative
+   2. GIVEN empty or not a number or text
+      1. WHEN I register its catalog
+         1. THEN the item is held back as having an invalid ID
+5. Unexpected formats are held back
+   1. GIVEN App developer has an item that is not a plain object
+      1. WHEN I register its catalog
+         1. THEN the item is held back as having an unexpected format
+6. Debug line reports held back items
+   1. GIVEN App developer has debug mode on and a catalog with malformed items
+      1. WHEN I register the catalog
+         1. THEN one debug line names the count and keys held back

@@ -14,11 +14,14 @@ debug lines Stratum writes
 
 ## Requirements
 
-- 0010.1
-  - Given App developer has a tab with the debug flag off, then on
-    - When Stratum writes a debug line
-      - Then the console shows the line, marked as Stratum, only while the flag is on
-- 0010.2
-  - Given App developer has a page that blocks session storage
-    - When Stratum checks for debug mode
-      - Then debug mode is off and nothing fails
+1. Debug lines follow the flag
+   1. GIVEN App developer has a tab with the debug flag off
+   2. GIVEN then on
+      1. WHEN Stratum writes a debug line
+         1. THEN the console shows the line
+         2. THEN marked as Stratum
+         3. THEN only while the flag is on
+2. Blocked storage turns debug off
+   1. GIVEN App developer has a page that blocks session storage
+      1. WHEN Stratum checks for debug mode
+         1. THEN debug mode is off and nothing fails
