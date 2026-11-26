@@ -47,6 +47,8 @@ flowchart TB
     newRelic[13 New Relic Interactions<br/>Req 0111]:::screen
     newRelicPlus[14 New Relic Plus Events<br/>Req 0121]:::screen
     debug[15 Debug Log<br/>Req 0010]:::screen
+    dataLayer[16 Data Layer Entries<br/>Req 0131]:::screen
+    beacon[17 Beacon Requests<br/>Req 0141]:::screen
 
     developer --> construct
     construct --> registry
@@ -64,6 +66,8 @@ flowchart TB
     publish --> console
     publish --> newRelic
     publish --> newRelicPlus
+    publish --> dataLayer
+    publish --> beacon
     registry --> debug
     validation --> debug
     publish --> debug
@@ -92,4 +96,6 @@ Numbers match the callout table.
 | 12  | [0101](../requirements/0101-plugin-browser-console-output.md): 0101.1.              | Screen  | Instant feedback in developer tools.                 |
 | 13  | [0111](../requirements/0111-plugin-new-relic-interactions.md): 0111.1 to 0111.4.    | Screen  | Queryable in New Relic.                              |
 | 14  | [0121](../requirements/0121-plugin-new-relic-plus-events.md): 0121.1 to 0121.5.     | Screen  | Typed New Relic events with prefixed context.        |
-| 15  | [0010](../requirements/0010-engine-debug-log.md): 0010.1 and 0010.2.                | Screen  | Explains dropped items and skipped publishers.       |
+| 15  | [0010](../requirements/0010-engine-debug-log.md): 0010.1 to 0010.4.                 | Screen  | Explains dropped items and skipped publishers.       |
+| 16  | [0131](../requirements/0131-plugin-data-layer-entries.md): 0131.1 to 0131.4.        | Screen  | Tag managers see every event.                        |
+| 17  | [0141](../requirements/0141-plugin-beacon-requests.md): 0141.1 to 0141.6.           | Screen  | A team's own collector sees every event.             |

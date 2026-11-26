@@ -25,3 +25,13 @@ debug lines Stratum writes
    1. GIVEN App developer has a page that blocks session storage
       1. WHEN Stratum checks for debug mode
          1. THEN debug mode is off and nothing fails
+3. Own logger gets the lines
+   1. GIVEN App developer passes a logger of their own to the service
+   2. GIVEN the debug flag is off
+      1. WHEN Stratum writes a debug line for that service
+         1. THEN my logger receives the line
+         2. THEN the console stays quiet
+4. Throwing logger is contained
+   1. GIVEN App developer passes a logger that throws
+      1. WHEN Stratum hands a debug line to the failing logger
+         1. THEN publishing carries on and nothing is thrown into my app

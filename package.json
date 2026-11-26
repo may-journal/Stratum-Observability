@@ -28,6 +28,16 @@
       "import": "./dist/esm/plugins/new-relic-plus/index.js",
       "default": "./dist/cjs/plugins/new-relic-plus/index.js"
     },
+    "./plugins/data-layer": {
+      "types": "./dist/types/plugins/data-layer/index.d.ts",
+      "import": "./dist/esm/plugins/data-layer/index.js",
+      "default": "./dist/cjs/plugins/data-layer/index.js"
+    },
+    "./plugins/beacon": {
+      "types": "./dist/types/plugins/beacon/index.d.ts",
+      "import": "./dist/esm/plugins/beacon/index.js",
+      "default": "./dist/cjs/plugins/beacon/index.js"
+    },
     "./plugins/browser-console": {
       "types": "./dist/types/plugins/browser-console/index.d.ts",
       "import": "./dist/esm/plugins/browser-console/index.js",
@@ -76,6 +86,12 @@
       ],
       "plugins/new-relic-plus": [
         "./dist/types/plugins/new-relic-plus/index.d.ts"
+      ],
+      "plugins/data-layer": [
+        "./dist/types/plugins/data-layer/index.d.ts"
+      ],
+      "plugins/beacon": [
+        "./dist/types/plugins/beacon/index.d.ts"
       ],
       "plugins/browser-console": [
         "./dist/types/plugins/browser-console/index.d.ts"
