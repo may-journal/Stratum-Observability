@@ -47,3 +47,6 @@ export const GENERATED_DEFAULT_METADATA = {
 
 // biome-ignore lint/suspicious/noExplicitAny: tests read and write arbitrary globals
 export const globalWindow = globalThis as any;
+
+/** Name of the global that tests alias, or remove to stand outside a browser. */
+export const WINDOW_GLOBAL = 'window';

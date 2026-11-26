@@ -16,6 +16,7 @@ apps that construct a service
 
 1. Core and plugin entry points load apart
    1. GIVEN App developer has installed the package
+   2. GIVEN the package has one entry point per bundled plugin
       1. WHEN I import the core and one plugin entry point
          1. THEN both load without the other plugins
 2. Service reports product and library
