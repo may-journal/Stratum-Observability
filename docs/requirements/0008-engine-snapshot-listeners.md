@@ -15,7 +15,8 @@ published events
 ## Requirements
 
 1. Listeners for every product come first
-   1. GIVEN App developer has listeners for every product and for this one
+   1. GIVEN App developer has listeners for every product
+   2. GIVEN listeners for this one
       1. WHEN the service gathers listeners
          1. THEN the listeners for every product come first
 2. Locked pages refuse listeners

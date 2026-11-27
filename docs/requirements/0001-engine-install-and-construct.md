@@ -16,12 +16,15 @@ apps that construct a service
 
 1. Core and plugin entry points load apart
    1. GIVEN App developer has installed the package
-      1. WHEN I import the core and one plugin entry point
+      1. WHEN I import the core with one plugin entry point
          1. THEN both load without the other plugins
 2. Service reports product and library
-   1. GIVEN App developer has a product name and version
+   1. GIVEN App developer has a product name
+   2. GIVEN a product version
       1. WHEN I construct the service with them
-         1. THEN the service reports the product name and version with the library version
+         1. THEN the service reports the product name
+         2. THEN the service reports the product version
+         3. THEN the service reports the library version
 3. Bare service holds nothing
    1. GIVEN App developer passes no catalog or plugins
       1. WHEN I construct the service
@@ -31,7 +34,8 @@ apps that construct a service
 4. New tab gets a stored session ID
    1. GIVEN App developer has a tab with no stored session ID
       1. WHEN I construct services one after another
-         1. THEN each creates a new random session ID and stores it for the tab
+         1. THEN each creates a new random session ID
+         2. THEN each stores it for the tab
 5. Stored session ID is reused
    1. GIVEN App developer has a tab with a stored session ID
       1. WHEN I construct a service in that tab

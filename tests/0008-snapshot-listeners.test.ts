@@ -19,6 +19,7 @@ describe('0008 Snapshot Listeners', () => {
     const globalListener = vi.fn();
 
     stratum.addSnapshotListener(serviceListener);
+    expect(stratum.injector.getExternalSnapshotListeners()).toStrictEqual([serviceListener]);
     addGlobalStratumSnapshotListener(globalListener);
 
     expect(stratum.injector.getExternalSnapshotListeners()).toStrictEqual([globalListener, serviceListener]);

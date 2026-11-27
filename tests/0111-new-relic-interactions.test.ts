@@ -35,7 +35,7 @@ describe('0111 New Relic Interactions', () => {
     resetStratum();
   });
 
-  it("0111.1 New Relic saves one interaction with that name and Stratum's attributes", async () => {
+  it("0111.1 New Relic saves one interaction with that name and the interaction carries Stratum's attributes", async () => {
     const spies = spyOnNewRelic();
     const eventName = 'testEvent';
 

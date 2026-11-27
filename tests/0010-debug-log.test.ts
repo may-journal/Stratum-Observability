@@ -24,6 +24,7 @@ describe('0010 Debug Log', () => {
     vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
       throw new Error();
     });
+    expect(() => debugModeEnabled()).not.toThrow();
     expect(debugModeEnabled()).toEqual(false);
   });
 });

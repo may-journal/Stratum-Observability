@@ -30,7 +30,7 @@ describe('0001 Install and Construct', () => {
     expect(Object.keys(newRelic).filter((name) => /Plus|BrowserConsole/.test(name))).toStrictEqual([]);
   });
 
-  it('0001.2 the service reports the product name and version with the library version', () => {
+  it('0001.2 the service reports the product name, the product version and the library version', () => {
     const stratum = createSampleService();
 
     expect(stratum.id).toEqual(PRODUCT_NAME);
@@ -50,7 +50,7 @@ describe('0001 Install and Construct', () => {
     expect(empty.injector.getExternalSnapshotListeners()).toEqual([]);
   });
 
-  it('0001.4 each creates a new random session ID and stores it for the tab', () => {
+  it('0001.4 each creates a new random session ID and each stores it for the tab', () => {
     expect(sessionStorage.getItem(STORED_SESSION_ID_KEY)).toBeNull();
     const first = generateDefaultSessionId();
     expect(isUuid(first)).toBe(true);

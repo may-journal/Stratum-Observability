@@ -95,7 +95,7 @@ describe('0002 Catalog Validation', () => {
     expect(model.validationErrors).toStrictEqual(['Catalog item has an unexpected format']);
   });
 
-  it('0002.6 one debug line names the count and keys held back', () => {
+  it('0002.6 one debug line names the count held back and the debug line names the keys held back', () => {
     enableDebugMode(true);
     const consoleSpy = spyOnConsoleDebug();
 

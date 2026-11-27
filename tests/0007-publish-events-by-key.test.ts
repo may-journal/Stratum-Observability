@@ -52,7 +52,7 @@ describe('0007 Publish Events by Key', () => {
     resetStratum();
   });
 
-  it('0007.1 the listener gets one event with the item, product, session, catalog ID and key', async () => {
+  it('0007.1 the listener gets one event for that key with the item, product, session and catalog ID', async () => {
     const entries = [
       {
         entry: 'stratum.publishFromCatalog',
@@ -74,7 +74,7 @@ describe('0007 Publish Events by Key', () => {
     }
   });
 
-  it('0007.3 the call resolves false and logs why in debug mode', async () => {
+  it('0007.3 the call resolves false and it logs why in debug mode', async () => {
     const cases = [
       { reason: 'no default catalog exists', act: () => createService().publish(1) },
       { reason: 'the catalog is unknown', act: (s: StratumService) => s.publishFromCatalog(UNKNOWN_CATALOG_ID, 1) },
@@ -129,7 +129,7 @@ describe('0007 Publish Events by Key', () => {
     expect(safeStringify(node)).toBe('{"self":"[Circular]"}');
   });
 
-  it('0007.6 the event carries the context and A/B tests from the moment of publishing', async () => {
+  it('0007.6 the event carries the context from the moment of publishing and it carries the A/B tests from that moment', async () => {
     const changes = [
       {
         change: 'plugin context',
@@ -174,7 +174,7 @@ describe('0007 Publish Events by Key', () => {
     expect(snapshot.plugins).toStrictEqual({});
   });
 
-  it('0007.8 replacement returns and leaves the value unchanged', () => {
+  it('0007.8 replacement returns and it leaves the value unchanged', () => {
     const model = createModel(createInjector(), { id: 1 });
     const cases = [
       { kind: 'a null value', value: () => null, expected: null },
@@ -188,7 +188,7 @@ describe('0007 Publish Events by Key', () => {
     }
   });
 
-  it('0007.9 the call resolves false and logs why in debug mode', async () => {
+  it('0007.9 the call resolves false and it logs why in debug mode', async () => {
     const stratum = createSampleService();
     const debugSpy = spyOnDebugLog();
     vi.spyOn(stratum.publishers[0], 'publish').mockRejectedValue(new Error('publisher failed'));

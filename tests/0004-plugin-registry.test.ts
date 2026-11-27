@@ -58,7 +58,7 @@ describe('0004 Plugin Registry', () => {
     expect(Object.keys(snapshot.plugins)).toStrictEqual([PLUGIN_A_NAME]);
   });
 
-  it('0004.2 only the first plugin and its publisher are registered', () => {
+  it("0004.2 only the first plugin is registered and only the first plugin's publisher is registered", () => {
     mockSessionId();
     mockNewRelic();
     const debugSpy = spyOnDebugLog();
