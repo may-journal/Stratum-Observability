@@ -20,7 +20,7 @@ describe('0101 Browser Console Output', () => {
     resetStratum();
   });
 
-  it("0101.1 the console shows one line, naming the plugin, with the event's type, ID and key", async () => {
+  it("0101.1 the console shows one line naming the plugin, with the event's type, ID and key", async () => {
     const publishSpy = spyOnPublish(plugin.publishers[0]);
     const expectedContent = JSON.stringify({ eventType: BASE_CATALOG[1].eventType, id: BASE_CATALOG[1].id, key: '1' });
 

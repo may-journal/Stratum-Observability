@@ -56,6 +56,9 @@ describe('0009 A/B Tests', () => {
       const { snapshot } = await captureSnapshot(stratum, () => stratum.publish(1, { abTestSchemas: transient }));
 
       expect.soft(snapshot.abTestSchemas, shape).toHaveLength([transient].flat().length);
+      for (const carried of snapshot.abTestSchemas) {
+        expect.soft(carried, shape).toMatchObject({ name: AB_TEST_SCHEMA.name });
+      }
       expect.soft(stratum.abTests, shape).toEqual([]);
     }
   });

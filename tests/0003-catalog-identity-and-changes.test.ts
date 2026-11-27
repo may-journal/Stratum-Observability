@@ -41,7 +41,7 @@ describe('0003 Catalog Identity and Changes', () => {
     resetStratum();
   });
 
-  it("0003.1 the catalog's ID and metadata come from that component and its items use the plugin's event types", () => {
+  it("0003.1 the catalog's ID comes from that component, its metadata comes from that component and its items use the plugin's event types", () => {
     const dynamic = createService({ plugins: [PluginAFactory()] });
     const catalog = dynamic.addCatalog({ items: SAMPLE_A_CATALOG, ...CATALOG_METADATA });
 

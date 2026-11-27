@@ -16,9 +16,11 @@ events published with the New Relic plugin on a page running the agent
 
 1. Events save as interactions
    1. GIVEN App developer has the New Relic plugin
-   2. GIVEN a running A/B test and the agent on the page
+   2. GIVEN a running A/B test
+   3. GIVEN the agent on the page
       1. WHEN I publish a key with a name replacement
-         1. THEN New Relic saves one interaction with that name and Stratum's attributes
+         1. THEN New Relic saves one interaction with that name
+         2. THEN the interaction carries Stratum's attributes
 2. Valid events save as valid
    1. GIVEN App developer has the New Relic plugin
       1. WHEN I publish with plugin data marking the event valid

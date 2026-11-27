@@ -20,8 +20,9 @@ New Relic Plus events published
       1. WHEN I register their catalog
          1. THEN each item is held back with one error per missing field
 2. Item types save their own fields
-   1. GIVEN App developer has New Relic Plus and an event
-   2. GIVEN API response or error item
+   1. GIVEN App developer has New Relic Plus
+   2. GIVEN an event
+   3. GIVEN API response or error item
       1. WHEN I publish its key
          1. THEN New Relic saves one interaction with that type's fields
 3. Empty context values are left out

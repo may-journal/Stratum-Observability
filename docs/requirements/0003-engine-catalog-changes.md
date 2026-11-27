@@ -15,12 +15,15 @@ run-time catalog changes
 ## Requirements
 
 1. Late catalogs take their component identity
-   1. GIVEN App developer has a catalog with a component name and versions
+   1. GIVEN App developer has a catalog with a component name
+   2. GIVEN component versions
       1. WHEN I add the catalog after construction
-         1. THEN the catalog's ID and metadata come from that component and its items use the plugin's event types
+         1. THEN the catalog's ID comes from that component
+         2. THEN the catalog's metadata comes from that component
+         3. THEN its items use the plugin's event types
 2. Catalog ID follows the most specific name
-   1. GIVEN App developer gives some
-   2. GIVEN all or none of the component name and versions
+   1. GIVEN App developer gives a varying share of the component name
+   2. GIVEN a varying share of the component versions
       1. WHEN I register a catalog with them
          1. THEN the catalog ID is the component name
          2. THEN or product

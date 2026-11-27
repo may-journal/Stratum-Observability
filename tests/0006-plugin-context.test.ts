@@ -34,7 +34,7 @@ describe('0006 Plugin Context', () => {
     }
   });
 
-  it('0006.2 the plugin refuses it and keeps no value', () => {
+  it('0006.2 the plugin refuses it and the plugin keeps no value', () => {
     for (const { name, create } of CONTEXT_PLUGINS) {
       const plugin = create();
       expect.soft(plugin.setContext(UNKNOWN_VAR, '456'), name).toBe(false);

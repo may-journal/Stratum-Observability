@@ -21,7 +21,8 @@ context keys set
 2. Undeclared context keys are refused
    1. GIVEN Plugin author has a plugin with a default context
       1. WHEN I set a key the plugin does not declare
-         1. THEN the plugin refuses it and keeps no value
+         1. THEN the plugin refuses it
+         2. THEN the plugin keeps no value
 3. Unprefixed context keys carry no plugin name
    1. GIVEN Plugin author has turned off the context prefix
       1. WHEN an event is delivered

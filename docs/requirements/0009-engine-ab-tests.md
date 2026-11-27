@@ -25,4 +25,5 @@ events published while A/B tests run
 3. Single use tests are not kept
    1. GIVEN App developer has one or more one-time A/B tests
       1. WHEN I pass them to a publish call
-         1. THEN that event carries them and the service does not keep them
+         1. THEN that event carries them
+         2. THEN the service does not keep them

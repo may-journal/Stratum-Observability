@@ -82,6 +82,7 @@ describe('0121 New Relic Plus Events', () => {
     for (const { key, model, attributes, name } of cases) {
       resetStratum();
       const stratum = createNewRelicPlusService();
+      expect.soft(Object.keys(stratum.injector.plugins), key).toHaveLength(1);
       expect.soft(stratum.defaultCatalog?.validModels[key], key).toBeInstanceOf(model);
       const publisherSpy = spyOnPublish(stratum.publishers[0]);
       const spies = spyOnNewRelic();
